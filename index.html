@@ -5,11 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MoneyMagnet Dashboard</title>
     <link rel="stylesheet" href="style.css">
+        <!-- Firebase config: definimos como global (window.firebaseConfig) antes dos scripts compat -->
+        <script>
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        window.firebaseConfig = {
+            apiKey: "AIzaSyC5EzxMIIOepO7y8EQX0_BSyYJYtUL9kuc",
+            authDomain: "economia-5c8de.firebaseapp.com",
+            projectId: "economia-5c8de",
+            storageBucket: "economia-5c8de.firebasestorage.app",
+            messagingSenderId: "615532860007",
+            appId: "1:615532860007:web:17a6764f45566915d47ac2",
+            measurementId: "G-937TF5WK6H"
+        };
+        </script>
+    <!-- Firebase (compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
 </head>
 <body class="app-body">
     <div class="container app-container">
+        <!-- Auth area -->
+        <div class="auth-bar">
+            <div class="auth-forms" id="auth-forms">
+                <input type="email" id="auth-email" placeholder="E-mail" class="input">
+                <input type="password" id="auth-password" placeholder="Senha" class="input">
+                <button id="btn-signup" class="btn btn--primary">Cadastrar</button>
+                <button id="btn-login" class="btn">Entrar</button>
+            </div>
+            <div class="auth-user" id="auth-user" style="display:none;">
+                <span id="user-email-display"></span>
+                <button id="btn-logout" class="btn">Sair</button>
+            </div>
+        </div>
         <header class="site-header">
             <h1 class="site-title">MoneyMagnet</h1>
             <p class="site-subtitle">Controle financeiro pessoal simplificado</p>

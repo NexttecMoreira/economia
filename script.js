@@ -1,28 +1,103 @@
  document.addEventListener('DOMContentLoaded', function() {
             // Initialize feather icons
             feather.replace();
-            
+
+            // Firebase variables
+            let firebaseApp = null;
+            let auth = null;
+            let db = null;
+            let currentUser = null;
+
             // Chart instances
             let incomeChart, expenseChart, summaryChart;
-            
+
             // Data structure
             let finances = {
                 income: [],
                 expense: []
             };
+
+            // Initialize Firebase (if firebase scripts are loaded)
+            function initFirebase() {
+                try {
+                    console.log('initFirebase: typeof firebase =', typeof firebase, 'window.firebaseConfig =', !!window.firebaseConfig);
+                    const cfg = (typeof window !== 'undefined' && window.firebaseConfig) ? window.firebaseConfig : (typeof firebaseConfig !== 'undefined' ? firebaseConfig : null);
+                    if (typeof firebase !== 'undefined' && cfg) {
+                        // initialize only if no apps initialized
+                        if (!firebase.apps || !firebase.apps.length) {
+                            firebaseApp = firebase.initializeApp(cfg);
+                            console.log('Firebase initialized', firebaseApp.name || '(default)');
+                        } else {
+                            firebaseApp = firebase.app();
+                            console.log('Firebase app already initialized');
+                        }
+
+                        auth = firebase.auth();
+                        db = firebase.firestore();
+
+                        // Auth state listener
+                        auth.onAuthStateChanged(async (user) => {
+                            console.log('onAuthStateChanged', user && user.uid);
+                            currentUser = user;
+                            updateAuthUI();
+                            if (user) {
+                                await loadFromFirestore();
+                            } else {
+                                loadDataFromLocalStorage();
+                            }
+                        });
+                    } else {
+                        console.warn('Firebase not available or config missing. cfg=', cfg);
+                    }
+                } catch (err) {
+                    console.error('initFirebase error', err);
+                }
+            }
             
-            // Load data from localStorage
-            function loadData() {
+            
+            // Load data from localStorage (fallback)
+            function loadDataFromLocalStorage() {
                 const savedData = localStorage.getItem('moneyMagnetData');
                 if (savedData) {
                     finances = JSON.parse(savedData);
                     updateAll();
+                } else {
+                    updateAll();
                 }
             }
-            
-            // Save data to localStorage
+
+            // Save data (to Firestore if logged in, else to localStorage)
             function saveData() {
                 localStorage.setItem('moneyMagnetData', JSON.stringify(finances));
+                if (currentUser && db) {
+                    saveToFirestore().catch(err => console.error('Error saving to Firestore', err));
+                }
+            }
+
+            // Load data from Firestore for current user
+            async function loadFromFirestore() {
+                if (!currentUser || !db) return;
+                try {
+                    const docRef = db.collection('users').doc(currentUser.uid);
+                    const doc = await docRef.get();
+                    if (doc.exists) {
+                        const data = doc.data();
+                        if (data && data.finances) {
+                            finances = data.finances;
+                        }
+                    }
+                    updateAll();
+                } catch (err) {
+                    console.error('Failed to load from Firestore', err);
+                    loadDataFromLocalStorage();
+                }
+            }
+
+            // Save finances to Firestore under users/{uid}
+            async function saveToFirestore() {
+                if (!currentUser || !db) return;
+                const docRef = db.collection('users').doc(currentUser.uid);
+                await docRef.set({ finances: finances }, { merge: true });
             }
             
             // Initialize charts
@@ -160,6 +235,27 @@
                 updateSummary();
                 saveData();
             }
+
+            // Update authentication UI (show login form or user info)
+            function updateAuthUI() {
+                try {
+                    const authForms = document.getElementById('auth-forms');
+                    const authUser = document.getElementById('auth-user');
+                    const userEmailDisplay = document.getElementById('user-email-display');
+
+                    if (currentUser) {
+                        if (authForms) authForms.style.display = 'none';
+                        if (authUser) authUser.style.display = 'flex';
+                        if (userEmailDisplay) userEmailDisplay.textContent = currentUser.email || currentUser.uid;
+                    } else {
+                        if (authForms) authForms.style.display = '';
+                        if (authUser) authUser.style.display = 'none';
+                        if (userEmailDisplay) userEmailDisplay.textContent = '';
+                    }
+                } catch (err) {
+                    console.error('updateAuthUI error', err);
+                }
+            }
             
             // Update income list
             function updateIncomeList() {
@@ -287,7 +383,7 @@
                 }
                     }
                     
-                    // Add income
+                // Add income
                     document.getElementById('add-income').addEventListener('click', function() {
                         const name = document.getElementById('income-name').value.trim();
                         const value = document.getElementById('income-value').value.trim();
@@ -367,7 +463,53 @@
                         }
                     });
                     
+                    // Auth UI buttons
+                    document.getElementById('btn-signup').addEventListener('click', async function() {
+                        const email = document.getElementById('auth-email').value.trim();
+                        const password = document.getElementById('auth-password').value.trim();
+                        if (!email || !password) return alert('Preencha email e senha');
+                        try {
+                            console.log('signup: calling createUserWithEmailAndPassword for', email);
+                            const res = await auth.createUserWithEmailAndPassword(email, password);
+                            console.log('signup success', res && res.user && res.user.uid);
+                            alert('Usuário criado e logado');
+                        } catch (err) {
+                            console.error('Erro ao cadastrar', err);
+                            alert('Erro ao cadastrar: ' + err.message);
+                        }
+                    });
+
+                    document.getElementById('btn-login').addEventListener('click', async function() {
+                        const email = document.getElementById('auth-email').value.trim();
+                        const password = document.getElementById('auth-password').value.trim();
+                        if (!email || !password) return alert('Preencha email e senha');
+                        try {
+                            console.log('login: attempting signInWithEmailAndPassword for', email);
+                            const res = await auth.signInWithEmailAndPassword(email, password);
+                            console.log('login success', res && res.user && res.user.uid);
+                            // Optionally clear fields on success
+                            document.getElementById('auth-password').value = '';
+                            // updateAuthUI will be triggered by onAuthStateChanged
+                            return;
+                        } catch (err) {
+                            console.error('Erro ao entrar', err);
+                            alert('Erro ao entrar: ' + err.message);
+                        }
+                    });
+
+                    document.getElementById('btn-logout').addEventListener('click', async function() {
+                        try {
+                            await auth.signOut();
+                        } catch (err) {
+                            console.error('Erro ao deslogar', err);
+                        }
+                    });
+
                     // Initialize
                     initCharts();
-                    loadData();
+                    initFirebase();
+                    // loadData will be triggered by auth state listener; if firebase not available, use localStorage
+                    if (typeof firebase === 'undefined') {
+                        loadDataFromLocalStorage();
+                    }
                 });
