@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MoneyMagnet Dashboard</title>
     <link rel="stylesheet" href="style.css">
+    <style id="early-hide">html{visibility:hidden !important;}</style>
         <!-- Firebase config (moved to separate file) -->
         <script src="firebase-config.js"></script>
     <!-- Firebase (compat) -->
@@ -13,7 +14,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-        <!-- Early auth check: redirect to login.html if not authenticated (prevents flashing app UI) -->
+        <!-- Early auth check: hide UI until we know auth state, then either show app or redirect to login -->
         <script>
             (function(){
                 try {
@@ -22,20 +23,33 @@
                             firebase.initializeApp(window.firebaseConfig);
                         }
                         var auth = firebase.auth();
-                        // If there's already a user, do nothing. If not, wait briefly for onAuthStateChanged then redirect.
-                        if (auth.currentUser) {
-                            console.log('Early check: user already signed in, staying on app');
-                        } else {
-                            var redirected = false;
-                            var t = setTimeout(function(){ if (!redirected) { window.location.href = 'login.html'; } }, 600);
-                            auth.onAuthStateChanged(function(user){ redirected = true; clearTimeout(t); if (!user) window.location.href = 'login.html'; });
+                        function showApp(){
+                            var s = document.getElementById('early-hide');
+                            if (s && s.parentNode) s.parentNode.removeChild(s);
+                            document.documentElement.style.visibility = 'visible';
                         }
+                        // Wait for Firebase to tell us the auth state; only redirect if explicitly unauthenticated
+                        auth.onAuthStateChanged(function(user){
+                            if (user) {
+                                console.log('Early check: user signed in, showing app');
+                                showApp();
+                            } else {
+                                console.log('Early check: no user, redirecting to login');
+                                try { window.location.href = 'login.html'; } catch(e){ console.warn(e); }
+                            }
+                        });
                     } else {
-                        // If firebase not present, redirect immediately to login so user lands on the auth page
-                        window.location.href = 'login.html';
+                        // If firebase not present, reveal and redirect to login
+                        var s = document.getElementById('early-hide');
+                        if (s && s.parentNode) s.parentNode.removeChild(s);
+                        document.documentElement.style.visibility = 'visible';
+                        try { window.location.href = 'login.html'; } catch(e) { console.warn(e); }
                     }
                 } catch (e) {
-                    console.warn('Early auth redirect check failed', e);
+                    console.warn('Early auth check failed', e);
+                    var s = document.getElementById('early-hide');
+                    if (s && s.parentNode) s.parentNode.removeChild(s);
+                    document.documentElement.style.visibility = 'visible';
                     try { window.location.href = 'login.html'; } catch(_){ }
                 }
             })();
