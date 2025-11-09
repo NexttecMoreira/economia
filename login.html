@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Login - MoneyMagnet</title>
+  <link rel="stylesheet" href="style.css">
+  <meta http-equiv="Cache-control" content="no-cache">
+  <!-- Firebase config and compat SDKs -->
+  <script src="firebase-config.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+</head>
+<body class="auth-page">
+  <div class="auth-container">
+    <h1>Entrar no MoneyMagnet</h1>
+    <div class="auth-box">
+      <input id="auth-email" type="email" placeholder="E-mail" class="input">
+      <input id="auth-password" type="password" placeholder="Senha" class="input">
+      <div class="auth-actions">
+        <button id="btn-login" class="btn btn--primary">Entrar</button>
+        <button id="btn-signup" class="btn">Cadastrar</button>
+      </div>
+      <div id="auth-message" class="auth-message" role="status" aria-live="polite"></div>
+    </div>
+    <p class="small">Voltará ao app após login com sucesso.</p>
+  </div>
+
+  <script src="login.js"></script>
+</body>
+</html>

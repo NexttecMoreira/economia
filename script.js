@@ -44,6 +44,17 @@
                                 await loadFromFirestore();
                             } else {
                                 loadDataFromLocalStorage();
+                                // If we're on the app page but not logged in, redirect to login page
+                                try {
+                                    const path = window.location.pathname || '';
+                                    const isLoginPage = path.endsWith('login.html') || path.endsWith('/login.html');
+                                    if (!isLoginPage) {
+                                        console.log('No user - redirecting to login.html');
+                                        window.location.href = 'login.html';
+                                    }
+                                } catch (err) {
+                                    console.warn('Redirect to login failed', err);
+                                }
                             }
                         });
                     } else {
