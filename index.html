@@ -13,6 +13,12 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+        <!-- Redirect immediately to login page so the app always starts on auth -->
+        <script>
+          (function(){
+            try { window.location.href = 'login.html'; } catch(e) { console.warn('redirect failed', e); }
+          })();
+        </script>
 </head>
 <body class="app-body">
     <div class="container app-container">
