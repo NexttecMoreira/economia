@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoneyMagnet Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+</head>
+<body class="app-body">
+    <div class="container app-container">
+        <header class="site-header">
+            <h1 class="site-title">MoneyMagnet</h1>
+            <p class="site-subtitle">Controle financeiro pessoal simplificado</p>
+        </header>
+
+        <main>
+            <div class="layout-grid">
+                <!-- Ganhos Section -->
+                <section class="card card--income">
+                    <div class="card-header">
+                        <h2 class="card-title"><i data-feather="trending-up" class="icon-left"></i> Ganhos</h2>
+                        <div class="amount amount--income" id="total-income">R$ 0,00</div>
+                    </div>
+
+                    <div class="controls">
+                        <input type="text" id="income-name" placeholder="Descrição" class="input input--flex focus-ring-blue">
+                        <input type="number" id="income-value" placeholder="Valor" class="input input--small focus-ring-blue">
+                        <button id="add-income" class="btn btn--primary glow-on-hover">
+                            <i data-feather="plus" class="icon-left"></i> Add
+                        </button>
+                    </div>
+
+                    <div class="chart-wrapper">
+                        <canvas id="income-chart"></canvas>
+                    </div>
+
+                    <div class="list-container" id="income-list">
+                        <!-- Income items will be added here -->
+                    </div>
+                </section>
+
+                <!-- Gastos Section -->
+                <section class="card card--expense">
+                    <div class="card-header">
+                        <h2 class="card-title"><i data-feather="trending-down" class="icon-left"></i> Gastos</h2>
+                        <div class="amount amount--expense" id="total-expense">R$ 0,00</div>
+                    </div>
+
+                    <div class="controls">
+                        <input type="text" id="expense-name" placeholder="Descrição" class="input input--flex focus-ring-red">
+                        <input type="number" id="expense-value" placeholder="Valor" class="input input--small focus-ring-red">
+                        <button id="add-expense" class="btn btn--danger glow-on-hover">
+                            <i data-feather="plus" class="icon-left"></i> Add
+                        </button>
+                    </div>
+
+                    <div class="chart-wrapper">
+                        <canvas id="expense-chart"></canvas>
+                    </div>
+
+                    <div class="list-container" id="expense-list">
+                        <!-- Expense items will be added here -->
+                    </div>
+                </section>
+            </div>
+
+            <!-- Resumo Total Section -->
+            <section class="card card--summary">
+                <div class="card-header">
+                    <h2 class="card-title"><i data-feather="pie-chart" class="icon-left"></i> Resumo Total</h2>
+                    <div class="balance-display" id="balance-display">
+                        <span id="balance-amount">R$ 0,00</span>
+                        <span id="balance-status" class="balance-status"></span>
+                    </div>
+                </div>
+
+                <div class="summary-grid">
+                    <div class="summary-chart-wrapper">
+                        <canvas id="summary-chart"></canvas>
+                    </div>
+                    
+                    <div class="summary-cards">
+                        <div class="summary-card">
+                            <div class="summary-row">
+                                <span class="summary-label summary-label--income">Total Ganhos:</span>
+                                <span class="summary-value" id="summary-income">R$ 0,00</span>
+                            </div>
+                            <div class="summary-row">
+                                <span class="summary-label summary-label--expense">Total Gastos:</span>
+                                <span class="summary-value" id="summary-expense">R$ 0,00</span>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-row">
+                                <span class="summary-label summary-label--balance">Saldo:</span>
+                                <span class="summary-value" id="summary-balance">R$ 0,00</span>
+                            </div>
+                            <div class="site-note" id="financial-tip">
+                                Adicione seus ganhos e gastos para começar!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"> </script>
+        </body>
+</html>
