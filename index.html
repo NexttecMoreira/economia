@@ -13,11 +13,32 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-        <!-- Redirect immediately to login page so the app always starts on auth -->
+        <!-- Early auth check: redirect to login.html if not authenticated (prevents flashing app UI) -->
         <script>
-          (function(){
-            try { window.location.href = 'login.html'; } catch(e) { console.warn('redirect failed', e); }
-          })();
+            (function(){
+                try {
+                    if (typeof firebase !== 'undefined' && window.firebaseConfig) {
+                        if (!firebase.apps || !firebase.apps.length) {
+                            firebase.initializeApp(window.firebaseConfig);
+                        }
+                        var auth = firebase.auth();
+                        // If there's already a user, do nothing. If not, wait briefly for onAuthStateChanged then redirect.
+                        if (auth.currentUser) {
+                            console.log('Early check: user already signed in, staying on app');
+                        } else {
+                            var redirected = false;
+                            var t = setTimeout(function(){ if (!redirected) { window.location.href = 'login.html'; } }, 600);
+                            auth.onAuthStateChanged(function(user){ redirected = true; clearTimeout(t); if (!user) window.location.href = 'login.html'; });
+                        }
+                    } else {
+                        // If firebase not present, redirect immediately to login so user lands on the auth page
+                        window.location.href = 'login.html';
+                    }
+                } catch (e) {
+                    console.warn('Early auth redirect check failed', e);
+                    try { window.location.href = 'login.html'; } catch(_){ }
+                }
+            })();
         </script>
 </head>
 <body class="app-body">
