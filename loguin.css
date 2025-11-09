@@ -1,0 +1,103 @@
+/* Styles dedicated to the login page (loguin.css)
+   Responsive and mobile-first. Works together with style.css.
+*/
+
+/* Page container */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(1200px 600px at 10% 10%, rgba(96,165,250,0.06), transparent),
+              radial-gradient(900px 400px at 90% 90%, rgba(6,182,212,0.04), transparent),
+              #0f1724; /* darker background for auth */
+  padding: 2rem;
+}
+
+.auth-container {
+  width: 100%;
+  max-width: 420px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 8px 30px rgba(2,6,23,0.7);
+  text-align: center;
+  color: #E6EDF3;
+  border: 1px solid rgba(255,255,255,0.03);
+}
+
+.auth-container h1 {
+  margin: 0 0 1rem 0;
+  font-size: 1.45rem;
+  letter-spacing: -0.02em;
+  color: #E6F0FF;
+}
+
+.auth-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.auth-box .input {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border-radius: 8px;
+  background: rgba(15,23,42,0.6);
+  color: #E6EDF3;
+  border: 1px solid rgba(255,255,255,0.03);
+  box-sizing: border-box;
+}
+
+.auth-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  justify-content: center;
+}
+
+.auth-actions .btn { flex: 1 1 0; }
+
+.auth-message {
+  margin-top: 0.5rem;
+  min-height: 1.2rem;
+  font-size: 0.95rem;
+  color: #9CA3AF;
+}
+
+.small { font-size: 0.85rem; color: #9CA3AF; margin-top: 0.75rem; }
+
+/* Visual polish */
+.btn--primary { box-shadow: 0 6px 18px rgba(37,99,235,0.14); }
+.btn { font-weight: 600; }
+
+/* Focus states for accessibility */
+.auth-box .input:focus { outline: none; box-shadow: 0 0 0 4px rgba(96,165,250,0.08); }
+
+/* Responsive tweaks */
+@media (max-width: 420px) {
+  .auth-container { padding: 1.25rem; border-radius: 10px; }
+  .auth-container h1 { font-size: 1.25rem; }
+  .auth-box .input { padding: 0.9rem 1rem; font-size: 1rem; }
+  .auth-actions { gap: 0.4rem; }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .auth-container { max-width: 520px; padding: 2.25rem; }
+}
+
+@media (min-width: 1200px) {
+  .auth-container { transform: translateY(-20px); }
+}
+
+/* Slight zoom/scale effect for very narrow viewports (phones) but using font-size for crispness */
+@media (max-width: 360px) {
+  html { font-size: 18px; }
+  .auth-container { padding: 1rem; }
+}
+
+/* Provide a simple utility to center a smaller notice area on desktop */
+@media (min-width: 1400px) {
+  .auth-container { max-width: 560px; padding: 2.5rem; }
+}

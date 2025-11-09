@@ -24,10 +24,61 @@ body {
     color: #e2e8f0;
 }
 
+/* Responsive base sizing: fluid typography and small-screen "zoom" via larger base font-size */
+html {
+    /* clamp(min, preferred, max) - adjusts fluidly across viewport widths */
+    font-size: clamp(14px, 1.0rem + 0.4vw, 20px);
+    -webkit-text-size-adjust: 100%;
+}
+
+/* Extra zoom for very small devices (phones) to improve tap targets and readability */
+@media (max-width: 420px) {
+    html { font-size: 18px; }
+    .btn { padding: 0.75rem 1rem; }
+    .input { padding: 0.75rem 1rem; }
+    .chart-wrapper { height: 12rem; }
+    .summary-chart-wrapper { height: 12rem; }
+}
+
+/* Mobile fixes: stack controls, enlarge touch targets, prevent horizontal overflow */
+@media (max-width: 480px) {
+    body { overflow-x: hidden; }
+    .controls { flex-direction: column; align-items: stretch; }
+    .controls .input, .controls .btn { width: 100% !important; }
+    .controls .btn { display: block; }
+    .input--small { width: 100% !important; }
+    .list-item { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    .card-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    .chart-wrapper { height: 10.5rem; }
+    .summary-chart-wrapper { height: 10.5rem; }
+    .container { padding: 0.75rem; }
+    .site-title { font-size: 1.6rem; }
+}
+
+/* Slight upscale on very large monitors to use available space */
+@media (min-width: 1600px) {
+    html { font-size: 18px; }
+    .container { max-width: 1500px; }
+    .chart-wrapper { height: 20rem; }
+    .summary-chart-wrapper { height: 28rem; }
+}
+
+/* Ultra-wide monitors: give more breathing room and optionally increase column layout */
+@media (min-width: 2000px) {
+    html { font-size: 20px; }
+    .container { max-width: 1800px; padding: 3rem; }
+    .layout-grid { grid-template-columns: repeat(3, 1fr); gap: 2.5rem; }
+}
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
+}
+
+/* Make container padding and layout fluid on small screens */
+@media (max-width: 480px) {
+    .container { padding: 1rem; }
 }
 
 @media (max-width: 768px) {
@@ -57,7 +108,8 @@ body {
 .site-subtitle { color: #9CA3AF; }
 
 .layout-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; margin-bottom: 2rem; }
-@media (min-width: 1024px) { .layout-grid { grid-template-columns: repeat(2, 1fr); } }
+    /* Only switch to two-column layout on wider screens (desktop). Keep tablets/iPads stacked. */
+    @media (min-width: 1200px) { .layout-grid { grid-template-columns: repeat(2, 1fr); } }
 
 .card { background: #1f2937; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 10px 15px rgba(2,6,23,0.6); }
 .card--income { }
@@ -97,7 +149,8 @@ body {
 .icon-btn:hover { color: #93C5FD; }
 
 .summary-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
-@media (min-width: 768px) { .summary-grid { grid-template-columns: 2fr 1fr; } }
+    /* Keep summary stacked on tablets; only split on desktop */
+    @media (min-width: 1200px) { .summary-grid { grid-template-columns: 2fr 1fr; } }
 .summary-chart-wrapper { height: 20rem; }
 .summary-cards { display: flex; flex-direction: column; justify-content: center; gap: 0.75rem; }
 .summary-card { background: #374151; border-radius: 0.5rem; padding: 1rem; }
