@@ -122,7 +122,7 @@
                         datasets: [{
                             data: [],
                             backgroundColor: [
-                                '#3B82F6', '#60A5FA', '#93C5FD', '#BFDBFE', '#DBEAFE'
+                                '#63A9EF', '#4C9DEE', '#3792EA', '#2A8BE7', '#1E88E5', '#1C7ED4', '#1A75C2', '#176CB0', '#15639E', '#135A8C'
                             ],
                             borderWidth: 0
                         }]
@@ -164,7 +164,7 @@
                         datasets: [{
                             data: [],
                             backgroundColor: [
-                                '#EF4444', '#F87171', '#FCA5A5', '#FECACA', '#FEE2E2'
+                                '#F4A04D', '#F29844', '#EF903A', '#EC872F', '#E57C23', '#D97320', '#CC6B1E', '#BF631C', '#B35B19', '#A65417'
                             ],
                             borderWidth: 0
                         }]
@@ -205,7 +205,7 @@
                         labels: ['Ganhos', 'Gastos'],
                         datasets: [{
                             data: [0, 0],
-                            backgroundColor: ['#10B981', '#EF4444'],
+                            backgroundColor: ['#1E88E5', '#E57C23'],
                             borderWidth: 0
                         }]
                     },
