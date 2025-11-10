@@ -158,8 +158,8 @@ html {
     @media (min-width: 1200px) { .summary-grid { grid-template-columns: 2fr 1fr; } }
 .summary-chart-wrapper { height: 20rem;}
 .summary-cards { display: flex; flex-direction: column; justify-content: center; gap: 0.75rem; }
-.summary-card { background: #3A3A3A; border-radius: 0.5rem; padding: 1rem; }
-.summary-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+.summary-card { background: #3A3A3A; border-radius: 0.5rem; padding: 1rem; width: 90%; align-self: center; align-items: center; }
+.summary-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; width: 100%; }
 .summary-label { font-weight: 600;}
 .summary-label--income { color: #1E88E5 }
 .summary-label--expense { color: #E57C23}
