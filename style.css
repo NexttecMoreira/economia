@@ -38,6 +38,8 @@ html {
     .input { padding: 0.75rem 1rem; }
     .chart-wrapper { height: 12rem; }
     .summary-chart-wrapper { height: 12rem; }
+    .card{width: 90%; align-self: center; align-items: center;  }
+
 }
 
 /* Mobile fixes: stack controls, enlarge touch targets, prevent horizontal overflow */
@@ -53,6 +55,7 @@ html {
     .summary-chart-wrapper { height: 10.5rem; }
     .container { padding: 0.75rem; }
     .site-title { font-size: 1.6rem; }
+    .card{width: 90%; align-self: center; align-items: center; }
 }
 
 /* Slight upscale on very large monitors to use available space */
@@ -61,6 +64,7 @@ html {
     .container { max-width: 1500px; }
     .chart-wrapper { height: 20rem; }
     .summary-chart-wrapper { height: 28rem; }
+    .card{width: 90%; align-self: center; align-items: center; }
 }
 
 /* Ultra-wide monitors: give more breathing room and optionally increase column layout */
@@ -130,7 +134,7 @@ html {
 .focus-ring-blue:focus { box-shadow: 0 0 0 2px #747474ff; outline: none; }
 .focus-ring-red:focus { box-shadow: 0 0 0 2px #747474ff; outline: none; }
 
-.btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 0.5rem; color: #ffffffff; cursor: pointer; border: none; margin-left:10px }
+.btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 0.5rem; color: #ffffffff; cursor: pointer; border: none; }
 .btn--primary { background: #D4AF37; }
 .btn--primary:hover { background: #ad891dff; }
 .btn--danger { background: #D4AF37; }
