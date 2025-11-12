@@ -4,60 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MoneyMagnet Dashboard</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="style.css">
-    <style id="early-hide">html{visibility:hidden !important;}</style>
-        <!-- Firebase config (moved to separate file) -->
-        <script src="firebase-config.js"></script>
-    <!-- Firebase (compat) -->
+<!-- Firebase config (moved to separate file) -->
+    <script src="firebase-config.js"></script>
+<!-- Firebase (compat) -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-        <!-- Early auth check: hide UI until we know auth state, then either show app or redirect to login -->
-        <script>
-            (function(){
-                try {
-                    if (typeof firebase !== 'undefined' && window.firebaseConfig) {
-                        if (!firebase.apps || !firebase.apps.length) {
-                            firebase.initializeApp(window.firebaseConfig);
-                        }
-                        var auth = firebase.auth();
-                        function showApp(){
-                            var s = document.getElementById('early-hide');
-                            if (s && s.parentNode) s.parentNode.removeChild(s);
-                            document.documentElement.style.visibility = 'visible';
-                        }
-                        // Wait for Firebase to tell us the auth state; only redirect if explicitly unauthenticated
-                        auth.onAuthStateChanged(function(user){
-                            if (user) {
-                                console.log('Early check: user signed in, showing app');
-                                showApp();
-                            } else {
-                                console.log('Early check: no user, redirecting to login');
-                                try { window.location.href = 'login.html'; } catch(e){ console.warn(e); }
-                            }
-                        });
-                    } else {
-                        // If firebase not present, reveal and redirect to login
-                        var s = document.getElementById('early-hide');
-                        if (s && s.parentNode) s.parentNode.removeChild(s);
-                        document.documentElement.style.visibility = 'visible';
-                        try { window.location.href = 'login.html'; } catch(e) { console.warn(e); }
-                    }
-                } catch (e) {
-                    console.warn('Early auth check failed', e);
-                    var s = document.getElementById('early-hide');
-                    if (s && s.parentNode) s.parentNode.removeChild(s);
-                    document.documentElement.style.visibility = 'visible';
-                    try { window.location.href = 'login.html'; } catch(_){ }
-                }
-            })();
-        </script>
+    
 </head>
-<body class="app-body">
-    <div class="container app-container">
-        <!-- Auth area -->
+<body>
+    <div class="container animate__animated animate__fadeIn">
+<!-- Auth area -->
         <div class="auth-bar">
             <div class="auth-forms" id="auth-forms">
                 <input type="email" id="auth-email" placeholder="E-mail" class="input">
@@ -70,12 +32,11 @@
                 <button id="btn-logout" class="btn">Sair</button>
             </div>
         </div>
-        <header class="site-header">
+        <header class="site-header animate__animated animate__fadeInDown">
             <h1 class="site-title">MoneyMagnet</h1>
-            <p class="site-subtitle">Controle financeiro pessoal simplificado</p>
-        </header>
-
-        <main>
+            <p class="site-subtitle">Seu controle financeiro inteligente</p>
+</header>
+<main>
             <div class="layout-grid">
                 <!-- Ganhos Section -->
                 <section class="card card--income">
@@ -166,7 +127,6 @@
             </section>
         </main>
     </div>
-
-    <script src="script.js"> </script>
-        </body>
+<script src="script.js"></script>
+</body>
 </html>

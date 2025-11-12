@@ -205,7 +205,7 @@
                         labels: ['Ganhos', 'Gastos'],
                         datasets: [{
                             data: [0, 0],
-                            backgroundColor: ['#1E88E5', '#E57C23'],
+                            backgroundColor: ['#15639e', '#b35b19'],
                             borderWidth: 0
                         }]
                     },
@@ -393,42 +393,55 @@
                     financialTip.className = 'site-subtext status-neutral';
                 }
                     }
-                    
-                // Add income
+                    // Add income
                     document.getElementById('add-income').addEventListener('click', function() {
                         const name = document.getElementById('income-name').value.trim();
                         const value = document.getElementById('income-value').value.trim();
                         
                         if (name && value) {
-                            finances.income.push({
-                                name: name,
-                                value: parseFloat(value).toFixed(2)
-                            });
+                            const existingItem = finances.income.find(item => item.name.toLowerCase() === name.toLowerCase());
+                            
+                            if (existingItem) {
+                                // Accumulate value if item exists
+                                existingItem.value = (parseFloat(existingItem.value) + parseFloat(value)).toFixed(2);
+                            } else {
+                                // Add new item
+                                finances.income.push({
+                                    name: name,
+                                    value: parseFloat(value).toFixed(2)
+                                });
+                            }
                             
                             document.getElementById('income-name').value = '';
                             document.getElementById('income-value').value = '';
                             updateAll();
                         }
                     });
-                    
                     // Add expense
                     document.getElementById('add-expense').addEventListener('click', function() {
                         const name = document.getElementById('expense-name').value.trim();
                         const value = document.getElementById('expense-value').value.trim();
                         
                         if (name && value) {
-                            finances.expense.push({
-                                name: name,
-                                value: parseFloat(value).toFixed(2)
-                            });
+                            const existingItem = finances.expense.find(item => item.name.toLowerCase() === name.toLowerCase());
+                            
+                            if (existingItem) {
+                                // Accumulate value if item exists
+                                existingItem.value = (parseFloat(existingItem.value) + parseFloat(value)).toFixed(2);
+                            } else {
+                                // Add new item
+                                finances.expense.push({
+                                    name: name,
+                                    value: parseFloat(value).toFixed(2)
+                                });
+                            }
                             
                             document.getElementById('expense-name').value = '';
                             document.getElementById('expense-value').value = '';
                             updateAll();
                         }
                     });
-                    
-                    // Delete income
+// Delete income
                     document.addEventListener('click', function(e) {
                         if (e.target.closest('.delete-income')) {
                             const index = e.target.closest('.delete-income').dataset.index;
