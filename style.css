@@ -15,6 +15,7 @@
 .from-blue-400 { --_from: #60A5FA; }
 .to-teal-400 { --_to: #06B6D4; }
 .bg-gradient-to-r { background-image: linear-gradient(90deg, var(--_from, #60A5FA) 0%, var(--_to, #06B6D4) 100%); }
+
 :root {
     --primary: #1a237e;
     --secondary: #283593;
@@ -38,26 +39,7 @@ body {
     overflow-x: hidden;
     scroll-behavior: smooth;
 }
-@keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-}
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-
-@keyframes gradientBG {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
 html {
     font-size: clamp(16px, 1.0rem + 0.5vw, 22px);
     -webkit-text-size-adjust: 100%;
@@ -66,47 +48,6 @@ html {
     animation: gradientBG 15s ease infinite;
 }
 /* Extra zoom for very small devices (phones) to improve tap targets and readability */
-@media (max-width: 420px) {
-    html { font-size: 18px; }
-    .btn { padding: 0.75rem 1rem; }
-    .input { padding: 0.75rem 1rem; }
-    .chart-wrapper { height: 12rem; }
-    .summary-chart-wrapper { height: 12rem; }
-    .card{width: 90%; align-self: center; align-items: center;  }
-
-}
-
-/* Mobile fixes: stack controls, enlarge touch targets, prevent horizontal overflow */
-@media (max-width: 480px) {
-    body { overflow-x: hidden; }
-    .controls { flex-direction: column; align-items: stretch; }
-    .controls .input, .controls .btn { width: 100% !important; }
-    .controls .btn { display: block; }
-    .input--small { width: 100% !important; }
-    .list-item { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
-    .card-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
-    .chart-wrapper { height: 10.5rem; }
-    .summary-chart-wrapper { height: 10.5rem; }
-    .container { padding: 0.75rem; }
-    .site-title { font-size: 1.6rem; }
-    .card{width: 90%; align-self: center; align-items: center; }
-}
-
-/* Slight upscale on very large monitors to use available space */
-@media (min-width: 1600px) {
-    html { font-size: 18px; }
-    .container { max-width: 1500px; }
-    .chart-wrapper { height: 20rem; }
-    .summary-chart-wrapper { height: 28rem; }
-    .card{width: 90%; align-self: center; align-items: center; }
-}
-
-/* Ultra-wide monitors: give more breathing room and optionally increase column layout */
-@media (min-width: 2000px) {
-    html { font-size: 20px; }
-    .container { max-width: 1800px; padding: 3rem; }
-    .layout-grid { grid-template-columns: repeat(3, 1fr); gap: 2.5rem; }
-}
 
 .container {
     max-width: 1200px;
@@ -114,16 +55,6 @@ html {
     padding: 2rem;
 }
 
-/* Make container padding and layout fluid on small screens */
-@media (max-width: 480px) {
-    .container { padding: 1rem; }
-}
-
-@media (max-width: 768px) {
-    .container {
-        padding: 1rem;
-    }
-}
 
 /* Styles moved from index.html <style> block */
 @keyframes fadeIn {
@@ -138,11 +69,11 @@ html {
     font-size: 3rem;
     font-weight: 800;
     margin-bottom: 0.5rem;
-    background: linear-gradient(90deg, var(--primary), var(--accent));
+    background: linear-gradient(90deg, rgba(233, 233, 233, 1), rgba(210, 210, 210, 1));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    text-shadow: 0 2px 10px rgba(92, 157, 231, 0.3);
+    text-shadow: 0 2px 10px rgba(150, 150, 150, 0.3);
     animation: pulse 3s ease infinite;
 }
 .site-subtitle { color: #9CA3AF; }
@@ -305,25 +236,11 @@ html {
     pointer-events: none;
 }
 
-@keyframes ripple {
-    to {
-        transform: scale(4);
-        opacity: 0;
-    }
-}
-
 .glow {
     animation: glow 2s ease-in-out infinite alternate;
 }
 
-@keyframes glow {
-    from {
-        box-shadow: 0 0 5px rgba(108, 92, 231, 0.5);
-    }
-    to {
-        box-shadow: 0 0 20px rgba(108, 92, 231, 0.8);
-    }
-}
+
 .glow-on-hover {
     transition: all 0.3s ease;
 }
@@ -358,4 +275,164 @@ html {
 }
 ::-webkit-scrollbar-thumb:hover {
     background: var(--secondary);
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+@keyframes glow {
+    from {
+        box-shadow: 0 0 5px rgba(108, 92, 231, 0.5);
+    }
+    to {
+        box-shadow: 0 0 20px rgba(108, 92, 231, 0.8);
+    }
+}
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* ============================================================
+   MOBILE (até 480px)
+   ============================================================ */
+@media (max-width: 480px) {
+
+    html { font-size: 18px; }
+
+    body { overflow-x: hidden; }
+
+    .btn,
+    .input { padding: 0.75rem 1rem; }
+
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .controls .input,
+    .controls .btn,
+    .input--small {
+        width: 100% !important;
+        display: block;
+    }
+
+    .list-item,
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .chart-wrapper,
+    .summary-chart-wrapper { height: 10.5rem; }
+
+    .container { padding: 1rem; }
+
+    .site-title { font-size: 1.6rem; }
+
+    .card { width: 90%; align-self: center; align-items: center; }
+}
+
+/* ============================================================
+   MOBILE GRANDE / TABLET PEQUENO (até 640px)
+   ============================================================ */
+@media (max-width: 640px) {
+
+    html { font-size: 17px; }
+
+    .chart-wrapper,
+    .summary-chart-wrapper { height: 12rem; }
+
+    .card { width: 90%; align-self: center; align-items: center; }
+}
+
+/* ============================================================
+   TABLET (até 768px)
+   ============================================================ */
+@media (max-width: 768px) {
+
+    .container { padding: 1rem; }
+
+    .chart-wrapper { height: 13rem; }
+    .summary-chart-wrapper { height: 13rem; }
+}
+
+/* ============================================================
+   NOTEBOOK PEQUENO (até 1024px)
+   ============================================================ */
+@media (max-width: 1024px) {
+
+    html { font-size: 17px; }
+
+    .container { max-width: 900px; }
+
+    .chart-wrapper { height: 15rem; }
+    .summary-chart-wrapper { height: 18rem; }
+}
+
+/* ============================================================
+   NOTEBOOK COMUM (até 1280px)
+   ============================================================ */
+@media (max-width: 1280px) {
+
+    .container { max-width: 1100px; }
+
+    .layout-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+}
+
+/* ============================================================
+   DESKTOP (até 1440px)
+   ============================================================ */
+@media (max-width: 1440px) {
+
+    .container { max-width: 1300px; }
+
+    .chart-wrapper { height: 18rem; }
+    .summary-chart-wrapper { height: 22rem; }
+}
+
+/* ============================================================
+   TELAS GRANDES (mínimo 1920px)
+   ============================================================ */
+@media (min-width: 1920px) {
+
+    html { font-size: 20px; }
+
+    .container {
+        max-width: 1800px;
+        padding: 3rem;
+    }
+
+    .layout-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2.5rem;
+    }
+
+    .chart-wrapper { height: 20rem; }
+    .summary-chart-wrapper { height: 28rem; }
+
+    .card { width: 90%; align-self: center; align-items: center; }
 }

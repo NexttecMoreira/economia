@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MoneyMagnet Dashboard</title>
+    <title>NextFlow Dashboard</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="style.css">
@@ -21,19 +21,19 @@
     <div class="container animate__animated animate__fadeIn">
 <!-- Auth area -->
         <div class="auth-bar">
-            <div class="auth-forms" id="auth-forms">
+            <div class="auth-forms" id="auth-forms" style="display: none;">
                 <input type="email" id="auth-email" placeholder="E-mail" class="input">
                 <input type="password" id="auth-password" placeholder="Senha" class="input">
                 <button id="btn-signup" class="btn btn--primary">Cadastrar</button>
                 <button id="btn-login" class="btn">Entrar</button>
             </div>
             <div class="auth-user" id="auth-user" style="display:none;">
-                <span id="user-email-display"></span>
+                <span id="user-email-display" style="display: none;"></span>
                 <button id="btn-logout" class="btn">Sair</button>
             </div>
         </div>
         <header class="site-header animate__animated animate__fadeInDown">
-            <h1 class="site-title">MoneyMagnet</h1>
+            <h1 class="site-title">NextFlow</h1>
             <p class="site-subtitle">Seu controle financeiro inteligente</p>
 </header>
 <main>

@@ -75,30 +75,76 @@
 /* Focus states for accessibility */
 .auth-box .input:focus { outline: none; box-shadow: 0 0 0 3px rgba(95, 95, 95, 0.37); }
 
-/* Responsive tweaks */
-@media (max-width: 420px) {
+/* ============================================================
+   MOBILE (até 480px)
+   ============================================================ */
+@media (max-width: 480px) {
+
+  /* vindo do max 420px */
   .auth-container { padding: 1.25rem; border-radius: 10px; }
   .auth-container h1 { font-size: 1.25rem; }
-  .auth-box .input { padding: 0.9rem 1rem; font-size: 1rem; }
+
+  .auth-box .input {
+    padding: 0.9rem 1rem;
+    font-size: 1rem;
+  }
+
   .auth-actions { gap: 0.4rem; }
-}
 
-@media (min-width: 768px) and (max-width: 1024px) {
-  .auth-container { max-width: 520px; padding: 2.25rem; }
-}
-
-@media (min-width: 1200px) {
-  .auth-container { transform: translateY(-20px); }
-}
-
-/* Slight zoom/scale effect for very narrow viewports (phones) but using font-size for crispness */
-@media (max-width: 360px) {
+  /* vindo do max 360px */
   html { font-size: 18px; }
   .auth-container { padding: 1rem; }
 }
 
-/* Provide a simple utility to center a smaller notice area on desktop */
-@media (min-width: 1400px) {
-  .auth-container { max-width: 560px; padding: 2.5rem; }
+/* ============================================================
+   MOBILE GRANDE / TABLET PEQUENO (até 640px)
+   ============================================================ */
+@media (max-width: 640px) {
+  /* Nenhuma regra específica original — pode deixar vazio
+     ou adicionar ajustes se quiser depois */
 }
 
+/* ============================================================
+   TABLET (até 768px)
+   ============================================================ */
+@media (max-width: 768px) {
+  /* Nada original para esse ponto */
+}
+
+/* ============================================================
+   NOTEBOOK PEQUENO (até 1024px)
+   ============================================================ */
+@media (max-width: 1024px) {
+
+  /* vindo do min 768px e max 1024px */
+  @media (min-width: 768px) {
+    .auth-container { max-width: 520px; padding: 2.25rem; }
+  }
+}
+
+/* ============================================================
+   NOTEBOOK COMUM (até 1280px)
+   ============================================================ */
+@media (max-width: 1280px) {
+  /* Nada original */
+}
+
+/* ============================================================
+   DESKTOP (até 1440px)
+   ============================================================ */
+@media (max-width: 1440px) {
+  /* Nada original */
+}
+
+/* ============================================================
+   TELAS GRANDES (mínimo 1920px)
+   ============================================================ */
+@media (min-width: 1920px) {
+
+  /* vindo do min 1200px + min 1400px */
+  .auth-container {
+    transform: translateY(-20px);
+    max-width: 560px;
+    padding: 2.5rem;
+  }
+}
