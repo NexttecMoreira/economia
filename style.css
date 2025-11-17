@@ -78,7 +78,10 @@ html {
 }
 .site-subtitle { color: #9CA3AF; }
 
-.layout-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; margin-bottom: 2rem; }
+.layout-grid { 
+    display: flex; 
+    flex-direction:column;
+}
     /* Only switch to two-column layout on wider screens (desktop). Keep tablets/iPads stacked. */
     @media (min-width: 1200px) { .layout-grid { grid-template-columns: repeat(2, 1fr); } }
 .card {
@@ -90,6 +93,7 @@ html {
     border: 1px solid rgba(60, 60, 60, 0.5);
     transition: all 0.3s ease;
     animation: fadeIn 0.5s ease-out forwards;
+    margin-bottom: 2rem;
 }
 .card:hover {
     transform: translateY(-5px);
