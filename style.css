@@ -122,7 +122,7 @@ html {
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
     border-radius: 50px;
-    color: white;
+    color: rgba(255, 255, 255, 1);
     cursor: pointer;
     border: none;
     font-weight: 600;
@@ -131,6 +131,7 @@ html {
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
+    background-color:rgba(177, 177, 177, 1);
 }
 
 .btn::before {
@@ -325,12 +326,15 @@ html {
 
     body { overflow-x: hidden; }
 
+   
+
     .btn,
     .input { padding: 0.75rem 1rem; }
 
     .controls {
         flex-direction: column;
         align-items: stretch;
+        margin-top: 1rem;
     }
 
     .controls .input,
@@ -338,6 +342,7 @@ html {
     .input--small {
         width: 100% !important;
         display: block;
+        margin-top:0.5rem
     }
 
     .list-item,
@@ -355,6 +360,10 @@ html {
     .site-title { font-size: 1.6rem; }
 
     .card { width: 90%; align-self: center; align-items: center; }
+
+    .card--summary{
+      margin-left:-0.5rem
+    }
 }
 
 /* ============================================================
