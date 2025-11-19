@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Limpar Cache - NextFlow</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      text-align: center;
+      max-width: 500px;
+    }
+    h1 {
+      color: #1F2937;
+      margin-bottom: 20px;
+    }
+    p {
+      color: #6B7280;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+    button {
+      background: #EF4444;
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    button:hover {
+      background: #DC2626;
+      transform: translateY(-2px);
+    }
+    .success {
+      color: #10B981;
+      font-weight: 600;
+      margin-top: 20px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧹 Limpar Cache Local</h1>
+    <p>Esta página remove todos os dados salvos no localStorage do navegador. Use isso se você quer garantir que apenas os dados do Firestore sejam usados.</p>
+    <p><strong>Aviso:</strong> Dados não sincronizados com o Firestore serão perdidos!</p>
+    <button onclick="limparCache()">Limpar Dados Locais</button>
+    <p class="success" id="mensagem"></p>
+    <p style="margin-top: 30px;">
+      <a href="login.html" style="color: #667eea; text-decoration: none; font-weight: 600;">← Voltar para Login</a>
+    </p>
+  </div>
+
+  <script>
+    function limparCache() {
+      try {
+        // Limpar localStorage
+        localStorage.clear();
+        
+        // Limpar sessionStorage
+        sessionStorage.clear();
+        
+        // Mostrar mensagem de sucesso
+        const mensagem = document.getElementById('mensagem');
+        mensagem.textContent = '✅ Cache limpo com sucesso! Agora apenas os dados do Firestore serão usados.';
+        mensagem.style.display = 'block';
+        
+        console.log('Cache limpo com sucesso');
+        
+        // Redirecionar após 2 segundos
+        setTimeout(() => {
+          window.location.href = 'login.html';
+        }, 2000);
+      } catch (erro) {
+        alert('Erro ao limpar cache: ' + erro.message);
+      }
+    }
+  </script>
+</body>
+</html>

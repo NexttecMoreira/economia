@@ -56,6 +56,21 @@ document.addEventListener('DOMContentLoaded', function() {
       console.log('signup attempt', email);
       const res = await auth.createUserWithEmailAndPassword(email, password);
       console.log('signup success', res && res.user && res.user.uid);
+      
+      // Criar documento inicial no Firestore para o novo usuário
+      if (res && res.user && firebase.firestore) {
+        const db = firebase.firestore();
+        const dadosIniciais = {
+          income: [],
+          expense: [],
+          createdAt: new Date().toISOString(),
+          email: email
+        };
+        
+        await db.collection('users').doc(res.user.uid).set(dadosIniciais);
+        console.log('Documento inicial criado no Firestore para', res.user.uid);
+      }
+      
       showMessage('Cadastro realizado. Redirecionando...', false);
       setTimeout(() => { window.location.href = 'index.html'; }, 600);
     } catch (err) {

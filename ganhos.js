@@ -66,36 +66,26 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   function carregarDoLocalStorage() {
-    try {
-      const dados = localStorage.getItem(STORAGE_KEY);
-      if (dados) {
-        finances = JSON.parse(dados);
-      }
-      renderizarLista();
-      atualizarGrafico();
-    } catch (erro) {
-      console.error('Erro ao carregar dados:', erro);
-    }
+    // Não usar mais localStorage - apenas Firestore
+    console.warn('Firestore indisponível');
+    renderizarLista();
+    atualizarGrafico();
   }
 
-  // Salvar dados no Firestore e localStorage
+  // Salvar dados APENAS no Firestore (sem localStorage)
   function salvarDados() {
-    // Sempre salvar no localStorage como backup
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(finances));
-    } catch (erro) {
-      console.error('Erro ao salvar no localStorage:', erro);
-    }
-    
-    // Salvar no Firestore se disponível
     if (db && currentUser) {
       db.collection('users').doc(currentUser.uid).set(finances)
         .then(function() {
-          console.log('Dados salvos no Firestore');
+          console.log('Dados salvos no Firestore com sucesso');
         })
         .catch(function(erro) {
           console.error('Erro ao salvar no Firestore:', erro);
+          alert('Erro ao salvar dados. Verifique sua conexão.');
         });
+    } else {
+      console.error('Firebase não disponível ou usuário não autenticado');
+      alert('Você precisa estar logado para salvar dados.');
     }
   }
 

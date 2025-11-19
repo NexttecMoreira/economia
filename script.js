@@ -31,10 +31,8 @@ function loadData() {
 }
 
 function loadFromLocalStorage() {
-  const saved = localStorage.getItem('moneyMagnetData');
-  if (saved) {
-    data = JSON.parse(saved);
-  }
+  // Não usar mais localStorage - apenas Firestore
+  console.warn('Firestore indisponível');
   updateCharts();
   updateSummary();
 }
