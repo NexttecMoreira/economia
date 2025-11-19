@@ -44,8 +44,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // Carregar dados do Firestore ou localStorage
   function carregarDados() {
     if (db && currentUser) {
-      db.collection('users').doc(currentUser.uid).get()
-        .then(function(doc) {
+      // Usar onSnapshot para sincronização em tempo real
+      db.collection('users').doc(currentUser.uid).onSnapshot(
+        function(doc) {
           if (doc.exists) {
             finances = doc.data() || { income: [], expense: [] };
             if (!finances.income) finances.income = [];
@@ -53,11 +54,12 @@ document.addEventListener('DOMContentLoaded', function() {
           }
           renderizarLista();
           atualizarGrafico();
-        })
-        .catch(function(erro) {
+        },
+        function(erro) {
           console.error('Erro ao carregar do Firestore:', erro);
           carregarDoLocalStorage();
-        });
+        }
+      );
     } else {
       carregarDoLocalStorage();
     }

@@ -9,8 +9,9 @@ let currentUser = null;
 // Carregar dados
 function loadData() {
   if (db && currentUser) {
-    db.collection('users').doc(currentUser.uid).get()
-      .then(function(doc) {
+    // Usar onSnapshot para sincronização em tempo real
+    db.collection('users').doc(currentUser.uid).onSnapshot(
+      function(doc) {
         if (doc.exists) {
           data = doc.data() || { income: [], expense: [] };
           if (!data.income) data.income = [];
@@ -18,11 +19,12 @@ function loadData() {
         }
         renderCalendar();
         updateSummary();
-      })
-      .catch(function(erro) {
+      },
+      function(erro) {
         console.error('Erro ao carregar do Firestore:', erro);
         loadFromLocalStorage();
-      });
+      }
+    );
   } else {
     loadFromLocalStorage();
   }
