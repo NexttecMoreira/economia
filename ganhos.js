@@ -74,19 +74,39 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Salvar dados APENAS no Firestore (sem localStorage)
   function salvarDados() {
-    if (db && currentUser) {
-      db.collection('users').doc(currentUser.uid).set(finances)
-        .then(function() {
-          console.log('Dados salvos no Firestore com sucesso');
-        })
-        .catch(function(erro) {
-          console.error('Erro ao salvar no Firestore:', erro);
-          alert('Erro ao salvar dados. Verifique sua conexão.');
-        });
-    } else {
-      console.error('Firebase não disponível ou usuário não autenticado');
-      alert('Você precisa estar logado para salvar dados.');
+    if (!db) {
+      console.error('Firestore não inicializado');
+      alert('Erro: Firestore não está disponível. Recarregue a página.');
+      return;
     }
+    
+    if (!currentUser) {
+      console.error('Usuário não autenticado');
+      alert('Erro: Você não está logado. Faça login novamente.');
+      window.location.href = 'login.html';
+      return;
+    }
+    
+    console.log('Salvando dados para usuário:', currentUser.uid);
+    console.log('Dados a salvar:', finances);
+    
+    db.collection('users').doc(currentUser.uid).set(finances)
+      .then(function() {
+        console.log('✅ Dados salvos no Firestore com sucesso');
+      })
+      .catch(function(erro) {
+        console.error('❌ Erro ao salvar no Firestore:', erro);
+        console.error('Código do erro:', erro.code);
+        console.error('Mensagem:', erro.message);
+        
+        if (erro.code === 'permission-denied') {
+          alert('Erro: Você não tem permissão para salvar dados. Verifique as regras do Firestore.');
+        } else if (erro.code === 'unavailable') {
+          alert('Erro: Firestore indisponível. Verifique sua conexão com a internet.');
+        } else {
+          alert('Erro ao salvar dados: ' + erro.message);
+        }
+      });
   }
 
   // Formatar valor em reais
