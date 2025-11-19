@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Calendário - NextFlow</title>
+  <link rel="stylesheet" href="datas.css">
+</head>
+<body class="datas-bg">
+  <div class="datas-container">
+    <header class="datas-header">
+      <button id="datas-btn-voltar" class="datas-btn-nav">← Voltar</button>
+      <div class="datas-titulo-grupo">
+        <h1 id="datas-mes-ano" class="datas-titulo">Novembro 2025</h1>
+        <div class="datas-controles">
+          <button id="datas-btn-anterior" class="datas-btn-mes">◄</button>
+          <button id="datas-btn-hoje" class="datas-btn-hoje">Hoje</button>
+          <button id="datas-btn-proximo" class="datas-btn-mes">►</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="datas-resumos">
+      <div class="datas-card-dia">
+        <h3 class="datas-label">Hoje</h3>
+        <p id="datas-total-dia" class="datas-valor-dia">R$ 0,00</p>
+      </div>
+      <div class="datas-card-semana">
+        <h3 class="datas-label">Esta Semana</h3>
+        <p id="datas-total-semana" class="datas-valor-semana">R$ 0,00</p>
+      </div>
+      <div class="datas-card-mes">
+        <h3 class="datas-label">Este Mês</h3>
+        <p id="datas-total-mes" class="datas-valor-mes">R$ 0,00</p>
+      </div>
+    </section>
+
+    <section class="datas-calendario">
+      <div class="datas-dias-semana">
+        <div class="datas-dia-semana-label">Dom</div>
+        <div class="datas-dia-semana-label">Seg</div>
+        <div class="datas-dia-semana-label">Ter</div>
+        <div class="datas-dia-semana-label">Qua</div>
+        <div class="datas-dia-semana-label">Qui</div>
+        <div class="datas-dia-semana-label">Sex</div>
+        <div class="datas-dia-semana-label">Sáb</div>
+      </div>
+      <div id="datas-grid" class="datas-grid"></div>
+    </section>
+
+    <section id="datas-detalhes" class="datas-detalhes">
+      <h2 class="datas-detalhes-titulo">Detalhes do Dia</h2>
+      <p id="datas-detalhes-data" class="datas-detalhes-data">Selecione um dia</p>
+      <div id="datas-detalhes-lista" class="datas-detalhes-lista"></div>
+    </section>
+  </div>
+
+  <script src="datas.js"></script>
+</body>
+</html>

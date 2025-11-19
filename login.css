@@ -1,6 +1,19 @@
-/* Styles dedicated to the login page (loguin.css)
-   Responsive and mobile-first. Works together with style.css.
-*/
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+::-webkit-scrollbar-track {
+    background: #131313ff;
+}
+::-webkit-scrollbar-thumb {
+    background: #3c3c3cff;
+    border-radius: 10px;
+    border: 2px solid #121212;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary);
+}
 
 /* Page container */
 .auth-page {

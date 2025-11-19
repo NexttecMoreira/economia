@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gastos - NextFlow</title>
+  <link rel="stylesheet" href="gastos.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="gastos-bg">
+  <div class="gastos-container">
+    <header class="gastos-header">
+      <h1 class="gastos-titulo">Gastos</h1>
+      <p class="gastos-subtitulo">Gerencie seus gastos</p>
+    </header>
+
+    <section class="gastos-form">
+      <input id="gasto-nome" type="text" placeholder="Descrição do gasto" class="gastos-input">
+      <input id="gasto-valor" type="number" placeholder="Valor" class="gastos-input">
+      <button id="adicionar-gasto" class="gastos-btn-add">Adicionar</button>
+      <button id="cancelar-edicao" class="gastos-btn-cancelar">Cancelar</button>
+    </section>
+
+    <section class="gastos-grafico">
+      <h2 class="gastos-grafico-titulo">Gráfico de Gastos</h2>
+      <canvas id="grafico-gastos" class="gastos-canvas"></canvas>
+    </section>
+
+    <section class="gastos-lista">
+      <h2 class="gastos-lista-titulo">Lista de Gastos</h2>
+      <div id="lista-gastos" class="gastos-items"></div>
+      <p id="total-gastos" class="gastos-total">Total: R$ 0,00</p>
+    </section>
+
+    <div class="gastos-navegacao">
+      <a href="index.html" class="gastos-link">Voltar ao Resumo</a>
+      <a href="ganhos.html" class="gastos-link">Ir para Ganhos</a>
+    </div>
+  </div>
+
+  <script src="gastos.js"></script>
+</body>
+</html>

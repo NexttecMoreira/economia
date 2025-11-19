@@ -1,0 +1,497 @@
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+::-webkit-scrollbar-track {
+    background: #131313ff;
+}
+::-webkit-scrollbar-thumb {
+    background: #3c3c3cff;
+    border-radius: 10px;
+    border: 2px solid #121212;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary);
+}
+
+body.datas-bg {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  background: linear-gradient(135deg, #121212 0%, #000000 100%);
+  color: #e0e0e0;
+  min-height: 100vh;
+}
+
+.datas-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.datas-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.datas-btn-nav {
+  background: rgba(30, 30, 30, 0.8);
+  backdrop-filter: blur(10px);
+  color: #e0e0e0;
+  border: 1px solid rgba(60, 60, 60, 0.5);
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.datas-btn-nav:hover {
+  background: rgba(40, 40, 40, 0.9);
+  transform: translateX(-5px);
+}
+
+.datas-titulo-grupo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.datas-titulo {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  background: linear-gradient(90deg, #1E88E5, #E57C23);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.datas-controles {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.datas-btn-mes {
+  background: rgba(30, 30, 30, 0.8);
+  backdrop-filter: blur(10px);
+  color: #e0e0e0;
+  border: 1px solid rgba(60, 60, 60, 0.5);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.datas-btn-mes:hover {
+  background: rgba(40, 40, 40, 0.9);
+  transform: scale(1.05);
+}
+
+.datas-btn-hoje {
+  background: rgba(30, 136, 229, 0.2);
+  backdrop-filter: blur(10px);
+  color: #1E88E5;
+  border: 1px solid rgba(30, 136, 229, 0.5);
+  padding: 0.5rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.datas-btn-hoje:hover {
+  background: rgba(30, 136, 229, 0.3);
+}
+
+.datas-resumos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.datas-card-dia {
+  background: rgba(30, 136, 229, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(30, 136, 229, 0.3);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.datas-card-semana {
+  background: rgba(229, 124, 35, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(229, 124, 35, 0.3);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.datas-card-mes {
+  background: rgba(177, 177, 177, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(177, 177, 177, 0.3);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.datas-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #9CA3AF;
+  margin: 0 0 0.5rem 0;
+}
+
+.datas-valor-dia {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1E88E5;
+  margin: 0;
+}
+
+.datas-valor-semana {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #E57C23;
+  margin: 0;
+}
+
+.datas-valor-mes {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #b5b5b5;
+  margin: 0;
+}
+
+.datas-calendario {
+  background: rgba(30, 30, 30, 0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(60, 60, 60, 0.5);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.datas-dias-semana {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.datas-dia-semana-label {
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #9CA3AF;
+  padding: 0.5rem;
+}
+
+.datas-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+}
+
+.datas-dia-celula {
+  background: rgba(40, 40, 40, 0.5);
+  border: 1px solid rgba(60, 60, 60, 0.5);
+  border-radius: 8px;
+  padding: 0.75rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 90px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0.25rem;
+}
+
+.datas-dia-celula:hover {
+  background: rgba(50, 50, 50, 0.7);
+  transform: scale(1.05);
+}
+
+.datas-dia-celula.outro-mes {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.datas-dia-celula.outro-mes:hover {
+  transform: none;
+  background: rgba(40, 40, 40, 0.5);
+}
+
+.datas-dia-celula.hoje {
+  border: 2px solid #1E88E5;
+  background: rgba(30, 136, 229, 0.1);
+}
+
+.datas-dia-celula.selecionado {
+  background: rgba(30, 136, 229, 0.2);
+  border: 2px solid #1E88E5;
+}
+
+.datas-dia-numero {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #e0e0e0;
+  margin-bottom: 0.25rem;
+}
+
+.datas-dia-valor {
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.datas-dia-valor.positivo {
+  color: #10B981;
+}
+
+.datas-dia-valor.negativo {
+  color: #EF4444;
+}
+
+.datas-dia-saldo {
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-top: 0.25rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.datas-dia-saldo.positivo {
+  color: #1E88E5;
+}
+
+.datas-dia-saldo.negativo {
+  color: #E57C23;
+}
+
+.datas-detalhes {
+  background: rgba(30, 30, 30, 0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(60, 60, 60, 0.5);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: none;
+}
+
+.datas-detalhes.visivel {
+  display: block;
+}
+
+.datas-detalhes-titulo {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  color: #e0e0e0;
+}
+
+.datas-detalhes-data {
+  font-size: 1rem;
+  color: #9CA3AF;
+  margin: 0 0 1.5rem 0;
+}
+
+.datas-detalhes-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.datas-item {
+  background: rgba(40, 40, 40, 0.5);
+  border-left: 3px solid #E57C23;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.datas-item.ganho {
+  border-left-color: #1E88E5;
+}
+
+.datas-item-nome {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #e0e0e0;
+  margin-bottom: 0.25rem;
+}
+
+.datas-item-valor {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.datas-item-valor.ganho {
+  color: #1E88E5;
+}
+
+.datas-item-valor.gasto {
+  color: #E57C23;
+}
+
+@media (max-width: 768px) {
+  .datas-container {
+    padding: 1rem;
+  }
+
+  .datas-header {
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .datas-btn-nav {
+    width: 100%;
+    text-align: center;
+  }
+
+  .datas-titulo-grupo {
+    width: 100%;
+  }
+
+  .datas-titulo {
+    font-size: 1.5rem;
+  }
+
+  .datas-controles {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .datas-btn-mes {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .datas-btn-hoje {
+    padding: 0.4rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .datas-resumos {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .datas-card-dia,
+  .datas-card-semana,
+  .datas-card-mes {
+    padding: 1rem;
+  }
+
+  .datas-label {
+    font-size: 0.9rem;
+  }
+
+  .datas-valor-dia,
+  .datas-valor-semana,
+  .datas-valor-mes {
+    font-size: 1.5rem;
+  }
+
+  .datas-calendario {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .datas-dias-semana {
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .datas-dia-semana-label {
+    font-size: 0.75rem;
+    padding: 0.25rem;
+  }
+
+  .datas-grid {
+    gap: 0.25rem;
+  }
+
+  .datas-dia-celula {
+    min-height: 50px;
+    padding: 0.4rem;
+  }
+
+  .datas-dia-numero {
+    font-size: 0.9rem;
+  }
+
+  .datas-dia-valor {
+    font-size: 0.65rem;
+    margin-top: 0.25rem;
+  }
+
+  .datas-detalhes {
+    padding: 1rem;
+  }
+
+  .datas-detalhes-titulo {
+    font-size: 1.2rem;
+  }
+
+  .datas-detalhes-data {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+
+  .datas-item {
+    padding: 0.75rem;
+  }
+
+  .datas-item-nome {
+    font-size: 0.9rem;
+  }
+
+  .datas-item-valor {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .datas-container {
+    padding: 0.5rem;
+  }
+
+  .datas-titulo {
+    font-size: 1.2rem;
+  }
+
+  .datas-dia-celula {
+    min-height: 45px;
+    padding: 0.3rem;
+  }
+
+  .datas-dia-numero {
+    font-size: 0.8rem;
+  }
+
+  .datas-dia-valor {
+    font-size: 0.6rem;
+  }
+
+  .datas-valor-dia,
+  .datas-valor-semana,
+  .datas-valor-mes {
+    font-size: 1.3rem;
+  }
+}

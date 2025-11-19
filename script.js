@@ -1,539 +1,342 @@
- document.addEventListener('DOMContentLoaded', function() {
-            // Initialize feather icons
-            feather.replace();
+// NextFlow - Página de Resumo
 
-            // Firebase variables
-            let firebaseApp = null;
-            let auth = null;
-            let db = null;
-            let currentUser = null;
+let data = { income: [], expense: [] };
+let incomeChart = null;
+let expenseChart = null;
+let currentPeriod = 'dia'; // 'dia', 'mes', 'ano'
+let db = null;
+let currentUser = null;
 
-            // Chart instances
-            let incomeChart, expenseChart, summaryChart;
+function loadData() {
+  if (db && currentUser) {
+    db.collection('users').doc(currentUser.uid).get()
+      .then(function(doc) {
+        if (doc.exists) {
+          data = doc.data() || { income: [], expense: [] };
+          if (!data.income) data.income = [];
+          if (!data.expense) data.expense = [];
+        }
+        updateCharts();
+        updateSummary();
+      })
+      .catch(function(erro) {
+        console.error('Erro ao carregar do Firestore:', erro);
+        loadFromLocalStorage();
+      });
+  } else {
+    loadFromLocalStorage();
+  }
+}
 
-            // Data structure
-            let finances = {
-                income: [],
-                expense: []
-            };
+function loadFromLocalStorage() {
+  const saved = localStorage.getItem('moneyMagnetData');
+  if (saved) {
+    data = JSON.parse(saved);
+  }
+  updateCharts();
+  updateSummary();
+}
 
-            // Initialize Firebase (if firebase scripts are loaded)
-            function initFirebase() {
-                try {
-                    console.log('initFirebase: typeof firebase =', typeof firebase, 'window.firebaseConfig =', !!window.firebaseConfig);
-                    const cfg = (typeof window !== 'undefined' && window.firebaseConfig) ? window.firebaseConfig : (typeof firebaseConfig !== 'undefined' ? firebaseConfig : null);
-                    if (typeof firebase !== 'undefined' && cfg) {
-                        // initialize only if no apps initialized
-                        if (!firebase.apps || !firebase.apps.length) {
-                            firebaseApp = firebase.initializeApp(cfg);
-                            console.log('Firebase initialized', firebaseApp.name || '(default)');
-                        } else {
-                            firebaseApp = firebase.app();
-                            console.log('Firebase app already initialized');
-                        }
+// Formatar data como YYYY-MM-DD
+function formatDateStr(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return year + '-' + month + '-' + day;
+}
 
-                        auth = firebase.auth();
-                        db = firebase.firestore();
+// Filtrar dados por período
+function filterDataByPeriod(items) {
+  if (!items || items.length === 0) return [];
+  
+  const hoje = new Date();
+  const hoje_str = formatDateStr(hoje);
+  
+  return items.filter(function(item) {
+    if (!item.date) return false;
+    
+    if (currentPeriod === 'dia') {
+      return item.date === hoje_str;
+    } else if (currentPeriod === 'mes') {
+      const itemDate = new Date(item.date);
+      return itemDate.getMonth() === hoje.getMonth() && 
+             itemDate.getFullYear() === hoje.getFullYear();
+    } else if (currentPeriod === 'ano') {
+      const itemDate = new Date(item.date);
+      return itemDate.getFullYear() === hoje.getFullYear();
+    }
+    return false;
+  });
+}
 
-                        // Auth state listener
-                        auth.onAuthStateChanged(async (user) => {
-                            console.log('onAuthStateChanged', user && user.uid);
-                            currentUser = user;
-                            updateAuthUI();
-                            if (user) {
-                                await loadFromFirestore();
-                            } else {
-                                loadDataFromLocalStorage();
-                                // If we're on the app page but not logged in, redirect to login page
-                                try {
-                                    const path = window.location.pathname || '';
-                                    const isLoginPage = path.endsWith('login.html') || path.endsWith('/login.html');
-                                    if (!isLoginPage) {
-                                        console.log('No user - redirecting to login.html');
-                                        window.location.href = 'login.html';
-                                    }
-                                } catch (err) {
-                                    console.warn('Redirect to login failed', err);
-                                }
-                            }
-                        });
-                    } else {
-                        console.warn('Firebase not available or config missing. cfg=', cfg);
-                    }
-                } catch (err) {
-                    console.error('initFirebase error', err);
-                }
+function initCharts() {
+  const ctxIncome = document.getElementById('resumo-grafico-ganhos');
+  const ctxExpense = document.getElementById('resumo-grafico-gastos');
+
+  if (ctxIncome) {
+    incomeChart = new Chart(ctxIncome, {
+      type: 'pie',
+      data: { labels: [], datasets: [{ data: [], backgroundColor: [], borderWidth: 0 }] },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(ctx) {
+                return ctx.label + ': R$ ' + ctx.parsed.toFixed(2);
+              }
             }
-            
-            
-            // Load data from localStorage (fallback)
-            function loadDataFromLocalStorage() {
-                const savedData = localStorage.getItem('moneyMagnetData');
-                if (savedData) {
-                    finances = JSON.parse(savedData);
-                    updateAll();
-                } else {
-                    updateAll();
-                }
+          }
+        }
+      }
+    });
+  }
+
+  if (ctxExpense) {
+    expenseChart = new Chart(ctxExpense, {
+      type: 'pie',
+      data: { labels: [], datasets: [{ data: [], backgroundColor: [], borderWidth: 0 }] },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(ctx) {
+                return ctx.label + ': R$ ' + ctx.parsed.toFixed(2);
+              }
             }
+          }
+        }
+      }
+    });
+  }
 
-            // Save data (to Firestore if logged in, else to localStorage)
-            function saveData() {
-                localStorage.setItem('moneyMagnetData', JSON.stringify(finances));
-                if (currentUser && db) {
-                    saveToFirestore().catch(err => console.error('Error saving to Firestore', err));
-                }
-            }
+  updateCharts();
+}
 
-            // Load data from Firestore for current user
-            async function loadFromFirestore() {
-                if (!currentUser || !db) return;
-                try {
-                    const docRef = db.collection('users').doc(currentUser.uid);
-                    const doc = await docRef.get();
-                    if (doc.exists) {
-                        const data = doc.data();
-                        if (data && data.finances) {
-                            finances = data.finances;
-                        }
-                    }
-                    updateAll();
-                } catch (err) {
-                    console.error('Failed to load from Firestore', err);
-                    loadDataFromLocalStorage();
-                }
-            }
+function updateCharts() {
+  const filteredIncome = filterDataByPeriod(data.income);
+  const filteredExpense = filterDataByPeriod(data.expense);
+  
+  if (incomeChart && filteredIncome && filteredIncome.length > 0) {
+    const grouped = {};
+    filteredIncome.forEach(function(item) {
+      const name = item.name || 'Outros';
+      const value = parseFloat(item.value || 0);
+      grouped[name] = (grouped[name] || 0) + value;
+    });
+    const labels = Object.keys(grouped);
+    const values = Object.values(grouped);
+    const colors = generateColors(labels.length, '#1E88E5');
+    
+    incomeChart.data.labels = labels;
+    incomeChart.data.datasets[0].data = values;
+    incomeChart.data.datasets[0].backgroundColor = colors;
+    incomeChart.update();
+    
+    // Atualizar legenda customizada
+    updateCustomLegend('resumo-legenda-ganhos', labels, values, colors);
+  } else if (incomeChart) {
+    incomeChart.data.labels = ['Sem dados'];
+    incomeChart.data.datasets[0].data = [1];
+    incomeChart.data.datasets[0].backgroundColor = ['rgba(100,100,100,0.3)'];
+    incomeChart.update();
+    document.getElementById('resumo-legenda-ganhos').innerHTML = '<p style="color: #9CA3AF; text-align: center;">Nenhum ganho registrado</p>';
+  }
 
-            // Save finances to Firestore under users/{uid}
-            async function saveToFirestore() {
-                if (!currentUser || !db) return;
-                const docRef = db.collection('users').doc(currentUser.uid);
-                await docRef.set({ finances: finances }, { merge: true });
-            }
-            
-            // Initialize charts
-            function initCharts() {
-                // Income Chart
-                const incomeCtx = document.getElementById('income-chart').getContext('2d');
-                incomeChart = new Chart(incomeCtx, {
-                    type: 'pie',
-                    data: {
-                        labels: [],
-                        datasets: [{
-                            data: [],
-                            backgroundColor: [
-                                '#63A9EF', '#4C9DEE', '#3792EA', '#2A8BE7', '#1E88E5', '#1C7ED4', '#1A75C2', '#176CB0', '#15639E', '#135A8C'
-                            ],
-                            borderWidth: 0
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'right',
-                                labels: {
-                                    color: '#E5E7EB',
-                                    font: {
-                                        size: 12
-                                    }
-                                }
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        const label = context.label || '';
-                                        const value = context.raw || 0;
-                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                        const percentage = Math.round((value / total) * 100);
-                                        return `${label}: R$ ${value.toFixed(2)} (${percentage}%)`;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-                
-                // Expense Chart
-                const expenseCtx = document.getElementById('expense-chart').getContext('2d');
-                expenseChart = new Chart(expenseCtx, {
-                    type: 'pie',
-                    data: {
-                        labels: [],
-                        datasets: [{
-                            data: [],
-                            backgroundColor: [
-                                '#F4A04D', '#F29844', '#EF903A', '#EC872F', '#E57C23', '#D97320', '#CC6B1E', '#BF631C', '#B35B19', '#A65417'
-                            ],
-                            borderWidth: 0
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'right',
-                                labels: {
-                                    color: '#E5E7EB',
-                                    font: {
-                                        size: 12
-                                    }
-                                }
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        const label = context.label || '';
-                                        const value = context.raw || 0;
-                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                        const percentage = Math.round((value / total) * 100);
-                                        return `${label}: R$ ${value.toFixed(2)} (${percentage}%)`;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-                
-                // Summary Chart
-                const summaryCtx = document.getElementById('summary-chart').getContext('2d');
-                summaryChart = new Chart(summaryCtx, {
-                    type: 'pie',
-                    data: {
-                        labels: ['Ganhos', 'Gastos'],
-                        datasets: [{
-                            data: [0, 0],
-                            backgroundColor: ['#15639e', '#b35b19'],
-                            borderWidth: 0
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'right',
-                                labels: {
-                                    color: '#E5E7EB',
-                                    font: {
-                                        size: 14
-                                    }
-                                }
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        const label = context.label || '';
-                                        const value = context.raw || 0;
-                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                        const percentage = Math.round((value / total) * 100);
-                                        return `${label}: R$ ${value.toFixed(2)} (${percentage}%)`;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-            
-            // Update all UI elements
-            function updateAll() {
-                updateIncomeList();
-                updateExpenseList();
-                updateCharts();
-                updateSummary();
-                saveData();
-            }
+  if (expenseChart && filteredExpense && filteredExpense.length > 0) {
+    const grouped = {};
+    filteredExpense.forEach(function(item) {
+      const name = item.name || 'Outros';
+      const value = parseFloat(item.value || 0);
+      grouped[name] = (grouped[name] || 0) + value;
+    });
+    const labels = Object.keys(grouped);
+    const values = Object.values(grouped);
+    const colors = generateColors(labels.length, '#E57C23');
+    
+    expenseChart.data.labels = labels;
+    expenseChart.data.datasets[0].data = values;
+    expenseChart.data.datasets[0].backgroundColor = colors;
+    expenseChart.update();
+    
+    // Atualizar legenda customizada
+    updateCustomLegend('resumo-legenda-gastos', labels, values, colors);
+  } else if (expenseChart) {
+    expenseChart.data.labels = ['Sem dados'];
+    expenseChart.data.datasets[0].data = [1];
+    expenseChart.data.datasets[0].backgroundColor = ['rgba(100,100,100,0.3)'];
+    expenseChart.update();
+    document.getElementById('resumo-legenda-gastos').innerHTML = '<p style="color: #9CA3AF; text-align: center;">Nenhum gasto registrado</p>';
+  }
+}
 
-            // Update authentication UI (show login form or user info)
-            function updateAuthUI() {
-                try {
-                    const authForms = document.getElementById('auth-forms');
-                    const authUser = document.getElementById('auth-user');
-                    const userEmailDisplay = document.getElementById('user-email-display');
+// Criar legenda customizada
+function updateCustomLegend(elementId, labels, values, colors) {
+  const container = document.getElementById(elementId);
+  container.innerHTML = '';
+  
+  labels.forEach(function(label, index) {
+    const item = document.createElement('div');
+    item.className = 'resumo-legenda-item';
+    
+    const cor = document.createElement('div');
+    cor.className = 'resumo-legenda-cor';
+    cor.style.backgroundColor = colors[index];
+    
+    const info = document.createElement('div');
+    info.className = 'resumo-legenda-info';
+    
+    const nome = document.createElement('span');
+    nome.className = 'resumo-legenda-nome';
+    nome.textContent = label;
+    
+    const valor = document.createElement('span');
+    valor.className = 'resumo-legenda-valor';
+    valor.textContent = 'R$ ' + values[index].toFixed(2);
+    
+    info.appendChild(nome);
+    info.appendChild(valor);
+    
+    item.appendChild(cor);
+    item.appendChild(info);
+    
+    container.appendChild(item);
+  });
+}
 
-                    if (currentUser) {
-                        if (authForms) authForms.style.display = 'none';
-                        if (authUser) authUser.style.display = 'flex';
-                        if (userEmailDisplay) userEmailDisplay.textContent = currentUser.email || currentUser.uid;
-                    } else {
-                        if (authForms) authForms.style.display = '';
-                        if (authUser) authUser.style.display = 'none';
-                        if (userEmailDisplay) userEmailDisplay.textContent = '';
-                    }
-                } catch (err) {
-                    console.error('updateAuthUI error', err);
-                }
-            }
-            
-            // Update income list
-            function updateIncomeList() {
-                const incomeList = document.getElementById('income-list');
-                incomeList.innerHTML = '';
-                
-                let totalIncome = 0;
-                
-                finances.income.forEach((item, index) => {
-                    totalIncome += parseFloat(item.value);
+function generateColors(count, baseColor) {
+  if (baseColor === '#1E88E5') {
+    return ['#63A9EF', '#4C9DEE', '#3792EA', '#2A8BE7', '#1E88E5', '#1C7ED4', '#1A75C2', '#176CB0', '#15639E', '#135A8C'].slice(0, count);
+  } else if (baseColor === '#E57C23') {
+    return ['#F4A04D', '#F29844', '#EF903A', '#EC872F', '#E57C23', '#D97320', '#CC6B1E', '#BF631C', '#B35B19', '#A65417'].slice(0, count);
+  }
+  const colors = [];
+  const base = hexToRgb(baseColor);
+  for (let i = 0; i < count; i++) {
+    const factor = 0.7 + (i * 0.3 / count);
+    colors.push('rgba(' + Math.floor(base.r * factor) + ',' + Math.floor(base.g * factor) + ',' + Math.floor(base.b * factor) + ',0.8)');
+  }
+  return colors;
+}
 
-                    const itemElement = document.createElement('div');
-                    itemElement.className = 'list-item card-item fade-in item-enter';
-                    itemElement.innerHTML = `
-                        <div class="item-info">
-                            <span class="item-name">${item.name}</span>
-                            <span class="item-value item-value--income">R$ ${parseFloat(item.value).toFixed(2)}</span>
-                        </div>
-                        <div class="card-actions">
-                            <button class="edit-income icon-btn" data-index="${index}">
-                                <i data-feather="edit-2" class="w-4 h-4"></i>
-                            </button>
-                            <button class="delete-income icon-btn" data-index="${index}">
-                                <i data-feather="trash-2" class="w-4 h-4"></i>
-                            </button>
-                        </div>
-                    `;
+function hexToRgb(hex) {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } : { r: 0, g: 0, b: 0 };
+}
 
-                    incomeList.appendChild(itemElement);
-                });
-                
-                document.getElementById('total-income').textContent = `R$ ${totalIncome.toFixed(2)}`;
-                feather.replace();
-            }
-            
-            // Update expense list
-            function updateExpenseList() {
-                const expenseList = document.getElementById('expense-list');
-                expenseList.innerHTML = '';
-                
-                let totalExpense = 0;
-                
-                finances.expense.forEach((item, index) => {
-                    totalExpense += parseFloat(item.value);
+function updateSummary() {
+  const filteredIncome = filterDataByPeriod(data.income);
+  const filteredExpense = filterDataByPeriod(data.expense);
+  
+  let totalIncome = 0;
+  let totalExpense = 0;
 
-                    const itemElement = document.createElement('div');
-                    itemElement.className = 'list-item card-item fade-in item-enter';
-                    itemElement.innerHTML = `
-                        <div class="item-info">
-                            <span class="item-name">${item.name}</span>
-                            <span class="item-value item-value--expense">R$ ${parseFloat(item.value).toFixed(2)}</span>
-                        </div>
-                        <div class="card-actions">
-                            <button class="edit-expense icon-btn" data-index="${index}">
-                                <i data-feather="edit-2" class="w-4 h-4"></i>
-                            </button>
-                            <button class="delete-expense icon-btn" data-index="${index}">
-                                <i data-feather="trash-2" class="w-4 h-4"></i>
-                            </button>
-                        </div>
-                    `;
+  if (filteredIncome) {
+    filteredIncome.forEach(function(item) {
+      totalIncome += parseFloat(item.value || 0);
+    });
+  }
 
-                    expenseList.appendChild(itemElement);
-                });
-                
-                document.getElementById('total-expense').textContent = `R$ ${totalExpense.toFixed(2)}`;
-                feather.replace();
-            }
-            
-            // Update charts
-            function updateCharts() {
-                // Income Chart
-                const incomeLabels = finances.income.map(item => item.name);
-                const incomeData = finances.income.map(item => parseFloat(item.value));
-                
-                incomeChart.data.labels = incomeLabels;
-                incomeChart.data.datasets[0].data = incomeData;
-                incomeChart.update();
-                
-                // Expense Chart
-                const expenseLabels = finances.expense.map(item => item.name);
-                const expenseData = finances.expense.map(item => parseFloat(item.value));
-                
-                expenseChart.data.labels = expenseLabels;
-                expenseChart.data.datasets[0].data = expenseData;
-                expenseChart.update();
-                
-                // Summary Chart
-                const totalIncome = finances.income.reduce((sum, item) => sum + parseFloat(item.value), 0);
-                const totalExpense = finances.expense.reduce((sum, item) => sum + parseFloat(item.value), 0);
-                
-                summaryChart.data.datasets[0].data = [totalIncome, totalExpense];
-                summaryChart.update();
-            }
-            
-            // Update summary section
-            function updateSummary() {
-                const totalIncome = finances.income.reduce((sum, item) => sum + parseFloat(item.value), 0);
-                const totalExpense = finances.expense.reduce((sum, item) => sum + parseFloat(item.value), 0);
-                const balance = totalIncome - totalExpense;
-                
-                document.getElementById('summary-income').textContent = `R$ ${totalIncome.toFixed(2)}`;
-                document.getElementById('summary-expense').textContent = `R$ ${totalExpense.toFixed(2)}`;
-                document.getElementById('summary-balance').textContent = `R$ ${balance.toFixed(2)}`;
-                document.getElementById('balance-amount').textContent = `R$ ${balance.toFixed(2)}`;
-                
-                const balanceStatus = document.getElementById('balance-status');
-                const financialTip = document.getElementById('financial-tip');
-                
-                if (balance > 0) {
-                    balanceStatus.textContent = '(Positivo)';
-                    balanceStatus.className = 'balance-status status-positive';
-                    financialTip.textContent = 'Ótimo trabalho! Você está economizando.';
-                    financialTip.className = 'site-subtext status-positive';
-                } else if (balance < 0) {
-                    balanceStatus.textContent = '(Negativo)';
-                    balanceStatus.className = 'balance-status status-negative';
-                    financialTip.textContent = 'Cuidado! Você está gastando mais do que ganha.';
-                    financialTip.className = 'site-subtext status-negative';
-                } else {
-                    balanceStatus.textContent = '(Equilibrado)';
-                    balanceStatus.className = 'balance-status status-neutral';
-                    financialTip.textContent = 'Seu saldo está equilibrado.';
-                    financialTip.className = 'site-subtext status-neutral';
-                }
-                    }
-                    // Add income
-                    document.getElementById('add-income').addEventListener('click', function() {
-                        const name = document.getElementById('income-name').value.trim();
-                        const value = document.getElementById('income-value').value.trim();
-                        
-                        if (name && value) {
-                            const existingItem = finances.income.find(item => item.name.toLowerCase() === name.toLowerCase());
-                            
-                            if (existingItem) {
-                                // Accumulate value if item exists
-                                existingItem.value = (parseFloat(existingItem.value) + parseFloat(value)).toFixed(2);
-                            } else {
-                                // Add new item
-                                finances.income.push({
-                                    name: name,
-                                    value: parseFloat(value).toFixed(2)
-                                });
-                            }
-                            
-                            document.getElementById('income-name').value = '';
-                            document.getElementById('income-value').value = '';
-                            updateAll();
-                        }
-                    });
-                    // Add expense
-                    document.getElementById('add-expense').addEventListener('click', function() {
-                        const name = document.getElementById('expense-name').value.trim();
-                        const value = document.getElementById('expense-value').value.trim();
-                        
-                        if (name && value) {
-                            const existingItem = finances.expense.find(item => item.name.toLowerCase() === name.toLowerCase());
-                            
-                            if (existingItem) {
-                                // Accumulate value if item exists
-                                existingItem.value = (parseFloat(existingItem.value) + parseFloat(value)).toFixed(2);
-                            } else {
-                                // Add new item
-                                finances.expense.push({
-                                    name: name,
-                                    value: parseFloat(value).toFixed(2)
-                                });
-                            }
-                            
-                            document.getElementById('expense-name').value = '';
-                            document.getElementById('expense-value').value = '';
-                            updateAll();
-                        }
-                    });
-// Delete income
-                    document.addEventListener('click', function(e) {
-                        if (e.target.closest('.delete-income')) {
-                            const index = e.target.closest('.delete-income').dataset.index;
-                            finances.income.splice(index, 1);
-                            updateAll();
-                        }
-                    });
-                    
-                    // Delete expense
-                    document.addEventListener('click', function(e) {
-                        if (e.target.closest('.delete-expense')) {
-                            const index = e.target.closest('.delete-expense').dataset.index;
-                            finances.expense.splice(index, 1);
-                            updateAll();
-                        }
-                    });
-                    
-                    // Edit income
-                    document.addEventListener('click', function(e) {
-                        if (e.target.closest('.edit-income')) {
-                            const index = e.target.closest('.edit-income').dataset.index;
-                            const item = finances.income[index];
-                            
-                            document.getElementById('income-name').value = item.name;
-                            document.getElementById('income-value').value = item.value;
-                            
-                            finances.income.splice(index, 1);
-                            updateAll();
-                        }
-                    });
-                    
-                    // Edit expense
-                    document.addEventListener('click', function(e) {
-                        if (e.target.closest('.edit-expense')) {
-                            const index = e.target.closest('.edit-expense').dataset.index;
-                            const item = finances.expense[index];
-                            
-                            document.getElementById('expense-name').value = item.name;
-                            document.getElementById('expense-value').value = item.value;
-                            
-                            finances.expense.splice(index, 1);
-                            updateAll();
-                        }
-                    });
-                    
-                    // Auth UI buttons
-                    document.getElementById('btn-signup').addEventListener('click', async function() {
-                        const email = document.getElementById('auth-email').value.trim();
-                        const password = document.getElementById('auth-password').value.trim();
-                        if (!email || !password) return alert('Preencha email e senha');
-                        try {
-                            console.log('signup: calling createUserWithEmailAndPassword for', email);
-                            const res = await auth.createUserWithEmailAndPassword(email, password);
-                            console.log('signup success', res && res.user && res.user.uid);
-                            alert('Usuário criado e logado');
-                        } catch (err) {
-                            console.error('Erro ao cadastrar', err);
-                            alert('Erro ao cadastrar: ' + err.message);
-                        }
-                    });
+  if (filteredExpense) {
+    filteredExpense.forEach(function(item) {
+      totalExpense += parseFloat(item.value || 0);
+    });
+  }
 
-                    document.getElementById('btn-login').addEventListener('click', async function() {
-                        const email = document.getElementById('auth-email').value.trim();
-                        const password = document.getElementById('auth-password').value.trim();
-                        if (!email || !password) return alert('Preencha email e senha');
-                        try {
-                            console.log('login: attempting signInWithEmailAndPassword for', email);
-                            const res = await auth.signInWithEmailAndPassword(email, password);
-                            console.log('login success', res && res.user && res.user.uid);
-                            // Optionally clear fields on success
-                            document.getElementById('auth-password').value = '';
-                            // updateAuthUI will be triggered by onAuthStateChanged
-                            return;
-                        } catch (err) {
-                            console.error('Erro ao entrar', err);
-                            alert('Erro ao entrar: ' + err.message);
-                        }
-                    });
+  const balance = totalIncome - totalExpense;
+  const incomeEl = document.getElementById('resumo-total-ganhos');
+  const expenseEl = document.getElementById('resumo-total-gastos');
+  const balanceEl = document.getElementById('resumo-total-saldo');
 
-                    document.getElementById('btn-logout').addEventListener('click', async function() {
-                        try {
-                            await auth.signOut();
-                        } catch (err) {
-                            console.error('Erro ao deslogar', err);
-                        }
-                    });
+  if (incomeEl) incomeEl.textContent = 'R$ ' + totalIncome.toFixed(2);
+  if (expenseEl) expenseEl.textContent = 'R$ ' + totalExpense.toFixed(2);
+  if (balanceEl) {
+    balanceEl.textContent = 'R$ ' + balance.toFixed(2);
+    balanceEl.style.color = balance >= 0 ? '#10B981' : '#EF4444';
+  }
+}
 
-                    // Initialize
-                    initCharts();
-                    initFirebase();
-                    // loadData will be triggered by auth state listener; if firebase not available, use localStorage
-                    if (typeof firebase === 'undefined') {
-                        loadDataFromLocalStorage();
-                    }
-                });
+// Atualizar período selecionado
+function setPeriod(period) {
+  currentPeriod = period;
+  
+  // Atualizar botões ativos
+  document.querySelectorAll('.resumo-btn-periodo').forEach(function(btn) {
+    btn.classList.remove('ativo');
+  });
+  document.getElementById('btn-periodo-' + period).classList.add('ativo');
+  
+  // Atualizar dados
+  updateCharts();
+  updateSummary();
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+  // Inicializar Firebase se disponível
+  if (typeof firebase !== 'undefined' && window.firebaseConfig) {
+    if (!firebase.apps || !firebase.apps.length) {
+      firebase.initializeApp(window.firebaseConfig);
+      console.log('Firebase inicializado no resumo');
+    }
+    db = firebase.firestore();
+    
+    // Verificar autenticação
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        currentUser = user;
+        loadData();
+        initCharts();
+      } else {
+        window.location.href = 'login.html';
+      }
+    });
+  } else {
+    loadData();
+    initCharts();
+    updateSummary();
+  }
+  
+  // Event listeners para os botões de período
+  document.getElementById('btn-periodo-dia').addEventListener('click', function() {
+    setPeriod('dia');
+  });
+  
+  document.getElementById('btn-periodo-mes').addEventListener('click', function() {
+    setPeriod('mes');
+  });
+  
+  document.getElementById('btn-periodo-ano').addEventListener('click', function() {
+    setPeriod('ano');
+  });
+  
+  // Botão de sair
+  const btnSair = document.getElementById('resumo-btn-sair');
+  if (btnSair) {
+    btnSair.addEventListener('click', function() {
+      console.log('Botão sair clicado');
+      // Fazer logout do Firebase se estiver disponível
+      if (typeof firebase !== 'undefined' && firebase.auth) {
+        const auth = firebase.auth();
+        auth.signOut().then(function() {
+          console.log('Logout realizado com sucesso');
+          window.location.href = 'login.html';
+        }).catch(function(error) {
+          console.error('Erro ao fazer logout:', error);
+          window.location.href = 'login.html';
+        });
+      } else {
+        console.log('Firebase não disponível, apenas redirecionando');
+        window.location.href = 'login.html';
+      }
+    });
+  }
+});

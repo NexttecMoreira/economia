@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Ganhos - NextFlow</title>
+  <link rel="stylesheet" href="ganhos.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="ganhos-bg">
+  <div class="ganhos-container">
+    <header class="ganhos-header">
+      <h1 class="ganhos-titulo">Ganhos</h1>
+      <p class="ganhos-subtitulo">Gerencie seus ganhos</p>
+    </header>
+
+    <section class="ganhos-form">
+      <input id="ganho-nome" type="text" placeholder="Descrição do ganho" class="ganhos-input">
+      <input id="ganho-valor" type="number" placeholder="Valor" class="ganhos-input">
+      <button id="adicionar-ganho" class="ganhos-btn-add">Adicionar</button>
+      <button id="cancelar-edicao" class="ganhos-btn-cancelar">Cancelar</button>
+    </section>
+
+    <section class="ganhos-grafico">
+      <h2 class="ganhos-grafico-titulo">Gráfico de Ganhos</h2>
+      <canvas id="grafico-ganhos" class="ganhos-canvas"></canvas>
+    </section>
+
+    <section class="ganhos-lista">
+      <h2 class="ganhos-lista-titulo">Lista de Ganhos</h2>
+      <div id="lista-ganhos" class="ganhos-items"></div>
+      <p id="total-ganhos" class="ganhos-total">Total: R$ 0,00</p>
+    </section>
+
+    <div class="ganhos-navegacao">
+      <a href="index.html" class="ganhos-link">Voltar ao Resumo</a>
+      <a href="gastos.html" class="ganhos-link">Ir para Gastos</a>
+    </div>
+  </div>
+
+  <script src="ganhos.js"></script>
+</body>
+</html>

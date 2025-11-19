@@ -1,132 +1,67 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NextFlow Dashboard</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <link rel="stylesheet" href="style.css">
-<!-- Firebase config (moved to separate file) -->
-    <script src="firebase-config.js"></script>
-<!-- Firebase (compat) -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-    
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Resumo - NextFlow</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
 </head>
-<body>
-    <div class="container animate__animated animate__fadeIn">
-<!-- Auth area -->
-        <div class="auth-bar">
-            <div class="auth-forms" id="auth-forms" style="display: none;">
-                <input type="email" id="auth-email" placeholder="E-mail" class="input">
-                <input type="password" id="auth-password" placeholder="Senha" class="input">
-                <button id="btn-signup" class="btn btn--primary">Cadastrar</button>
-                <button id="btn-login" class="btn">Entrar</button>
-            </div>
-            <div class="auth-user" id="auth-user" style="display:none;">
-                <span id="user-email-display" style="display: none;"></span>
-                <button id="btn-logout" class="btn">Sair</button>
-            </div>
-        </div>
-        <header class="site-header animate__animated animate__fadeInDown">
-            <h1 class="site-title">NextFlow</h1>
-            <p class="site-subtitle">Seu controle financeiro inteligente</p>
-</header>
-<main>
-            <div class="layout-grid">
-                <!-- Ganhos Section -->
-                <section class="card card--income">
-                    <div class="card-header">
-                        <h2 class="card-title"><i data-feather="trending-up" class="icon-left"></i> Ganhos</h2>
-                        <div class="amount amount--income" id="total-income">R$ 0,00</div>
-                    </div>
+<body class="resumo-bg">
+  <div class="resumo-container">
+    <button id="resumo-btn-sair" class="resumo-btn-voltar">← Sair</button>
+    <header class="resumo-header">
+      <h1 class="resumo-titulo">Resumo Financeiro</h1>
+      <p class="resumo-subtitulo">Visão geral dos seus ganhos e gastos</p>
+      <div class="resumo-periodo">
+        <button id="btn-periodo-dia" class="resumo-btn-periodo ativo">Dia</button>
+        <button id="btn-periodo-mes" class="resumo-btn-periodo">Mês</button>
+        <button id="btn-periodo-ano" class="resumo-btn-periodo">Ano</button>
+      </div>
+    </header>
 
-                    <div class="controls">
-                        <input type="text" id="income-name" placeholder="Descrição" class="input input--flex focus-ring-blue">
-                        <input type="number" id="income-value" placeholder="Valor" class="input input--small focus-ring-blue">
-                        <button id="add-income" class="btn btn--primary glow-on-hover">
-                            <i data-feather="plus" class="icon-left"></i> Add
-                        </button>
-                    </div>
+    <section class="resumo-totais">
+      <div class="resumo-card-ganhos">
+        <h3 class="resumo-label-ganhos">Total Ganhos</h3>
+        <p id="resumo-total-ganhos" class="resumo-valor-ganhos">R$ 0,00</p>
+      </div>
+      <div class="resumo-card-gastos">
+        <h3 class="resumo-label-gastos">Total Gastos</h3>
+        <p id="resumo-total-gastos" class="resumo-valor-gastos">R$ 0,00</p>
+      </div>
+      <div class="resumo-card-saldo">
+        <h3 class="resumo-label-saldo">Saldo</h3>
+        <p id="resumo-total-saldo" class="resumo-valor-saldo">R$ 0,00</p>
+      </div>
+    </section>
 
-                    <div class="chart-wrapper">
-                        <canvas id="income-chart"></canvas>
-                    </div>
+    <section class="resumo-grafico">
+      <h2 class="resumo-grafico-titulo">Ganhos por Categoria</h2>
+      <div class="resumo-grafico-wrapper">
+        <canvas id="resumo-grafico-ganhos" class="resumo-canvas"></canvas>
+        <div id="resumo-legenda-ganhos" class="resumo-legenda"></div>
+      </div>
+    </section>
 
-                    <div class="list-container" id="income-list">
-                        <!-- Income items will be added here -->
-                    </div>
-                </section>
+    <section class="resumo-grafico">
+      <h2 class="resumo-grafico-titulo">Gastos por Categoria</h2>
+      <div class="resumo-grafico-wrapper">
+        <canvas id="resumo-grafico-gastos" class="resumo-canvas"></canvas>
+        <div id="resumo-legenda-gastos" class="resumo-legenda"></div>
+      </div>
+    </section>
 
-                <!-- Gastos Section -->
-                <section class="card card--expense">
-                    <div class="card-header">
-                        <h2 class="card-title"><i data-feather="trending-down" class="icon-left"></i> Gastos</h2>
-                        <div class="amount amount--expense" id="total-expense">R$ 0,00</div>
-                    </div>
-
-                    <div class="controls">
-                        <input type="text" id="expense-name" placeholder="Descrição" class="input input--flex focus-ring-red">
-                        <input type="number" id="expense-value" placeholder="Valor" class="input input--small focus-ring-red">
-                        <button id="add-expense" class="btn btn--danger glow-on-hover">
-                            <i data-feather="plus" class="icon-left"></i> Add
-                        </button>
-                    </div>
-
-                    <div class="chart-wrapper">
-                        <canvas id="expense-chart"></canvas>
-                    </div>
-
-                    <div class="list-container" id="expense-list">
-                        <!-- Expense items will be added here -->
-                    </div>
-                </section>
-            </div>
-
-            <!-- Resumo Total Section -->
-            <section class="card card--summary">
-                <div class="card-header">
-                    <h2 class="card-title"><i data-feather="pie-chart" class="icon-left"></i> Resumo Total</h2>
-                    <div class="balance-display" id="balance-display">
-                        <span id="balance-amount">R$ 0,00</span>
-                        <span id="balance-status" class="balance-status"></span>
-                    </div>
-                </div>
-
-                <div class="summary-grid">
-                    <div class="summary-chart-wrapper">
-                        <canvas id="summary-chart"></canvas>
-                    </div>
-                    
-                    <div class="summary-cards">
-                        <div class="summary-card">
-                            <div class="summary-row">
-                                <span class="summary-label summary-label--income">Total Ganhos:</span>
-                                <span class="summary-value" id="summary-income">R$ 0,00</span>
-                            </div>
-                            <div class="summary-row">
-                                <span class="summary-label summary-label--expense">Total Gastos:</span>
-                                <span class="summary-value" id="summary-expense">R$ 0,00</span>
-                            </div>
-                        </div>
-                        <div class="summary-card">
-                            <div class="summary-row">
-                                <span class="summary-label summary-label--balance">Saldo:</span>
-                                <span class="summary-value" id="summary-balance">R$ 0,00</span>
-                            </div>
-                            <div class="site-note" id="financial-tip">
-                                Adicione seus ganhos e gastos para começar!
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
+    <div class="resumo-navegacao">
+      <a href="ganhos.html" class="resumo-link">Gerenciar Ganhos</a>
+      <a href="gastos.html" class="resumo-link">Gerenciar Gastos</a>
+      <a href="datas.html" class="resumo-link">Ver Datas</a>
     </div>
-<script src="script.js"></script>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
