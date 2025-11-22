@@ -22,19 +22,9 @@ function loadData() {
       },
       function(erro) {
         console.error('Erro ao carregar do Firestore:', erro);
-        loadFromLocalStorage();
       }
     );
-  } else {
-    loadFromLocalStorage();
   }
-}
-
-function loadFromLocalStorage() {
-  // Não usar mais localStorage - apenas Firestore
-  console.warn('Firestore indisponível');
-  renderCalendar();
-  updateSummary();
 }
 
 // Obter gastos de um dia específico

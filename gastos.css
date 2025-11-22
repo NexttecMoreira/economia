@@ -252,7 +252,6 @@ body.gastos-bg {
   align-items: center;
   gap: 1rem;
   flex: 1;
-  margin-right: 2rem;
 }
 
 .gasto-item-nome {
@@ -261,26 +260,24 @@ body.gastos-bg {
   flex: 1;
 }
 
-.gasto-item-data {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: #9CA3AF;
-  padding: 0.25rem 0.75rem;
-  background: rgba(30, 30, 30, 0.5);
-  border-radius: 12px;
-  white-space: nowrap;
-}
-
 .gasto-item-valor {
   font-weight: 700;
   color: #E57C23;
   white-space: nowrap;
-  margin-right: 1.5rem;
+}
+
+.gasto-item-data {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #9CA3AF;
+  margin-right: 0.75rem;
+  white-space: nowrap;
 }
 
 .gasto-item-acoes {
   display: flex;
   gap: 0.5rem;
+  align-items: center;
 }
 
 .gasto-btn-editar {
@@ -668,9 +665,26 @@ body.gastos-bg {
   }
 
   .gasto-item {
+    padding: 0.75rem;
+  }
+
+  .gasto-item-info {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.5rem;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .gasto-item-nome {
+    font-size: 0.95rem;
+  }
+
+  .gasto-item-valor {
+    font-size: 0.9rem;
+  }
+
+  .gasto-item-data {
+    font-size: 0.75rem;
   }
 }
 

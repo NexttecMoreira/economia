@@ -506,32 +506,6 @@ body.resumo-bg {
   gap: 0.5rem;
 }
 
-.resumo-data-ganho,
-.resumo-data-gasto,
-.resumo-data-saldo {
-  font-size: 0.9rem;
-  margin: 0;
-  color: #9CA3AF;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.resumo-data-ganho span {
-  font-weight: 700;
-  color: #1E88E5;
-}
-
-.resumo-data-gasto span {
-  font-weight: 700;
-  color: #E57C23;
-}
-
-.resumo-data-saldo span {
-  font-weight: 700;
-  color: #B9B9B9;
-}
-
 /* Animations */
 
 /* Responsive */

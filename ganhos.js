@@ -1,9 +1,7 @@
 // ganhos.js - Gerenciamento de ganhos
 
 document.addEventListener('DOMContentLoaded', function() {
-  const STORAGE_KEY = 'moneyMagnetData';
   let finances = { income: [], expense: [] };
-  let editingIndex = -1;
   let db = null;
   let currentUser = null;
 
@@ -11,7 +9,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const nomeInput = document.getElementById('ganho-nome');
   const valorInput = document.getElementById('ganho-valor');
   const adicionarBtn = document.getElementById('adicionar-ganho');
-  const cancelarBtn = document.getElementById('cancelar-edicao');
   const listaGanhos = document.getElementById('lista-ganhos');
   const totalGanhos = document.getElementById('total-ganhos');
   const canvasGrafico = document.getElementById('grafico-ganhos');
@@ -57,19 +54,9 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         function(erro) {
           console.error('Erro ao carregar do Firestore:', erro);
-          carregarDoLocalStorage();
         }
       );
-    } else {
-      carregarDoLocalStorage();
     }
-  }
-  
-  function carregarDoLocalStorage() {
-    // Não usar mais localStorage - apenas Firestore
-    console.warn('Firestore indisponível');
-    renderizarLista();
-    atualizarGrafico();
   }
 
   // Salvar dados APENAS no Firestore (sem localStorage)
@@ -137,6 +124,16 @@ document.addEventListener('DOMContentLoaded', function() {
       nomeSpan.className = 'ganho-item-nome';
       nomeSpan.textContent = ganho.name;
 
+      const valorSpan = document.createElement('span');
+      valorSpan.className = 'ganho-item-valor';
+      valorSpan.textContent = formatarReal(ganho.value);
+
+      infoDiv.appendChild(nomeSpan);
+      infoDiv.appendChild(valorSpan);
+
+      const acoesDiv = document.createElement('div');
+      acoesDiv.className = 'ganho-item-acoes';
+
       const dataSpan = document.createElement('span');
       dataSpan.className = 'ganho-item-data';
       if (ganho.date) {
@@ -146,17 +143,6 @@ document.addEventListener('DOMContentLoaded', function() {
       } else {
         dataSpan.textContent = 'Sem data';
       }
-
-      const valorSpan = document.createElement('span');
-      valorSpan.className = 'ganho-item-valor';
-      valorSpan.textContent = formatarReal(ganho.value);
-
-      infoDiv.appendChild(nomeSpan);
-      infoDiv.appendChild(dataSpan);
-      infoDiv.appendChild(valorSpan);
-
-      const acoesDiv = document.createElement('div');
-      acoesDiv.className = 'ganho-item-acoes';
 
       const editarBtn = document.createElement('button');
       editarBtn.className = 'ganho-btn-editar';
@@ -168,6 +154,7 @@ document.addEventListener('DOMContentLoaded', function() {
       excluirBtn.textContent = '✕';
       excluirBtn.onclick = () => excluirGanho(realIndex);
 
+      acoesDiv.appendChild(dataSpan);
       acoesDiv.appendChild(editarBtn);
       acoesDiv.appendChild(excluirBtn);
 
@@ -254,24 +241,12 @@ document.addEventListener('DOMContentLoaded', function() {
                       String(hoje.getMonth() + 1).padStart(2, '0') + '-' + 
                       String(hoje.getDate()).padStart(2, '0');
 
-    if (editingIndex >= 0) {
-      // Editando ganho existente - mantém a data original
-      finances.income[editingIndex] = {
-        name: nome,
-        value: valor.toFixed(2),
-        date: finances.income[editingIndex].date || dataAtual
-      };
-      editingIndex = -1;
-      adicionarBtn.textContent = 'Adicionar';
-      cancelarBtn.style.display = 'none';
-    } else {
-      // Adicionando novo ganho - usa data atual
-      finances.income.push({
-        name: nome,
-        value: valor.toFixed(2),
-        date: dataAtual
-      });
-    }
+    // Adicionando novo ganho - usa data atual
+    finances.income.push({
+      name: nome,
+      value: valor.toFixed(2),
+      date: dataAtual
+    });
 
     nomeInput.value = '';
     valorInput.value = '';
@@ -298,15 +273,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Mostrar modal de edição
     document.getElementById('modal-editar').classList.add('ativo');
-  }
-
-  // Cancelar edição
-  function cancelarEdicao() {
-    nomeInput.value = '';
-    valorInput.value = '';
-    editingIndex = -1;
-    adicionarBtn.textContent = 'Adicionar';
-    cancelarBtn.style.display = 'none';
   }
 
   // Excluir ganho - Abrir modal
@@ -391,7 +357,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Event listeners
   adicionarBtn.addEventListener('click', adicionarGanho);
-  cancelarBtn.addEventListener('click', cancelarEdicao);
   
   // Event listeners do modal de exclusão
   document.getElementById('modal-btn-excluir').addEventListener('click', confirmarExclusao);
