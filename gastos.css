@@ -23,7 +23,9 @@ body.gastos-bg {
   color: #e0e0e0;
   min-height: 100vh;
   overflow-x: hidden;
-  scroll-behavior: smooth;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: transform;
 }
 
 .gastos-container {
@@ -178,7 +180,8 @@ body.gastos-bg {
   border: 1px solid rgba(60, 60, 60, 0.5);
   margin-bottom: 2rem;
   animation: fadeIn 0.5s ease-out forwards;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  will-change: transform;
 }
 
 .gastos-grafico:hover {
@@ -208,7 +211,8 @@ body.gastos-bg {
   border: 1px solid rgba(60, 60, 60, 0.5);
   margin-bottom: 2rem;
   animation: fadeIn 0.5s ease-out forwards;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  will-change: transform;
 }
 
 .gastos-lista:hover {
@@ -238,8 +242,9 @@ body.gastos-bg {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: all 0.3s ease;
+  transition: transform 0.2s ease, background 0.2s ease;
   animation: fadeIn 0.5s ease-out forwards;
+  will-change: transform;
 }
 
 .gasto-item:hover {

@@ -1,5 +1,21 @@
 /* Estilos para NextFlow - Sistema Financeiro */
 
+/* Performance optimizations */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: auto;
+}
+
+body {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
 
 /* Estilos para página de login */
 body.login-bg {
@@ -216,6 +232,8 @@ body.resumo-bg {
   border: 1px solid rgba(30, 136, 229, 0.3);
   text-align: left;
   animation: fadeIn 0.5s ease-out forwards;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .resumo-card-gastos {
@@ -227,6 +245,8 @@ body.resumo-bg {
   border: 1px solid rgba(229, 124, 35, 0.3);
   text-align: left;
   animation: fadeIn 0.5s ease-out forwards;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .resumo-card-saldo {
@@ -238,6 +258,8 @@ body.resumo-bg {
   border: 1px solid rgba(177, 177, 177, 0.3);
   text-align: left;
   animation: fadeIn 0.5s ease-out forwards;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .resumo-label-ganhos {
@@ -297,10 +319,11 @@ body.resumo-bg {
   border: 1px solid rgba(60, 60, 60, 0.5);
   margin-bottom: 2rem;
   animation: fadeIn 0.5s ease-out forwards;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
+  will-change: transform;
 }
 
 .resumo-grafico:hover {
