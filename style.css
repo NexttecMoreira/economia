@@ -17,6 +17,31 @@ body {
   -webkit-backface-visibility: hidden;
 }
 
+/* Desabilitar animações pesadas no mobile */
+@media (max-width: 768px) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .resumo-grafico:hover,
+  .resumo-card-ganhos:hover,
+  .resumo-card-gastos:hover,
+  .resumo-card-saldo:hover {
+    transform: none !important;
+  }
+  
+  /* Remover backdrop-filter no mobile (muito pesado) */
+  .resumo-grafico,
+  .resumo-card-ganhos,
+  .resumo-card-gastos,
+  .resumo-card-saldo {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
 /* Estilos para página de login */
 body.login-bg {
   background: linear-gradient(135deg, #121212 0%, #000000 100%);

@@ -15,6 +15,28 @@
     background: var(--secondary);
 }
 
+/* Otimizações mobile */
+@media (max-width: 768px) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .datas-dia-celula:hover {
+    transform: none !important;
+  }
+  
+  /* Remover backdrop-filter no mobile */
+  .datas-header,
+  .datas-calendario,
+  .datas-dia-celula,
+  .datas-detalhes {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
 body.datas-bg {
   margin: 0;
   padding: 0;

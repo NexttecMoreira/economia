@@ -15,6 +15,30 @@
     background: var(--secondary);
 }
 
+/* Otimizações mobile */
+@media (max-width: 768px) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .ganhos-grafico:hover,
+  .ganhos-lista:hover,
+  .ganho-item:hover {
+    transform: none !important;
+  }
+  
+  /* Remover backdrop-filter no mobile */
+  .ganhos-grafico,
+  .ganhos-lista,
+  .ganho-item,
+  .ganhos-formulario {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
 body.ganhos-bg {
   padding: 0;
   margin: 0;
