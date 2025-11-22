@@ -68,7 +68,7 @@ body.datas-bg {
   font-size: 2rem;
   font-weight: 700;
   margin: 0;
-  background: linear-gradient(90deg, #1E88E5, #E57C23);
+  background: linear-gradient(90deg, rgba(222, 222, 222, 1), rgba(213, 213, 213, 1));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -260,11 +260,11 @@ body.datas-bg {
 }
 
 .datas-dia-valor.positivo {
-  color: #10B981;
+  color: #1E88E5;
 }
 
 .datas-dia-valor.negativo {
-  color: #EF4444;
+  color: #E57C23;
 }
 
 .datas-dia-saldo {
@@ -277,11 +277,11 @@ body.datas-bg {
 }
 
 .datas-dia-saldo.positivo {
-  color: #1E88E5;
+  color: #10B981;
 }
 
 .datas-dia-saldo.negativo {
-  color: #E57C23;
+  color: #EF4444;
 }
 
 .datas-detalhes {
@@ -469,24 +469,69 @@ body.datas-bg {
 
 @media (max-width: 480px) {
   .datas-container {
-    padding: 0.5rem;
+    padding: 0.3rem;
   }
 
   .datas-titulo {
     font-size: 1.2rem;
   }
 
+  .datas-btn-nav {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+    max-width: fit-content;
+    width: auto;
+    text-align: left;
+    align-self: flex-start;
+    margin-left: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .datas-calendario {
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    width: 94%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .datas-dias-semana {
+    gap: 0.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .datas-dia-semana-label {
+    font-size: 0.7rem;
+    padding: 0.2rem;
+  }
+
+  .datas-grid {
+    gap: 0.2rem;
+  }
+
   .datas-dia-celula {
-    min-height: 45px;
-    padding: 0.3rem;
+    min-height: 85px;
+    max-height: 85px;
+    padding: 0.4rem;
+    gap: 0.2rem;
+    overflow: hidden;
   }
 
   .datas-dia-numero {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
+    margin-bottom: 0.2rem;
   }
 
   .datas-dia-valor {
     font-size: 0.6rem;
+    line-height: 1.1;
+  }
+
+  .datas-dia-saldo {
+    font-size: 0.6rem;
+    line-height: 1.1;
+    margin-top: 0.15rem;
+    padding-top: 0.15rem;
   }
 
   .datas-valor-dia,

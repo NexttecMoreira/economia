@@ -19,6 +19,7 @@ function loadData() {
         }
         updateCharts();
         updateSummary();
+        updateDatesSummary();
       },
       function(erro) {
         console.error('Erro ao carregar do Firestore:', erro);
@@ -280,6 +281,76 @@ function setPeriod(period) {
   updateSummary();
 }
 
+// Atualizar resumo de datas (hoje, semana, mês, ano)
+function updateDatesSummary() {
+  const hoje = new Date();
+  const hojeFmt = formatDateStr(hoje);
+  
+  // Calcular início da semana (domingo)
+  const inicioSemana = new Date(hoje);
+  inicioSemana.setDate(hoje.getDate() - hoje.getDay());
+  const inicioSemanaFmt = formatDateStr(inicioSemana);
+  
+  // Calcular início do mês
+  const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+  const inicioMesFmt = formatDateStr(inicioMes);
+  
+  // Calcular início do ano
+  const inicioAno = new Date(hoje.getFullYear(), 0, 1);
+  const inicioAnoFmt = formatDateStr(inicioAno);
+  
+  // Calcular valores para hoje
+  const ganhosHoje = calcularTotal(data.income, hojeFmt, hojeFmt);
+  const gastosHoje = calcularTotal(data.expense, hojeFmt, hojeFmt);
+  const saldoHoje = ganhosHoje - gastosHoje;
+  
+  // Calcular valores para esta semana
+  const ganhosSemana = calcularTotal(data.income, inicioSemanaFmt, hojeFmt);
+  const gastosSemana = calcularTotal(data.expense, inicioSemanaFmt, hojeFmt);
+  const saldoSemana = ganhosSemana - gastosSemana;
+  
+  // Calcular valores para este mês
+  const ganhosMes = calcularTotal(data.income, inicioMesFmt, hojeFmt);
+  const gastosMes = calcularTotal(data.expense, inicioMesFmt, hojeFmt);
+  const saldoMes = ganhosMes - gastosMes;
+  
+  // Calcular valores para este ano
+  const ganhosAno = calcularTotal(data.income, inicioAnoFmt, hojeFmt);
+  const gastosAno = calcularTotal(data.expense, inicioAnoFmt, hojeFmt);
+  const saldoAno = ganhosAno - gastosAno;
+  
+  // Atualizar DOM
+  document.getElementById('data-ganho-hoje').textContent = 'R$ ' + ganhosHoje.toFixed(2);
+  document.getElementById('data-gasto-hoje').textContent = 'R$ ' + gastosHoje.toFixed(2);
+  document.getElementById('data-saldo-hoje').textContent = 'R$ ' + saldoHoje.toFixed(2);
+  
+  document.getElementById('data-ganho-semana').textContent = 'R$ ' + ganhosSemana.toFixed(2);
+  document.getElementById('data-gasto-semana').textContent = 'R$ ' + gastosSemana.toFixed(2);
+  document.getElementById('data-saldo-semana').textContent = 'R$ ' + saldoSemana.toFixed(2);
+  
+  document.getElementById('data-ganho-mes').textContent = 'R$ ' + ganhosMes.toFixed(2);
+  document.getElementById('data-gasto-mes').textContent = 'R$ ' + gastosMes.toFixed(2);
+  document.getElementById('data-saldo-mes').textContent = 'R$ ' + saldoMes.toFixed(2);
+  
+  document.getElementById('data-ganho-ano').textContent = 'R$ ' + ganhosAno.toFixed(2);
+  document.getElementById('data-gasto-ano').textContent = 'R$ ' + gastosAno.toFixed(2);
+  document.getElementById('data-saldo-ano').textContent = 'R$ ' + saldoAno.toFixed(2);
+}
+
+// Calcular total entre duas datas
+function calcularTotal(items, dataInicio, dataFim) {
+  if (!items || items.length === 0) return 0;
+  
+  let total = 0;
+  items.forEach(function(item) {
+    if (item.date >= dataInicio && item.date <= dataFim) {
+      total += parseFloat(item.value || 0);
+    }
+  });
+  
+  return total;
+}
+
 window.addEventListener('DOMContentLoaded', function() {
   // Inicializar Firebase se disponível
   if (typeof firebase !== 'undefined' && window.firebaseConfig) {
@@ -303,6 +374,7 @@ window.addEventListener('DOMContentLoaded', function() {
     loadData();
     initCharts();
     updateSummary();
+    updateDatesSummary();
   }
   
   // Event listeners para os botões de período

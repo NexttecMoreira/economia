@@ -165,20 +165,20 @@ function createDayCell(day, isOtherMonth, isToday, total, dateStr) {
     // Sempre mostrar ganhos (mesmo se for 0)
     const valorGanho = document.createElement('div');
     valorGanho.className = 'datas-dia-valor positivo';
-    valorGanho.textContent = '+R$ ' + totalIncome.toFixed(2);
+    valorGanho.textContent = totalIncome.toFixed(2);
     cell.appendChild(valorGanho);
     
     // Sempre mostrar gastos (mesmo se for 0)
     const valorGasto = document.createElement('div');
     valorGasto.className = 'datas-dia-valor negativo';
-    valorGasto.textContent = '-R$ ' + totalExpense.toFixed(2);
+    valorGasto.textContent = totalExpense.toFixed(2);
     cell.appendChild(valorGasto);
     
     // Sempre mostrar saldo
     const valorSaldo = document.createElement('div');
     valorSaldo.className = 'datas-dia-saldo';
     valorSaldo.className += saldo >= 0 ? ' positivo' : ' negativo';
-    valorSaldo.textContent = 'Saldo: R$ ' + Math.abs(saldo).toFixed(2);
+    valorSaldo.textContent = Math.abs(saldo).toFixed(2);
     cell.appendChild(valorSaldo);
   }
   

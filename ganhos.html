@@ -13,6 +13,7 @@
 </head>
 <body class="ganhos-bg">
   <div class="ganhos-container">
+    <a href="index.html" class="ganhos-btn-voltar">← Voltar</a>
     <header class="ganhos-header">
       <h1 class="ganhos-titulo">Ganhos</h1>
       <p class="ganhos-subtitulo">Gerencie seus ganhos</p>
@@ -37,8 +38,51 @@
     </section>
 
     <div class="ganhos-navegacao">
-      <a href="index.html" class="ganhos-link">Voltar ao Resumo</a>
-      <a href="gastos.html" class="ganhos-link">Ir para Gastos</a>
+      <a href="gastos.html" class="ganhos-link ganhos-link-gastos">Ir para Gastos</a>
+    </div>
+  </div>
+
+  <!-- Modal de Edição -->
+  <div id="modal-editar" class="modal-excluir">
+    <div class="modal-excluir-overlay"></div>
+    <div class="modal-excluir-conteudo">
+      <h3 class="modal-excluir-titulo">Editar Ganho</h3>
+      <div class="modal-excluir-info">
+        <label class="modal-excluir-label">Nome</label>
+        <input id="modal-editar-nome" class="modal-input" type="text" />
+
+        <label class="modal-excluir-label">Valor</label>
+        <input id="modal-editar-valor" class="modal-input" type="number" step="0.01" />
+
+        <label class="modal-excluir-label">Data</label>
+        <input id="modal-editar-data" class="modal-input" type="date" />
+      </div>
+      <div class="modal-excluir-acoes">
+        <button id="modal-editar-cancelar" class="modal-btn-cancelar">Cancelar</button>
+        <button id="modal-editar-salvar" class="modal-btn-excluir">Editar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Confirmação de Exclusão -->
+  <div id="modal-excluir" class="modal-excluir">
+    <div class="modal-excluir-overlay"></div>
+    <div class="modal-excluir-conteudo">
+      <h3 class="modal-excluir-titulo">Apagar Ganho</h3>
+      <div class="modal-excluir-info">
+        <p class="modal-excluir-label">Nome:</p>
+        <p id="modal-excluir-nome" class="modal-excluir-valor"></p>
+        
+        <p class="modal-excluir-label">Valor:</p>
+        <p id="modal-excluir-valor-texto" class="modal-excluir-valor"></p>
+        
+        <p class="modal-excluir-label">Data:</p>
+        <p id="modal-excluir-data" class="modal-excluir-valor"></p>
+      </div>
+      <div class="modal-excluir-acoes">
+        <button id="modal-btn-cancelar" class="modal-btn-cancelar">Cancelar</button>
+        <button id="modal-btn-excluir" class="modal-btn-excluir">Excluir</button>
+      </div>
     </div>
   </div>
 

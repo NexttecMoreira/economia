@@ -72,6 +72,49 @@
 
 .auth-actions .btn { flex: 1 1 0; }
 
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn--primary {
+  background: linear-gradient(135deg, #1E88E5 0%, #1565C0 100%);
+  color: white;
+}
+
+.btn--primary:hover {
+  background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+  box-shadow: 0 6px 20px rgba(30, 136, 229, 0.4);
+}
+
+.btn:not(.btn--primary) {
+  background: #151515;
+  color: #e0e0e0;
+  border: 1px solid #3a3a3a;
+}
+
+.btn:not(.btn--primary):hover {
+  background: #1a1a1a;
+  border-color: #4a4a4a;
+}
+
 .auth-message {
   margin-top: 0.5rem;
   min-height: 1.2rem;
@@ -80,10 +123,6 @@
 }
 
 .small { font-size: 0.85rem; color: #9CA3AF; margin-top: 0.75rem; }
-
-/* Visual polish */
-.btn--primary { box-shadow: 0 6px 18px rgba(255, 255, 255, 0.14); }
-.btn { font-weight: 600; }
 
 /* Focus states for accessibility */
 .auth-box .input:focus { outline: none; box-shadow: 0 0 0 3px rgba(95, 95, 95, 0.37); }

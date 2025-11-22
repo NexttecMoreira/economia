@@ -160,12 +160,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
       const editarBtn = document.createElement('button');
       editarBtn.className = 'gasto-btn-editar';
-      editarBtn.textContent = '✏️';
+      editarBtn.textContent = '✎';
       editarBtn.onclick = () => editarGasto(realIndex);
 
       const excluirBtn = document.createElement('button');
       excluirBtn.className = 'gasto-btn-excluir';
-      excluirBtn.textContent = '🗑️';
+      excluirBtn.textContent = '✕';
       excluirBtn.onclick = () => excluirGasto(realIndex);
 
       acoesDiv.appendChild(editarBtn);
@@ -280,16 +280,24 @@ document.addEventListener('DOMContentLoaded', function() {
     atualizarGrafico();
   }
 
-  // Editar gasto
+  // Editar gasto (abre modal de edição)
+  let indexParaEditar = -1;
   function editarGasto(index) {
     const gasto = finances.expense[index];
     if (!gasto) return;
 
-    nomeInput.value = gasto.name;
-    valorInput.value = gasto.value;
-    editingIndex = index;
-    adicionarBtn.textContent = 'Salvar';
-    cancelarBtn.style.display = 'inline-flex';
+    indexParaEditar = index;
+    // Preencher campos do modal
+    document.getElementById('modal-editar-nome').value = gasto.name || '';
+    document.getElementById('modal-editar-valor').value = parseFloat(gasto.value || 0).toFixed(2);
+    if (gasto.date) {
+      document.getElementById('modal-editar-data').value = gasto.date;
+    } else {
+      document.getElementById('modal-editar-data').value = '';
+    }
+
+    // Mostrar modal de edição
+    document.getElementById('modal-editar').classList.add('ativo');
   }
 
   // Cancelar edição
@@ -301,19 +309,113 @@ document.addEventListener('DOMContentLoaded', function() {
     cancelarBtn.style.display = 'none';
   }
 
-  // Excluir gasto
+  // Excluir gasto - Abrir modal
+  let indexParaExcluir = -1;
+  
   function excluirGasto(index) {
-    if (confirm('Deseja realmente excluir este gasto?')) {
-      finances.expense.splice(index, 1);
+    const gasto = finances.expense[index];
+    if (!gasto) return;
+    
+    indexParaExcluir = index;
+    
+    // Preencher informações no modal
+    document.getElementById('modal-excluir-nome').textContent = gasto.name;
+    document.getElementById('modal-excluir-valor-texto').textContent = 'R$ ' + parseFloat(gasto.value).toFixed(2);
+    
+    // Formatar data
+    if (gasto.date) {
+      const partes = gasto.date.split('-');
+      const dataFormatada = partes[2] + '/' + partes[1] + '/' + partes[0];
+      document.getElementById('modal-excluir-data').textContent = dataFormatada;
+    } else {
+      document.getElementById('modal-excluir-data').textContent = 'Sem data';
+    }
+    
+    // Mostrar modal
+    document.getElementById('modal-excluir').classList.add('ativo');
+  }
+  
+  // Confirmar exclusão
+  function confirmarExclusao() {
+    if (indexParaExcluir >= 0) {
+      finances.expense.splice(indexParaExcluir, 1);
       salvarDados();
       renderizarLista();
       atualizarGrafico();
+      indexParaExcluir = -1;
     }
+    fecharModal();
+  }
+  
+  // Fechar modal
+  function fecharModal() {
+    document.getElementById('modal-excluir').classList.remove('ativo');
+    indexParaExcluir = -1;
+  }
+
+  // Fechar modal de edição
+  function fecharModalEditar() {
+    const modal = document.getElementById('modal-editar');
+    if (modal) modal.classList.remove('ativo');
+    indexParaEditar = -1;
+  }
+
+  // Confirmar edição
+  function confirmarEdicao() {
+    if (indexParaEditar < 0) return fecharModalEditar();
+
+    const nome = document.getElementById('modal-editar-nome').value.trim();
+    let valor = parseFloat(document.getElementById('modal-editar-valor').value);
+    const data = document.getElementById('modal-editar-data').value;
+
+    if (!nome || isNaN(valor) || valor <= 0) {
+      alert('Preencha nome e valor válidos');
+      return;
+    }
+
+    // Normalizar valor e data
+    valor = valor.toFixed(2);
+    const dataStr = data ? data : (finances.expense[indexParaEditar].date || null);
+
+    finances.expense[indexParaEditar] = {
+      name: nome,
+      value: valor,
+      date: dataStr
+    };
+
+    salvarDados();
+    renderizarLista();
+    atualizarGrafico();
+    fecharModalEditar();
   }
 
   // Event listeners
   adicionarBtn.addEventListener('click', adicionarGasto);
   cancelarBtn.addEventListener('click', cancelarEdicao);
+  
+  // Event listeners do modal de exclusão
+  document.getElementById('modal-btn-excluir').addEventListener('click', confirmarExclusao);
+  document.getElementById('modal-btn-cancelar').addEventListener('click', fecharModal);
+  
+  const modalExcluir = document.getElementById('modal-excluir');
+  if (modalExcluir) {
+    const overlayExcluir = modalExcluir.querySelector('.modal-excluir-overlay');
+    if (overlayExcluir) {
+      overlayExcluir.addEventListener('click', fecharModal);
+    }
+  }
+
+  // Event listeners do modal de edição
+  document.getElementById('modal-editar-salvar').addEventListener('click', confirmarEdicao);
+  document.getElementById('modal-editar-cancelar').addEventListener('click', fecharModalEditar);
+  
+  const modalEditar = document.getElementById('modal-editar');
+  if (modalEditar) {
+    const overlayEditar = modalEditar.querySelector('.modal-excluir-overlay');
+    if (overlayEditar) {
+      overlayEditar.addEventListener('click', fecharModalEditar);
+    }
+  }
 
   // Permitir adicionar com Enter
   nomeInput.addEventListener('keypress', function(e) {
