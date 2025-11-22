@@ -173,11 +173,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const labels = finances.expense.map(g => g.name);
     const dados = finances.expense.map(g => parseFloat(g.value));
-    const cores = [
-      '#F4A04D', '#F29844', '#EF903A', '#EC872F', 
-      '#E57C23', '#D97320', '#CC6B1E', '#BF631C', 
-      '#B35B19', '#A65417'
-    ];
+    
+    // Gerar cores aleatórias infinitas em tons de laranja
+    const cores = [];
+    for (let i = 0; i < labels.length; i++) {
+      const h = 20 + Math.random() * 20;  // Laranja: 20-40
+      const s = 70 + Math.random() * 25;  // 70-95%
+      const l = 45 + Math.random() * 25;  // 45-70%
+      cores.push(`hsl(${h}, ${s}%, ${l}%)`);
+    }
 
     if (graficoGastos) {
       graficoGastos.destroy();

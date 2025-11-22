@@ -18,7 +18,7 @@
 /* Otimizações mobile */
 @media (max-width: 768px) {
   * {
-    animation-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important; 
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
@@ -395,18 +395,17 @@ body.gastos-bg {
 }
 
 .gastos-items::-webkit-scrollbar-track {
-  background: rgba(30, 30, 30, 0.4);
-  border-radius: 10px;
+  background: #131313ff;
 }
 
 .gastos-items::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #4a4a4a, #2a2a2a);
+  background: #3c3c3cff;
   border-radius: 10px;
-  border: 2px solid rgba(20, 20, 20, 0.3);
+  border: 2px solid #121212;
 }
 
 .gastos-items::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #5a5a5a, #3a3a3a);
+  background: #E57C23;
 }
 
 /* Modal de Exclusão */

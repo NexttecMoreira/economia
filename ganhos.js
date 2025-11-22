@@ -173,11 +173,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const labels = finances.income.map(g => g.name);
     const dados = finances.income.map(g => parseFloat(g.value));
-    const cores = [
-      '#63A9EF', '#4C9DEE', '#3792EA', '#2A8BE7',
-      '#1E88E5', '#1C7ED4', '#1A75C2', '#176CB0',
-      '#15639E', '#135A8C'
-    ];
+    
+    // Gerar cores aleatórias infinitas em tons de azul
+    const cores = [];
+    for (let i = 0; i < labels.length; i++) {
+      const h = 200 + Math.random() * 20; // Azul: 200-220
+      const s = 70 + Math.random() * 20;  // 70-90%
+      const l = 45 + Math.random() * 25;  // 45-70%
+      cores.push(`hsl(${h}, ${s}%, ${l}%)`);
+    }
 
     if (graficoGanhos) {
       graficoGanhos.destroy();

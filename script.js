@@ -200,17 +200,29 @@ function updateCustomLegend(elementId, labels, values, colors) {
 }
 
 function generateColors(count, baseColor) {
-  if (baseColor === '#1E88E5') {
-    return ['#63A9EF', '#4C9DEE', '#3792EA', '#2A8BE7', '#1E88E5', '#1C7ED4', '#1A75C2', '#176CB0', '#15639E', '#135A8C'].slice(0, count);
-  } else if (baseColor === '#E57C23') {
-    return ['#F4A04D', '#F29844', '#EF903A', '#EC872F', '#E57C23', '#D97320', '#CC6B1E', '#BF631C', '#B35B19', '#A65417'].slice(0, count);
-  }
   const colors = [];
-  const base = hexToRgb(baseColor);
+  
+  // Gerar cores aleatórias infinitas baseadas na cor base
+  const isBlue = baseColor === '#1E88E5';
+  
   for (let i = 0; i < count; i++) {
-    const factor = 0.7 + (i * 0.3 / count);
-    colors.push('rgba(' + Math.floor(base.r * factor) + ',' + Math.floor(base.g * factor) + ',' + Math.floor(base.b * factor) + ',0.8)');
+    let h, s, l;
+    
+    if (isBlue) {
+      // Tons de azul: matiz entre 200-220
+      h = 200 + Math.random() * 20;
+      s = 70 + Math.random() * 20; // 70-90%
+      l = 45 + Math.random() * 25; // 45-70%
+    } else {
+      // Tons de laranja: matiz entre 20-40
+      h = 20 + Math.random() * 20;
+      s = 70 + Math.random() * 25; // 70-95%
+      l = 45 + Math.random() * 25; // 45-70%
+    }
+    
+    colors.push(`hsl(${h}, ${s}%, ${l}%)`);
   }
+  
   return colors;
 }
 
