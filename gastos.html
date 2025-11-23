@@ -28,7 +28,10 @@
         <label class="gastos-pagamento-label">Forma de Pagamento:</label>
         <div class="gastos-pagamento-botoes">
           <button type="button" class="gastos-btn-pagamento" data-pagamento="Débito">Débito</button>
-          <button type="button" class="gastos-btn-pagamento" data-pagamento="Crédito">Crédito</button>
+          <button type="button" class="gastos-btn-pagamento" data-pagamento="Crédito">
+            Crédito
+            <span id="parcelas-badge" class="parcelas-badge" style="display: none;"></span>
+          </button>
           <button type="button" class="gastos-btn-pagamento" data-pagamento="PIX">PIX</button>
           <button type="button" class="gastos-btn-pagamento" data-pagamento="Dinheiro">Dinheiro</button>
         </div>
@@ -130,6 +133,34 @@
       <h3 class="modal-alerta-titulo">⚠️ Atenção</h3>
       <p class="modal-alerta-mensagem">Preencha o nome e um valor válido</p>
       <button id="modal-alerta-validacao-ok" class="modal-alerta-btn-ok">OK</button>
+    </div>
+  </div>
+
+  <!-- Modal de Parcelas -->
+  <div id="modal-parcelas" class="modal-alerta">
+    <div class="modal-alerta-overlay"></div>
+    <div class="modal-alerta-conteudo modal-parcelas-conteudo">
+      <button id="modal-parcelas-fechar" class="modal-btn-fechar">✕</button>
+      <h3 class="modal-alerta-titulo">💳 Quantas parcelas?</h3>
+      <div class="modal-parcelas-grid">
+        <button class="modal-btn-parcela" data-parcela="1x">1x</button>
+        <button class="modal-btn-parcela" data-parcela="2x">2x</button>
+        <button class="modal-btn-parcela" data-parcela="3x">3x</button>
+        <button class="modal-btn-parcela" data-parcela="4x">4x</button>
+        <button class="modal-btn-parcela" data-parcela="5x">5x</button>
+        <button class="modal-btn-parcela" data-parcela="6x">6x</button>
+        <button class="modal-btn-parcela" data-parcela="7x">7x</button>
+        <button class="modal-btn-parcela" data-parcela="8x">8x</button>
+        <button class="modal-btn-parcela" data-parcela="9x">9x</button>
+        <button class="modal-btn-parcela" data-parcela="10x">10x</button>
+        <button class="modal-btn-parcela" data-parcela="11x">11x</button>
+        <button class="modal-btn-parcela" data-parcela="12x">12x</button>
+      </div>
+      <button id="modal-btn-mais-parcelas" class="modal-btn-mais-parcelas">Mais parcelas</button>
+      <div id="modal-parcelas-custom-section" class="modal-parcelas-custom" style="display: none;">
+        <input type="number" id="modal-input-parcelas" class="modal-input-parcelas" placeholder="Digite o número de parcelas" min="1" max="99">
+        <button id="modal-btn-confirmar-parcelas" class="modal-alerta-btn-ok">Confirmar</button>
+      </div>
     </div>
   </div>
 

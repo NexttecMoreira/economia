@@ -449,6 +449,16 @@ body.gastos-bg {
   color: #E57C23;
 }
 
+.parcelas-badge {
+  margin-left: 0.5rem;
+  padding: 0.15rem 0.5rem;
+  background: #E57C23;
+  color: #1a1a1a;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
 /* Botões de Pagamento no Modal */
 .modal-pagamento-botoes {
   display: grid;
@@ -787,6 +797,105 @@ body.gastos-bg {
 .modal-alerta-btn-ok:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(229, 124, 35, 0.6);
+}
+
+/* Modal de Parcelas */
+.modal-parcelas-conteudo {
+  max-width: 450px;
+  padding: 2rem;
+  position: relative;
+}
+
+.modal-btn-fechar {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  color: #9CA3AF;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0.25rem 0.5rem;
+  line-height: 1;
+  z-index: 10;
+}
+
+.modal-btn-fechar:hover {
+  color: #E57C23;
+  transform: scale(1.1);
+}
+
+.modal-parcelas-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.modal-btn-parcela {
+  padding: 0.75rem;
+  background: #2a2a2a;
+  border: 2px solid #3a3a3a;
+  border-radius: 0.75rem;
+  color: #9CA3AF;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modal-btn-parcela:hover {
+  background: #333333;
+  border-color: #E57C23;
+}
+
+.modal-btn-parcela.selecionado {
+  background: rgba(229, 124, 35, 0.2);
+  border-color: #E57C23;
+  color: #E57C23;
+}
+
+.modal-btn-mais-parcelas {
+  width: 100%;
+  padding: 0.75rem;
+  background: #2a2a2a;
+  border: 2px solid #3a3a3a;
+  border-radius: 0.75rem;
+  color: #9CA3AF;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 1rem;
+}
+
+.modal-btn-mais-parcelas:hover {
+  background: #333333;
+  border-color: #E57C23;
+  color: #E57C23;
+}
+
+.modal-parcelas-custom {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.modal-input-parcelas {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 2px solid #3a3a3a;
+  background: #2a2a2a;
+  color: #e5e7eb;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.modal-input-parcelas:focus {
+  outline: none;
+  border-color: #E57C23;
 }
 
 /* Inputs do modal */

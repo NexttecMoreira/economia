@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   let graficoGastos = null;
   let pagamentoSelecionado = null;
+  let parcelasSelecionadas = null;
 
   // Adicionar listeners para os botões de pagamento do formulário
   botoesFormPagamento.forEach(btn => {
@@ -23,6 +24,14 @@ document.addEventListener('DOMContentLoaded', function() {
       botoesFormPagamento.forEach(b => b.classList.remove('selecionado'));
       this.classList.add('selecionado');
       pagamentoSelecionado = this.dataset.pagamento;
+      
+      // Se selecionou Crédito, mostrar modal de parcelas
+      if (pagamentoSelecionado === 'Crédito') {
+        mostrarModalParcelas();
+      } else {
+        parcelasSelecionadas = null;
+        atualizarBadgeParcelas(); // Limpar badge se não for crédito
+      }
     });
   });
 
@@ -145,7 +154,14 @@ document.addEventListener('DOMContentLoaded', function() {
       if (gasto.payment) {
         const pagamentoSpan = document.createElement('span');
         pagamentoSpan.className = 'gasto-item-pagamento';
-        pagamentoSpan.textContent = gasto.payment;
+        
+        // Se for crédito e tiver parcelas, mostrar com parcelas
+        if (gasto.payment === 'Crédito' && gasto.installments) {
+          pagamentoSpan.textContent = gasto.payment + ' ' + gasto.installments;
+        } else {
+          pagamentoSpan.textContent = gasto.payment;
+        }
+        
         infoDiv.appendChild(pagamentoSpan);
       }
 
@@ -292,18 +308,28 @@ document.addEventListener('DOMContentLoaded', function() {
                       String(hoje.getMonth() + 1).padStart(2, '0') + '-' + 
                       String(hoje.getDate()).padStart(2, '0');
 
-    // Adicionando novo gasto - usa data atual
-    finances.expense.push({
+    // Criar objeto do gasto
+    const novoGasto = {
       name: nome,
       value: valor.toFixed(2),
       date: dataAtual,
       payment: pagamento
-    });
+    };
+    
+    // Se for crédito e tiver parcelas, adicionar ao objeto
+    if (pagamento === 'Crédito' && parcelasSelecionadas) {
+      novoGasto.installments = parcelasSelecionadas;
+    }
+
+    // Adicionando novo gasto
+    finances.expense.push(novoGasto);
 
     nomeInput.value = '';
     valorInput.value = '';
     pagamentoSelecionado = null;
+    parcelasSelecionadas = null;
     botoesFormPagamento.forEach(b => b.classList.remove('selecionado'));
+    atualizarBadgeParcelas(); // Limpar badge
     salvarDados();
     renderizarLista();
     atualizarGrafico();
@@ -331,6 +357,43 @@ document.addEventListener('DOMContentLoaded', function() {
   function fecharAlertaPagamento() {
     const modal = document.getElementById('modal-alerta-pagamento');
     if (modal) modal.classList.remove('ativo');
+  }
+
+  // Mostrar modal de parcelas
+  function mostrarModalParcelas() {
+    const modal = document.getElementById('modal-parcelas');
+    if (modal) {
+      modal.classList.add('ativo');
+      parcelasSelecionadas = null;
+      
+      // Limpar seleção anterior
+      const botoesParcelas = modal.querySelectorAll('.modal-btn-parcela');
+      botoesParcelas.forEach(b => b.classList.remove('selecionado'));
+      
+      // Esconder input customizado
+      const customSection = document.getElementById('modal-parcelas-custom-section');
+      if (customSection) customSection.style.display = 'none';
+      
+      const customInput = document.getElementById('modal-input-parcelas');
+      if (customInput) customInput.value = '';
+    }
+  }
+
+  // Fechar modal de parcelas
+  function fecharModalParcelas() {
+    const modal = document.getElementById('modal-parcelas');
+    if (modal) modal.classList.remove('ativo');
+  }
+
+  // Atualizar badge de parcelas no botão Crédito
+  function atualizarBadgeParcelas() {
+    const badge = document.getElementById('parcelas-badge');
+    if (badge && parcelasSelecionadas) {
+      badge.textContent = parcelasSelecionadas;
+      badge.style.display = 'inline-block';
+    } else if (badge) {
+      badge.style.display = 'none';
+    }
   }
 
   // Editar gasto (abre modal de edição)
@@ -518,6 +581,55 @@ document.addEventListener('DOMContentLoaded', function() {
     const overlayValidacao = modalAlertaValidacao.querySelector('.modal-alerta-overlay');
     if (overlayValidacao) {
       overlayValidacao.addEventListener('click', fecharAlertaValidacao);
+    }
+  }
+
+  // Event listeners do modal de parcelas
+  const btnFecharParcelas = document.getElementById('modal-parcelas-fechar');
+  if (btnFecharParcelas) {
+    btnFecharParcelas.addEventListener('click', fecharModalParcelas);
+  }
+
+  const botoesParcelas = document.querySelectorAll('.modal-btn-parcela');
+  botoesParcelas.forEach(btn => {
+    btn.addEventListener('click', function() {
+      parcelasSelecionadas = this.dataset.parcela;
+      atualizarBadgeParcelas();
+      fecharModalParcelas();
+    });
+  });
+
+  const btnMaisParcelas = document.getElementById('modal-btn-mais-parcelas');
+  if (btnMaisParcelas) {
+    btnMaisParcelas.addEventListener('click', function() {
+      const customSection = document.getElementById('modal-parcelas-custom-section');
+      if (customSection) {
+        customSection.style.display = customSection.style.display === 'none' ? 'flex' : 'none';
+      }
+    });
+  }
+
+  const btnConfirmarParcelas = document.getElementById('modal-btn-confirmar-parcelas');
+  if (btnConfirmarParcelas) {
+    btnConfirmarParcelas.addEventListener('click', function() {
+      const input = document.getElementById('modal-input-parcelas');
+      const valor = parseInt(input.value);
+      
+      if (valor && valor >= 1 && valor <= 99) {
+        parcelasSelecionadas = valor + 'x';
+        atualizarBadgeParcelas();
+        fecharModalParcelas();
+      } else {
+        alert('Digite um valor entre 1 e 99');
+      }
+    });
+  }
+
+  const modalParcelas = document.getElementById('modal-parcelas');
+  if (modalParcelas) {
+    const overlayParcelas = modalParcelas.querySelector('.modal-alerta-overlay');
+    if (overlayParcelas) {
+      overlayParcelas.addEventListener('click', fecharModalParcelas);
     }
   }
 
