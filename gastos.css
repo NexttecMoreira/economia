@@ -917,6 +917,22 @@ body.gastos-bg {
   box-shadow: 0 6px 20px rgba(229,124,35,0.08);
 }
 
+.modal-campo-parcelas {
+  margin-top: 1rem;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Modal de Edição */
 .modal-editar {
   display: none;

@@ -385,6 +385,25 @@ document.addEventListener('DOMContentLoaded', function() {
     if (modal) modal.classList.remove('ativo');
   }
 
+  // Mostrar modal de parcelas durante edição
+  function mostrarModalParcelasParaEdicao() {
+    const modal = document.getElementById('modal-parcelas');
+    if (modal) {
+      modal.classList.add('ativo');
+      
+      // Limpar seleção anterior
+      const botoesParcelas = modal.querySelectorAll('.modal-btn-parcela');
+      botoesParcelas.forEach(b => b.classList.remove('selecionado'));
+      
+      // Esconder input customizado
+      const customSection = document.getElementById('modal-parcelas-custom-section');
+      if (customSection) customSection.style.display = 'none';
+      
+      const customInput = document.getElementById('modal-input-parcelas');
+      if (customInput) customInput.value = '';
+    }
+  }
+
   // Atualizar badge de parcelas no botão Crédito
   function atualizarBadgeParcelas() {
     const badge = document.getElementById('parcelas-badge');
@@ -396,9 +415,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
+  // Atualizar badge de parcelas no modal de edição
+  function atualizarBadgeParcelasModal() {
+    const badge = document.getElementById('modal-editar-parcelas-badge');
+    if (badge && parcelasModalSelecionadas) {
+      badge.textContent = parcelasModalSelecionadas;
+      badge.style.display = 'inline-block';
+    } else if (badge) {
+      badge.style.display = 'none';
+    }
+  }
+
   // Editar gasto (abre modal de edição)
   let indexParaEditar = -1;
   let pagamentoModalSelecionado = null;
+  let parcelasModalSelecionadas = null;
   
   function editarGasto(index) {
     const gasto = finances.expense[index];
@@ -416,6 +447,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Selecionar botão de pagamento
     pagamentoModalSelecionado = gasto.payment || null;
+    parcelasModalSelecionadas = gasto.installments || null;
+    
     const botoesModal = document.querySelectorAll('.modal-btn-pagamento');
     botoesModal.forEach(btn => {
       if (btn.dataset.pagamento === pagamentoModalSelecionado) {
@@ -424,6 +457,18 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.classList.remove('selecionado');
       }
     });
+    
+    // Mostrar/preencher campo de parcelas se for crédito
+    const campoParcelas = document.getElementById('modal-editar-campo-parcelas');
+    const inputParcelas = document.getElementById('modal-editar-parcelas-input');
+    
+    if (pagamentoModalSelecionado === 'Crédito') {
+      if (campoParcelas) campoParcelas.style.display = 'block';
+      if (inputParcelas) inputParcelas.value = parcelasModalSelecionadas || '';
+    } else {
+      if (campoParcelas) campoParcelas.style.display = 'none';
+      if (inputParcelas) inputParcelas.value = '';
+    }
 
     // Mostrar modal de edição
     document.getElementById('modal-editar').classList.add('ativo');
@@ -506,12 +551,29 @@ document.addEventListener('DOMContentLoaded', function() {
     valor = valor.toFixed(2);
     const dataStr = data ? data : (finances.expense[indexParaEditar].date || null);
 
-    finances.expense[indexParaEditar] = {
+    const gastoEditado = {
       name: nome,
       value: valor,
       date: dataStr,
       payment: pagamento
     };
+    
+    // Se for crédito, pegar parcelas do input
+    if (pagamento === 'Crédito') {
+      const inputParcelas = document.getElementById('modal-editar-parcelas-input');
+      let parcelas = inputParcelas ? inputParcelas.value.trim() : '';
+      
+      // Adicionar 'x' se o usuário digitou apenas números
+      if (parcelas && !parcelas.toLowerCase().includes('x')) {
+        parcelas = parcelas + 'x';
+      }
+      
+      if (parcelas) {
+        gastoEditado.installments = parcelas;
+      }
+    }
+
+    finances.expense[indexParaEditar] = gastoEditado;
 
     salvarDados();
     renderizarLista();
@@ -522,15 +584,15 @@ document.addEventListener('DOMContentLoaded', function() {
   // Event listeners
   adicionarBtn.addEventListener('click', adicionarGasto);
   
-  // Event listeners para botões de pagamento do modal
-  const botoesModalPagamento = document.querySelectorAll('.modal-btn-pagamento');
-  botoesModalPagamento.forEach(btn => {
-    btn.addEventListener('click', function() {
-      botoesModalPagamento.forEach(b => b.classList.remove('selecionado'));
-      this.classList.add('selecionado');
-      pagamentoModalSelecionado = this.dataset.pagamento;
-    });
-  });
+  // Event listeners para botões de pagamento do modal (antigo - pode ser removido se não for usado)
+  // const botoesModalPagamento = document.querySelectorAll('.modal-btn-pagamento');
+  // botoesModalPagamento.forEach(btn => {
+  //   btn.addEventListener('click', function() {
+  //     botoesModalPagamento.forEach(b => b.classList.remove('selecionado'));
+  //     this.classList.add('selecionado');
+  //     pagamentoModalSelecionado = this.dataset.pagamento;
+  //   });
+  // });
   
   // Event listeners do modal de exclusão
   document.getElementById('modal-btn-excluir').addEventListener('click', confirmarExclusao);
@@ -555,6 +617,28 @@ document.addEventListener('DOMContentLoaded', function() {
       overlayEditar.addEventListener('click', fecharModalEditar);
     }
   }
+
+  // Listeners para botões de pagamento no modal de edição
+  const botoesModalPagamento = document.querySelectorAll('.modal-btn-pagamento');
+  botoesModalPagamento.forEach(btn => {
+    btn.addEventListener('click', function() {
+      botoesModalPagamento.forEach(b => b.classList.remove('selecionado'));
+      this.classList.add('selecionado');
+      pagamentoModalSelecionado = this.dataset.pagamento;
+      
+      // Mostrar/esconder campo de parcelas
+      const campoParcelas = document.getElementById('modal-editar-campo-parcelas');
+      const inputParcelas = document.getElementById('modal-editar-parcelas-input');
+      
+      if (pagamentoModalSelecionado === 'Crédito') {
+        if (campoParcelas) campoParcelas.style.display = 'block';
+      } else {
+        if (campoParcelas) campoParcelas.style.display = 'none';
+        if (inputParcelas) inputParcelas.value = '';
+        parcelasModalSelecionadas = null;
+      }
+    });
+  });
 
   // Event listeners do modal de alerta de pagamento
   const btnAlertaOk = document.getElementById('modal-alerta-ok');
@@ -593,8 +677,19 @@ document.addEventListener('DOMContentLoaded', function() {
   const botoesParcelas = document.querySelectorAll('.modal-btn-parcela');
   botoesParcelas.forEach(btn => {
     btn.addEventListener('click', function() {
-      parcelasSelecionadas = this.dataset.parcela;
-      atualizarBadgeParcelas();
+      const valorParcela = this.dataset.parcela;
+      
+      // Verificar se estamos no modo de edição ou adição
+      const modalEditarAberto = document.getElementById('modal-editar').classList.contains('ativo');
+      
+      if (modalEditarAberto) {
+        parcelasModalSelecionadas = valorParcela;
+        atualizarBadgeParcelasModal();
+      } else {
+        parcelasSelecionadas = valorParcela;
+        atualizarBadgeParcelas();
+      }
+      
       fecharModalParcelas();
     });
   });
@@ -616,8 +711,19 @@ document.addEventListener('DOMContentLoaded', function() {
       const valor = parseInt(input.value);
       
       if (valor && valor >= 1 && valor <= 99) {
-        parcelasSelecionadas = valor + 'x';
-        atualizarBadgeParcelas();
+        const valorParcela = valor + 'x';
+        
+        // Verificar se estamos no modo de edição ou adição
+        const modalEditarAberto = document.getElementById('modal-editar').classList.contains('ativo');
+        
+        if (modalEditarAberto) {
+          parcelasModalSelecionadas = valorParcela;
+          atualizarBadgeParcelasModal();
+        } else {
+          parcelasSelecionadas = valorParcela;
+          atualizarBadgeParcelas();
+        }
+        
         fecharModalParcelas();
       } else {
         alert('Digite um valor entre 1 e 99');
