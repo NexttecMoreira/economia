@@ -28,7 +28,10 @@
 
     <section class="ganhos-grafico">
       <h2 class="ganhos-grafico-titulo">Gráfico de Ganhos</h2>
-      <canvas id="grafico-ganhos" class="ganhos-canvas"></canvas>
+      <div class="ganhos-grafico-wrapper">
+        <canvas id="grafico-ganhos" class="ganhos-canvas"></canvas>
+        <div id="ganhos-legenda" class="ganhos-legenda"></div>
+      </div>
     </section>
 
     <section class="ganhos-lista">
@@ -83,6 +86,16 @@
         <button id="modal-btn-cancelar" class="modal-btn-cancelar">Cancelar</button>
         <button id="modal-btn-excluir" class="modal-btn-excluir">Excluir</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal de Alerta de Validação -->
+  <div id="modal-alerta-validacao" class="modal-alerta">
+    <div class="modal-alerta-overlay"></div>
+    <div class="modal-alerta-conteudo">
+      <h3 class="modal-alerta-titulo">⚠️ Atenção</h3>
+      <p class="modal-alerta-mensagem">Preencha o nome e um valor válido</p>
+      <button id="modal-alerta-validacao-ok" class="modal-alerta-btn-ok">OK</button>
     </div>
   </div>
 

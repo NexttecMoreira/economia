@@ -8,12 +8,23 @@ document.addEventListener('DOMContentLoaded', function() {
   // Elementos DOM
   const nomeInput = document.getElementById('gasto-nome');
   const valorInput = document.getElementById('gasto-valor');
+  const botoesFormPagamento = document.querySelectorAll('.gastos-btn-pagamento');
   const adicionarBtn = document.getElementById('adicionar-gasto');
   const listaGastos = document.getElementById('lista-gastos');
   const totalGastos = document.getElementById('total-gastos');
   const canvasGrafico = document.getElementById('grafico-gastos');
 
   let graficoGastos = null;
+  let pagamentoSelecionado = null;
+
+  // Adicionar listeners para os botões de pagamento do formulário
+  botoesFormPagamento.forEach(btn => {
+    btn.addEventListener('click', function() {
+      botoesFormPagamento.forEach(b => b.classList.remove('selecionado'));
+      this.classList.add('selecionado');
+      pagamentoSelecionado = this.dataset.pagamento;
+    });
+  });
 
   // Inicializar Firebase
   function initFirebase() {
@@ -129,6 +140,15 @@ document.addEventListener('DOMContentLoaded', function() {
       valorSpan.textContent = formatarReal(gasto.value);
 
       infoDiv.appendChild(nomeSpan);
+
+      // Adicionar forma de pagamento antes do valor, se existir
+      if (gasto.payment) {
+        const pagamentoSpan = document.createElement('span');
+        pagamentoSpan.className = 'gasto-item-pagamento';
+        pagamentoSpan.textContent = gasto.payment;
+        infoDiv.appendChild(pagamentoSpan);
+      }
+
       infoDiv.appendChild(valorSpan);
 
       const acoesDiv = document.createElement('div');
@@ -204,13 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
           maintainAspectRatio: false,
           plugins: {
             legend: {
-              position: 'right',
-              labels: {
-                color: '#E5E7EB',
-                font: {
-                  size: 12
-                }
-              }
+              display: false
             },
             tooltip: {
               callbacks: {
@@ -223,8 +237,35 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
               }
             }
+          },
+          layout: {
+            padding: {
+              right: 10
+            }
           }
         }
+      });
+    }
+    
+    // Criar legenda customizada
+    const legendaDiv = document.getElementById('gastos-legenda');
+    if (legendaDiv) {
+      legendaDiv.innerHTML = '';
+      labels.forEach((label, i) => {
+        const item = document.createElement('div');
+        item.className = 'gastos-legenda-item';
+        
+        const cor = document.createElement('div');
+        cor.className = 'gastos-legenda-cor';
+        cor.style.backgroundColor = cores[i];
+        
+        const texto = document.createElement('div');
+        texto.className = 'gastos-legenda-texto';
+        texto.textContent = `${label}: R$ ${dados[i].toFixed(2)}`;
+        
+        item.appendChild(cor);
+        item.appendChild(texto);
+        legendaDiv.appendChild(item);
       });
     }
   }
@@ -233,9 +274,15 @@ document.addEventListener('DOMContentLoaded', function() {
   function adicionarGasto() {
     const nome = nomeInput.value.trim();
     const valor = parseFloat(valorInput.value);
+    const pagamento = pagamentoSelecionado;
 
     if (!nome || !valor || valor <= 0) {
-      alert('Por favor, preencha o nome e um valor válido');
+      mostrarAlertaValidacao();
+      return;
+    }
+
+    if (!pagamento) {
+      mostrarAlertaPagamento();
       return;
     }
 
@@ -249,18 +296,47 @@ document.addEventListener('DOMContentLoaded', function() {
     finances.expense.push({
       name: nome,
       value: valor.toFixed(2),
-      date: dataAtual
+      date: dataAtual,
+      payment: pagamento
     });
 
     nomeInput.value = '';
     valorInput.value = '';
+    pagamentoSelecionado = null;
+    botoesFormPagamento.forEach(b => b.classList.remove('selecionado'));
     salvarDados();
     renderizarLista();
     atualizarGrafico();
   }
 
+  // Mostrar modal de alerta de validação
+  function mostrarAlertaValidacao() {
+    const modal = document.getElementById('modal-alerta-validacao');
+    if (modal) modal.classList.add('ativo');
+  }
+
+  // Fechar modal de alerta de validação
+  function fecharAlertaValidacao() {
+    const modal = document.getElementById('modal-alerta-validacao');
+    if (modal) modal.classList.remove('ativo');
+  }
+
+  // Mostrar modal de alerta de pagamento
+  function mostrarAlertaPagamento() {
+    const modal = document.getElementById('modal-alerta-pagamento');
+    if (modal) modal.classList.add('ativo');
+  }
+
+  // Fechar modal de alerta de pagamento
+  function fecharAlertaPagamento() {
+    const modal = document.getElementById('modal-alerta-pagamento');
+    if (modal) modal.classList.remove('ativo');
+  }
+
   // Editar gasto (abre modal de edição)
   let indexParaEditar = -1;
+  let pagamentoModalSelecionado = null;
+  
   function editarGasto(index) {
     const gasto = finances.expense[index];
     if (!gasto) return;
@@ -274,6 +350,17 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
       document.getElementById('modal-editar-data').value = '';
     }
+    
+    // Selecionar botão de pagamento
+    pagamentoModalSelecionado = gasto.payment || null;
+    const botoesModal = document.querySelectorAll('.modal-btn-pagamento');
+    botoesModal.forEach(btn => {
+      if (btn.dataset.pagamento === pagamentoModalSelecionado) {
+        btn.classList.add('selecionado');
+      } else {
+        btn.classList.remove('selecionado');
+      }
+    });
 
     // Mostrar modal de edição
     document.getElementById('modal-editar').classList.add('ativo');
@@ -300,6 +387,9 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
       document.getElementById('modal-excluir-data').textContent = 'Sem data';
     }
+
+    // Forma de pagamento
+    document.getElementById('modal-excluir-pagamento').textContent = gasto.payment || 'N/A';
     
     // Mostrar modal
     document.getElementById('modal-excluir').classList.add('ativo');
@@ -337,9 +427,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const nome = document.getElementById('modal-editar-nome').value.trim();
     let valor = parseFloat(document.getElementById('modal-editar-valor').value);
     const data = document.getElementById('modal-editar-data').value;
+    const pagamento = pagamentoModalSelecionado;
 
     if (!nome || isNaN(valor) || valor <= 0) {
-      alert('Preencha nome e valor válidos');
+      mostrarAlertaValidacao();
+      return;
+    }
+
+    if (!pagamento) {
+      mostrarAlertaPagamento();
       return;
     }
 
@@ -350,7 +446,8 @@ document.addEventListener('DOMContentLoaded', function() {
     finances.expense[indexParaEditar] = {
       name: nome,
       value: valor,
-      date: dataStr
+      date: dataStr,
+      payment: pagamento
     };
 
     salvarDados();
@@ -361,6 +458,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Event listeners
   adicionarBtn.addEventListener('click', adicionarGasto);
+  
+  // Event listeners para botões de pagamento do modal
+  const botoesModalPagamento = document.querySelectorAll('.modal-btn-pagamento');
+  botoesModalPagamento.forEach(btn => {
+    btn.addEventListener('click', function() {
+      botoesModalPagamento.forEach(b => b.classList.remove('selecionado'));
+      this.classList.add('selecionado');
+      pagamentoModalSelecionado = this.dataset.pagamento;
+    });
+  });
   
   // Event listeners do modal de exclusão
   document.getElementById('modal-btn-excluir').addEventListener('click', confirmarExclusao);
@@ -383,6 +490,34 @@ document.addEventListener('DOMContentLoaded', function() {
     const overlayEditar = modalEditar.querySelector('.modal-excluir-overlay');
     if (overlayEditar) {
       overlayEditar.addEventListener('click', fecharModalEditar);
+    }
+  }
+
+  // Event listeners do modal de alerta de pagamento
+  const btnAlertaOk = document.getElementById('modal-alerta-ok');
+  if (btnAlertaOk) {
+    btnAlertaOk.addEventListener('click', fecharAlertaPagamento);
+  }
+
+  const modalAlerta = document.getElementById('modal-alerta-pagamento');
+  if (modalAlerta) {
+    const overlayAlerta = modalAlerta.querySelector('.modal-alerta-overlay');
+    if (overlayAlerta) {
+      overlayAlerta.addEventListener('click', fecharAlertaPagamento);
+    }
+  }
+
+  // Event listeners do modal de alerta de validação
+  const btnAlertaValidacaoOk = document.getElementById('modal-alerta-validacao-ok');
+  if (btnAlertaValidacaoOk) {
+    btnAlertaValidacaoOk.addEventListener('click', fecharAlertaValidacao);
+  }
+
+  const modalAlertaValidacao = document.getElementById('modal-alerta-validacao');
+  if (modalAlertaValidacao) {
+    const overlayValidacao = modalAlertaValidacao.querySelector('.modal-alerta-overlay');
+    if (overlayValidacao) {
+      overlayValidacao.addEventListener('click', fecharAlertaValidacao);
     }
   }
 

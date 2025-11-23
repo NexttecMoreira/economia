@@ -204,13 +204,7 @@ document.addEventListener('DOMContentLoaded', function() {
           maintainAspectRatio: false,
           plugins: {
             legend: {
-              position: 'right',
-              labels: {
-                color: '#E5E7EB',
-                font: {
-                  size: 12
-                }
-              }
+              display: false
             },
             tooltip: {
               callbacks: {
@@ -223,8 +217,35 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
               }
             }
+          },
+          layout: {
+            padding: {
+              right: 10
+            }
           }
         }
+      });
+    }
+    
+    // Criar legenda customizada
+    const legendaDiv = document.getElementById('ganhos-legenda');
+    if (legendaDiv) {
+      legendaDiv.innerHTML = '';
+      labels.forEach((label, i) => {
+        const item = document.createElement('div');
+        item.className = 'ganhos-legenda-item';
+        
+        const cor = document.createElement('div');
+        cor.className = 'ganhos-legenda-cor';
+        cor.style.backgroundColor = cores[i];
+        
+        const texto = document.createElement('div');
+        texto.className = 'ganhos-legenda-texto';
+        texto.textContent = `${label}: R$ ${dados[i].toFixed(2)}`;
+        
+        item.appendChild(cor);
+        item.appendChild(texto);
+        legendaDiv.appendChild(item);
       });
     }
   }
@@ -235,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const valor = parseFloat(valorInput.value);
 
     if (!nome || !valor || valor <= 0) {
-      alert('Por favor, preencha o nome e um valor válido');
+      mostrarAlertaValidacao();
       return;
     }
 
@@ -257,6 +278,18 @@ document.addEventListener('DOMContentLoaded', function() {
     salvarDados();
     renderizarLista();
     atualizarGrafico();
+  }
+
+  // Mostrar modal de alerta de validação
+  function mostrarAlertaValidacao() {
+    const modal = document.getElementById('modal-alerta-validacao');
+    if (modal) modal.classList.add('ativo');
+  }
+
+  // Fechar modal de alerta de validação
+  function fecharAlertaValidacao() {
+    const modal = document.getElementById('modal-alerta-validacao');
+    if (modal) modal.classList.remove('ativo');
   }
 
   // Editar ganho (abre modal de edição)
@@ -339,7 +372,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const data = document.getElementById('modal-editar-data').value;
 
     if (!nome || isNaN(valor) || valor <= 0) {
-      alert('Preencha nome e valor válidos');
+      mostrarAlertaValidacao();
       return;
     }
 
@@ -383,6 +416,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const overlayEditar = modalEditar.querySelector('.modal-excluir-overlay');
     if (overlayEditar) {
       overlayEditar.addEventListener('click', fecharModalEditar);
+    }
+  }
+
+  // Event listeners do modal de alerta de validação
+  const btnAlertaValidacaoOk = document.getElementById('modal-alerta-validacao-ok');
+  if (btnAlertaValidacaoOk) {
+    btnAlertaValidacaoOk.addEventListener('click', fecharAlertaValidacao);
+  }
+
+  const modalAlertaValidacao = document.getElementById('modal-alerta-validacao');
+  if (modalAlertaValidacao) {
+    const overlayValidacao = modalAlertaValidacao.querySelector('.modal-alerta-overlay');
+    if (overlayValidacao) {
+      overlayValidacao.addEventListener('click', fecharAlertaValidacao);
     }
   }
 

@@ -20,15 +20,31 @@
     </header>
 
     <section class="gastos-form">
-      <input id="gasto-nome" type="text" placeholder="Descrição do gasto" class="gastos-input">
-      <input id="gasto-valor" type="number" placeholder="Valor" class="gastos-input">
-      <button id="adicionar-gasto" class="gastos-btn-add">Adicionar</button>
-      <button id="cancelar-edicao" class="gastos-btn-cancelar">Cancelar</button>
+      <div class="gastos-form-row">
+        <input id="gasto-nome" type="text" placeholder="Descrição do gasto" class="gastos-input">
+        <input id="gasto-valor" type="number" placeholder="Valor" class="gastos-input">
+      </div>
+      <div class="gastos-pagamento-grupo">
+        <label class="gastos-pagamento-label">Forma de Pagamento:</label>
+        <div class="gastos-pagamento-botoes">
+          <button type="button" class="gastos-btn-pagamento" data-pagamento="Débito">Débito</button>
+          <button type="button" class="gastos-btn-pagamento" data-pagamento="Crédito">Crédito</button>
+          <button type="button" class="gastos-btn-pagamento" data-pagamento="PIX">PIX</button>
+          <button type="button" class="gastos-btn-pagamento" data-pagamento="Dinheiro">Dinheiro</button>
+        </div>
+      </div>
+      <div class="gastos-form-row">
+        <button id="adicionar-gasto" class="gastos-btn-add">Adicionar</button>
+        <button id="cancelar-edicao" class="gastos-btn-cancelar">Cancelar</button>
+      </div>
     </section>
 
     <section class="gastos-grafico">
       <h2 class="gastos-grafico-titulo">Gráfico de Gastos</h2>
-      <canvas id="grafico-gastos" class="gastos-canvas"></canvas>
+      <div class="gastos-grafico-wrapper">
+        <canvas id="grafico-gastos" class="gastos-canvas"></canvas>
+        <div id="gastos-legenda" class="gastos-legenda"></div>
+      </div>
     </section>
 
     <section class="gastos-lista">
@@ -56,6 +72,14 @@
 
         <label class="modal-excluir-label">Data</label>
         <input id="modal-editar-data" class="modal-input" type="date" />
+
+        <label class="modal-excluir-label">Forma de Pagamento</label>
+        <div class="modal-pagamento-botoes">
+          <button type="button" class="modal-btn-pagamento" data-pagamento="Débito">Débito</button>
+          <button type="button" class="modal-btn-pagamento" data-pagamento="Crédito">Crédito</button>
+          <button type="button" class="modal-btn-pagamento" data-pagamento="PIX">PIX</button>
+          <button type="button" class="modal-btn-pagamento" data-pagamento="Dinheiro">Dinheiro</button>
+        </div>
       </div>
       <div class="modal-excluir-acoes">
         <button id="modal-editar-cancelar" class="modal-btn-cancelar">Cancelar</button>
@@ -78,11 +102,34 @@
         
         <p class="modal-excluir-label">Data:</p>
         <p id="modal-excluir-data" class="modal-excluir-valor"></p>
+
+        <p class="modal-excluir-label">Pagamento:</p>
+        <p id="modal-excluir-pagamento" class="modal-excluir-valor"></p>
       </div>
       <div class="modal-excluir-acoes">
         <button id="modal-btn-cancelar" class="modal-btn-cancelar">Cancelar</button>
         <button id="modal-btn-excluir" class="modal-btn-excluir">Excluir</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal de Alerta de Pagamento -->
+  <div id="modal-alerta-pagamento" class="modal-alerta">
+    <div class="modal-alerta-overlay"></div>
+    <div class="modal-alerta-conteudo">
+      <h3 class="modal-alerta-titulo">⚠️ Atenção</h3>
+      <p class="modal-alerta-mensagem">Selecione uma forma de pagamento</p>
+      <button id="modal-alerta-ok" class="modal-alerta-btn-ok">OK</button>
+    </div>
+  </div>
+
+  <!-- Modal de Alerta de Validação -->
+  <div id="modal-alerta-validacao" class="modal-alerta">
+    <div class="modal-alerta-overlay"></div>
+    <div class="modal-alerta-conteudo">
+      <h3 class="modal-alerta-titulo">⚠️ Atenção</h3>
+      <p class="modal-alerta-mensagem">Preencha o nome e um valor válido</p>
+      <button id="modal-alerta-validacao-ok" class="modal-alerta-btn-ok">OK</button>
     </div>
   </div>
 
