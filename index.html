@@ -5,15 +5,19 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Resumo - NextFlow</title>
   <link rel="stylesheet" href="style.css">
+  <script src="firebase-config.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-functions-compat.js"></script>
+  <script src="subscription-middleware.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js" defer></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js" defer></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js" defer></script>
-  <script src="firebase-config.js" defer></script>
 </head>
 <body class="resumo-bg">
   <div class="resumo-container">
-    <button id="resumo-btn-sair" class="resumo-btn-voltar"> ← Sair</button>
+    <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 1rem;">
+      <button id="resumo-btn-sair" class="resumo-btn-voltar"> ← Sair</button>
+    </div>
     <header class="resumo-header">
       <h1 class="resumo-titulo">Resumo Financeiro</h1>
       <p class="resumo-subtitulo">Visão geral dos seus ganhos e gastos</p>

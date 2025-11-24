@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planos - Finanças</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .pricing-container {
+      max-width: 800px;
+      margin: 4rem auto;
+      padding: 2rem;
+    }
+
+    .pricing-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .pricing-header h1 {
+      font-size: 2.5rem;
+      color: #E57C23;
+      margin-bottom: 1rem;
+    }
+
+    .pricing-header p {
+      font-size: 1.2rem;
+      color: #9CA3AF;
+    }
+
+    .pricing-card {
+      background: linear-gradient(145deg, #1e1e1e 0%, #2a2a2a 100%);
+      border-radius: 20px;
+      padding: 3rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      border: 2px solid #3a3a3a;
+      text-align: center;
+    }
+
+    .pricing-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #E57C23 0%, #D97320 100%);
+      color: white;
+      padding: 0.5rem 1.5rem;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .pricing-price {
+      font-size: 4rem;
+      font-weight: 700;
+      color: #E57C23;
+      margin: 1rem 0;
+    }
+
+    .pricing-price span {
+      font-size: 1.5rem;
+      color: #9CA3AF;
+    }
+
+    .pricing-trial {
+      font-size: 1.1rem;
+      color: #10B981;
+      font-weight: 600;
+      margin-bottom: 2rem;
+    }
+
+    .pricing-features {
+      list-style: none;
+      padding: 0;
+      margin: 2rem 0;
+      text-align: left;
+    }
+
+    .pricing-features li {
+      padding: 0.75rem 0;
+      color: #e5e7eb;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .pricing-features li::before {
+      content: "✓";
+      color: #10B981;
+      font-weight: bold;
+      font-size: 1.3rem;
+    }
+
+    .pricing-btn {
+      width: 100%;
+      padding: 1.2rem;
+      font-size: 1.2rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, #E57C23 0%, #D97320 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(229, 124, 35, 0.4);
+      margin-top: 2rem;
+    }
+
+    .pricing-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(229, 124, 35, 0.6);
+    }
+
+    .pricing-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .pricing-login-link {
+      text-align: center;
+      margin-top: 2rem;
+      color: #9CA3AF;
+    }
+
+    .pricing-login-link a {
+      color: #E57C23;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .pricing-login-link a:hover {
+      text-decoration: underline;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    .loading.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="pricing-container">
+    <div class="pricing-header">
+      <h1>📊 Organize suas Finanças</h1>
+      <p>Controle total dos seus gastos e ganhos</p>
+    </div>
+
+    <div class="pricing-card">
+      <div class="pricing-badge">MELHOR VALOR</div>
+      <h2>Plano Mensal</h2>
+      <div class="pricing-price">R$ 5,99<span>/mês</span></div>
+      <div class="pricing-trial">🎉 7 dias grátis para testar</div>
+
+      <ul class="pricing-features">
+        <li>Controle ilimitado de gastos e ganhos</li>
+        <li>Gráficos interativos e relatórios</li>
+        <li>Categorização de pagamentos</li>
+        <li>Parcelamento de compras no crédito</li>
+        <li>Sincronização em tempo real</li>
+        <li>Acesso em qualquer dispositivo</li>
+        <li>Suporte prioritário</li>
+      </ul>
+
+      <button id="subscribe-btn" class="pricing-btn">
+        Começar 7 dias grátis
+      </button>
+
+      <div class="loading" id="loading">
+        <p>Carregando checkout...</p>
+      </div>
+    </div>
+
+    <div class="pricing-login-link">
+      Já tem uma conta? <a href="login.html">Fazer login</a><br>
+      <a href="index.html" style="margin-top: 0.5rem; display: inline-block;">Já sou assinante - Acessar o App</a>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-functions-compat.js"></script>
+  <script src="https://js.stripe.com/v3/"></script>
+  <script src="firebase-config.js"></script>
+  <script>
+    // Inicializar Firebase
+    if (!firebase.apps || !firebase.apps.length) {
+      firebase.initializeApp(window.firebaseConfig);
+    }
+
+    // Configurar região das functions (São Paulo)
+    const functions = firebase.app().functions('southamerica-east1');
+    const subscribeBtn = document.getElementById('subscribe-btn');
+    const loading = document.getElementById('loading');
+
+    subscribeBtn.addEventListener('click', async () => {
+      // Aguardar um momento para garantir que o Firebase Auth está pronto
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const user = firebase.auth().currentUser;
+
+      if (!user) {
+        // Se não estiver logado, redirecionar para login
+        window.location.href = 'login.html';
+        return;
+      }
+
+      subscribeBtn.disabled = true;
+      loading.classList.add('active');
+
+      try {
+        console.log('Enviando requisição com:', { userId: user.uid, email: user.email });
+        
+        // Chamar Firebase Function usando callable
+        const createCheckoutSession = functions.httpsCallable('createCheckoutSession');
+        const result = await createCheckoutSession({
+          userId: user.uid,
+          email: user.email
+        });
+
+        console.log('Response data:', result.data);
+
+        if (result.data.url) {
+          // Redirecionar para checkout do Stripe
+          window.location.href = result.data.url;
+        } else {
+          throw new Error('URL de checkout não retornada');
+        }
+      } catch (error) {
+        console.error('Erro completo:', error);
+        alert(`Erro ao processar pagamento: ${error.message}`);
+        subscribeBtn.disabled = false;
+        loading.classList.remove('active');
+      }
+    });
+
+    // Verificar se usuário já está logado
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        subscribeBtn.textContent = 'Assinar agora';
+      } else {
+        subscribeBtn.textContent = 'Fazer login para assinar';
+      }
+    });
+  </script>
+</body>
+</html>

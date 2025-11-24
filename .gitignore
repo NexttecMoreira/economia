@@ -1,0 +1,30 @@
+# Arquivos sensíveis
+.env
+.env.local
+.env.example
+
+# Firebase
+.firebase/
+.firebaserc
+firebase-debug.log
+firestore-debug.log
+
+# Node
+node_modules/
+functions/node_modules/
+npm-debug.log
+
+# Chaves e secrets
+*.pem
+*.key
+*-key.json
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo

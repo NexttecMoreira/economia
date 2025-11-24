@@ -11,6 +11,8 @@
   <script src="firebase-config.js" defer></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js" defer></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js" defer></script>
 </head>
 <body class="auth-page">
   <div class="auth-container">
@@ -19,12 +21,17 @@
       <input id="auth-email" type="email" placeholder="E-mail" class="input">
       <input id="auth-password" type="password" placeholder="Senha" class="input">
       <div class="auth-actions">
-        <button id="btn-login" class="btn btn--primary">Entrar</button>
-        <button id="btn-signup" class="btn">Cadastrar</button>
+        <button id="btn-login" type="button" class="btn btn--primary">Entrar</button>
+        <button id="btn-signup" type="button" class="btn">Cadastrar</button>
       </div>
       <div id="auth-message" class="auth-message" role="status" aria-live="polite"></div>
     </div>
-    <p class="small">Voltará ao app após login com sucesso.</p>
+    
+    <div style="text-align: center; margin-top: 2rem;">
+      <a href="pricing.html" style="display: inline-block; background: linear-gradient(135deg, #E57C23 0%, #D97320 100%); color: white; padding: 1rem 2rem; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(229, 124, 35, 0.4); transition: all 0.3s ease;">
+        ⭐ Ver Planos Premium - 7 dias grátis
+      </a>
+    </div>
   </div>
 
   <script src="login.js" defer></script>

@@ -291,13 +291,39 @@ window.addEventListener('DOMContentLoaded', function() {
     }
     db = firebase.firestore();
     
-    // Verificar autenticação
-    firebase.auth().onAuthStateChanged(function(user) {
+    // Flag para evitar verificação duplicada
+    let isVerifying = false;
+    
+    // Aguardar Firebase Auth e verificar assinatura
+    firebase.auth().onAuthStateChanged(async function(user) {
+      if (isVerifying) {
+        console.log('⏸️ Verificação já em andamento, pulando...');
+        return;
+      }
+      
       if (user) {
+        isVerifying = true;
         currentUser = user;
-        loadData();
-        initCharts();
+        console.log('👤 Usuário logado:', user.email);
+        
+        // Verificar assinatura (middleware já está carregado no HTML)
+        if (typeof window.protectPage === 'function') {
+          console.log('🔍 Chamando protectPage...');
+          const hasAccess = await window.protectPage();
+          if (!hasAccess) {
+            console.log('🚫 Acesso negado, protectPage já redirecionou');
+            return;
+          }
+          console.log('✅ Acesso permitido, carregando dados...');
+          loadData();
+          initCharts();
+        } else {
+          console.error('❌ Middleware não carregado!');
+          alert('Erro ao verificar assinatura. Recarregue a página.');
+          return;
+        }
       } else {
+        console.log('❌ Usuário não logado, redirecionando...');
         window.location.href = 'login.html';
       }
     });

@@ -24,9 +24,32 @@ document.addEventListener('DOMContentLoaded', function() {
       db = firebase.firestore();
       
       // Verificar autenticação
-      firebase.auth().onAuthStateChanged(function(user) {
+      firebase.auth().onAuthStateChanged(async function(user) {
         if (user) {
           currentUser = user;
+          
+          // Aguardar middleware carregar e verificar assinatura
+          let attempts = 0;
+          while (!window.protectPage && attempts < 50) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+          }
+          
+          if (window.protectPage) {
+            console.log('Chamando protectPage...');
+            const hasAccess = await window.protectPage();
+            if (!hasAccess) {
+              console.log('Acesso negado, redirecionando...');
+              return; // protectPage já redireciona
+            }
+            console.log('Acesso permitido, carregando dados...');
+          } else {
+            console.error('protectPage não disponível após timeout');
+            alert('Erro ao verificar assinatura. Redirecionando...');
+            window.location.href = 'pricing.html';
+            return;
+          }
+          
           carregarDados();
         } else {
           window.location.href = 'login.html';
