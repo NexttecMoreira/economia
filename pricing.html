@@ -174,7 +174,7 @@
     <div class="pricing-card">
       <div class="pricing-badge">MELHOR VALOR</div>
       <h2>Plano Mensal</h2>
-      <div class="pricing-price">R$ 5,99<span>/mês</span></div>
+      <div class="pricing-price">R$ 5,00<span>/mês</span></div>
       <div class="pricing-trial">🎉 7 dias grátis para testar</div>
 
       <ul class="pricing-features">
@@ -197,8 +197,7 @@
     </div>
 
     <div class="pricing-login-link">
-      Já tem uma conta? <a href="login.html">Fazer login</a><br>
-      <a href="index.html" style="margin-top: 0.5rem; display: inline-block;">Já sou assinante - Acessar o App</a>
+      Já tem uma conta? <a href="login.html">Fazer login</a>
     </div>
   </div>
 
@@ -228,6 +227,14 @@
         // Se não estiver logado, redirecionar para login
         window.location.href = 'login.html';
         return;
+      }
+
+      // Garantir persistência LOCAL antes de ir para o Stripe
+      try {
+        await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+        console.log('✅ Persistência LOCAL configurada');
+      } catch (error) {
+        console.error('Erro ao configurar persistência:', error);
       }
 
       subscribeBtn.disabled = true;

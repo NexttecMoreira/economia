@@ -16,6 +16,16 @@ function loadData() {
           data = doc.data() || { income: [], expense: [] };
           if (!data.income) data.income = [];
           if (!data.expense) data.expense = [];
+          
+          // Update user info in header
+          const userEmailEl = document.getElementById('user-email');
+          if (userEmailEl) {
+            if (data.name) {
+              userEmailEl.textContent = data.name;
+            } else {
+              userEmailEl.textContent = currentUser.email || 'Usuário';
+            }
+          }
         }
         updateCharts();
         updateSummary();
@@ -265,6 +275,27 @@ function updateSummary() {
     balanceEl.textContent = 'R$ ' + balance.toFixed(2);
     balanceEl.style.color = balance >= 0 ? '#10B981' : '#EF4444';
   }
+  
+  // Update variation indicators (placeholder - would need previous period data)
+  updateVariationIndicator('income-variation', 0);
+  updateVariationIndicator('expense-variation', 0);
+  updateVariationIndicator('balance-variation', 0);
+}
+
+function updateVariationIndicator(elementId, percentChange) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  
+  if (percentChange === 0) {
+    el.textContent = '—';
+    el.className = 'variation-indicator';
+  } else if (percentChange > 0) {
+    el.textContent = '+' + percentChange.toFixed(1) + '%';
+    el.className = 'variation-indicator positive';
+  } else {
+    el.textContent = percentChange.toFixed(1) + '%';
+    el.className = 'variation-indicator negative';
+  }
 }
 
 // Atualizar período selecionado
@@ -348,23 +379,90 @@ window.addEventListener('DOMContentLoaded', function() {
   
   // Botão de sair
   const btnSair = document.getElementById('resumo-btn-sair');
-  if (btnSair) {
-    btnSair.addEventListener('click', function() {
-      console.log('Botão sair clicado');
-      // Fazer logout do Firebase se estiver disponível
-      if (typeof firebase !== 'undefined' && firebase.auth) {
-        const auth = firebase.auth();
-        auth.signOut().then(function() {
-          console.log('Logout realizado com sucesso');
-          window.location.href = 'login.html';
-        }).catch(function(error) {
-          console.error('Erro ao fazer logout:', error);
-          window.location.href = 'login.html';
-        });
-      } else {
-        console.log('Firebase não disponível, apenas redirecionando');
+  const btnSairNew = document.getElementById('resumo-btn-sair-new');
+  
+  function handleLogout() {
+    console.log('Botão sair clicado');
+    // Fazer logout do Firebase se estiver disponível
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+      const auth = firebase.auth();
+      auth.signOut().then(function() {
+        console.log('Logout realizado com sucesso');
         window.location.href = 'login.html';
+      }).catch(function(error) {
+        console.error('Erro ao fazer logout:', error);
+        window.location.href = 'login.html';
+      });
+    } else {
+      console.log('Firebase não disponível, apenas redirecionando');
+      window.location.href = 'login.html';
+    }
+  }
+  
+  if (btnSair) {
+    btnSair.addEventListener('click', handleLogout);
+  }
+  
+  if (btnSairNew) {
+    btnSairNew.addEventListener('click', handleLogout);
+  }
+
+  // Botão de gerenciar assinatura
+  const btnManage = document.getElementById('manage-subscription-btn');
+  const btnManageNew = document.getElementById('manage-subscription-btn-new');
+  
+  async function handleManageSubscription() {
+    if (!currentUser) {
+      alert('Você precisa estar logado!');
+      return;
+    }
+
+    const btn = this;
+    btn.disabled = true;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = 'Carregando...';
+
+    try {
+      const functions = firebase.app().functions('southamerica-east1');
+      const createPortalSession = functions.httpsCallable('createPortalSession');
+      
+      const result = await createPortalSession({ userId: currentUser.uid });
+
+      if (result.data.url) {
+        // Redirecionar para o portal do Stripe
+        window.location.href = result.data.url;
+      } else {
+        throw new Error('URL do portal não retornada');
       }
+    } catch (error) {
+      console.error('Erro ao abrir portal:', error);
+      alert('Erro ao abrir gerenciamento de assinatura. Tente novamente.');
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+    }
+  }
+  
+  if (btnManage) {
+    btnManage.addEventListener('click', handleManageSubscription);
+  }
+  
+  if (btnManageNew) {
+    btnManageNew.addEventListener('click', handleManageSubscription);
+  }
+  
+  // Quick action buttons
+  const btnQuickIncome = document.getElementById('btn-quick-add-income');
+  const btnQuickExpense = document.getElementById('btn-quick-add-expense');
+  
+  if (btnQuickIncome) {
+    btnQuickIncome.addEventListener('click', function() {
+      window.location.href = 'ganhos.html';
+    });
+  }
+  
+  if (btnQuickExpense) {
+    btnQuickExpense.addEventListener('click', function() {
+      window.location.href = 'gastos.html';
     });
   }
 });

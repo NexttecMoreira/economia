@@ -1,206 +1,337 @@
 document.addEventListener('DOMContentLoaded', function() {
   console.log('login.js loaded');
-  console.log('🌐 User Agent:', navigator.userAgent);
-  console.log('🍪 Cookies enabled:', navigator.cookieEnabled);
 
-  // Initialize firebase app if not already (compat expects window.firebaseConfig)
   try {
     if (typeof firebase !== 'undefined' && window.firebaseConfig) {
       if (!firebase.apps || !firebase.apps.length) {
         firebase.initializeApp(window.firebaseConfig);
-        console.log('Firebase initialized in login page');
+        console.log('Firebase initialized');
       }
-    } else {
-      console.warn('Firebase or firebaseConfig missing on login page');
     }
   } catch (err) {
-    console.error('Error initializing firebase on login page', err);
+    console.error('Error initializing firebase', err);
   }
 
   const auth = (typeof firebase !== 'undefined') ? firebase.auth() : null;
-  const emailInput = document.getElementById('auth-email');
-  const passInput = document.getElementById('auth-password');
-  const msg = document.getElementById('auth-message');
-
-  function showMessage(text, isError) {
-    if (msg) {
-      msg.textContent = text;
-      msg.style.color = isError ? '#EF4444' : '#10B981';
+  
+  const tabLogin = document.getElementById('tab-login');
+  const tabSignup = document.getElementById('tab-signup');
+  const formLogin = document.getElementById('form-login');
+  const formSignup = document.getElementById('form-signup');
+  
+  if (tabLogin && tabSignup && formLogin && formSignup) {
+    tabLogin.addEventListener('click', function() {
+      tabLogin.classList.add('active');
+      tabSignup.classList.remove('active');
+      formLogin.style.display = 'flex';
+      formSignup.style.display = 'none';
+    });
+    
+    tabSignup.addEventListener('click', function() {
+      tabSignup.classList.add('active');
+      tabLogin.classList.remove('active');
+      formSignup.style.display = 'flex';
+      formLogin.style.display = 'none';
+    });
+  }
+  
+  const loginEmailInput = document.getElementById('login-email');
+  const loginPasswordInput = document.getElementById('login-password');
+  const loginEmailValidation = document.getElementById('login-email-validation');
+  const loginPasswordValidation = document.getElementById('login-password-validation');
+  const loginMessage = document.getElementById('login-message');
+  const btnLogin = document.getElementById('btn-login');
+  const toggleLoginPassword = document.getElementById('toggle-login-password');
+  
+  const signupNameInput = document.getElementById('signup-name');
+  const signupPhoneInput = document.getElementById('signup-phone');
+  const signupEmailInput = document.getElementById('signup-email');
+  const signupPasswordInput = document.getElementById('signup-password');
+  const signupNameValidation = document.getElementById('signup-name-validation');
+  const signupPhoneValidation = document.getElementById('signup-phone-validation');
+  const signupEmailValidation = document.getElementById('signup-email-validation');
+  const signupPasswordValidation = document.getElementById('signup-password-validation');
+  const signupMessage = document.getElementById('signup-message');
+  const btnSignup = document.getElementById('btn-signup');
+  const toggleSignupPassword = document.getElementById('toggle-signup-password');
+  
+  if (toggleLoginPassword && loginPasswordInput) {
+    toggleLoginPassword.addEventListener('click', function() {
+      const type = loginPasswordInput.type === 'password' ? 'text' : 'password';
+      loginPasswordInput.type = type;
+      
+      const eyeOpen = toggleLoginPassword.querySelector('.eye-open');
+      const eyeClosed = toggleLoginPassword.querySelector('.eye-closed');
+      
+      if (type === 'password') {
+        eyeOpen.style.display = 'block';
+        eyeClosed.style.display = 'none';
+      } else {
+        eyeOpen.style.display = 'none';
+        eyeClosed.style.display = 'block';
+      }
+    });
+  }
+  
+  if (toggleSignupPassword && signupPasswordInput) {
+    toggleSignupPassword.addEventListener('click', function() {
+      const type = signupPasswordInput.type === 'password' ? 'text' : 'password';
+      signupPasswordInput.type = type;
+      
+      const eyeOpen = toggleSignupPassword.querySelector('.eye-open');
+      const eyeClosed = toggleSignupPassword.querySelector('.eye-closed');
+      
+      if (type === 'password') {
+        eyeOpen.style.display = 'block';
+        eyeClosed.style.display = 'none';
+      } else {
+        eyeOpen.style.display = 'none';
+        eyeClosed.style.display = 'block';
+      }
+    });
+  }
+  
+  function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+  
+  function validatePhone(phone) {
+    return /^\(?[0-9]{2}\)?\s?[0-9]{4,5}-?[0-9]{4}$/.test(phone);
+  }
+  
+  function showValidation(element, validationElement, isValid, validMessage, invalidMessage) {
+    if (!element || !validationElement) return;
+    
+    if (isValid) {
+      element.classList.remove('invalid');
+      element.classList.add('valid');
+      validationElement.innerHTML = '<span style="font-size: 1rem;">✓</span> ' + validMessage;
+      validationElement.className = 'input-validation valid';
+    } else {
+      element.classList.remove('valid');
+      element.classList.add('invalid');
+      validationElement.innerHTML = '<span style="font-size: 1rem;">⚠</span> ' + invalidMessage;
+      validationElement.className = 'input-validation invalid';
+    }
+  }
+  
+  function clearValidation(element, validationElement) {
+    if (!element || !validationElement) return;
+    element.classList.remove('valid', 'invalid');
+    validationElement.textContent = '';
+    validationElement.className = 'input-validation';
+  }
+  
+  if (loginEmailInput) {
+    loginEmailInput.addEventListener('input', function() {
+      const email = loginEmailInput.value.trim();
+      if (email === '') {
+        clearValidation(loginEmailInput, loginEmailValidation);
+      } else if (validateEmail(email)) {
+        showValidation(loginEmailInput, loginEmailValidation, true, 'E-mail válido', '');
+      } else {
+        showValidation(loginEmailInput, loginEmailValidation, false, '', 'Formato de e-mail inválido');
+      }
+    });
+  }
+  
+  if (loginPasswordInput) {
+    loginPasswordInput.addEventListener('input', function() {
+      const password = loginPasswordInput.value;
+      if (password === '') {
+        clearValidation(loginPasswordInput, loginPasswordValidation);
+      } else if (password.length >= 6) {
+        showValidation(loginPasswordInput, loginPasswordValidation, true, 'Senha válida', '');
+      } else {
+        showValidation(loginPasswordInput, loginPasswordValidation, false, '', 'Mínimo 6 caracteres');
+      }
+    });
+  }
+  
+  if (signupNameInput) {
+    signupNameInput.addEventListener('input', function() {
+      const name = signupNameInput.value.trim();
+      if (name === '') {
+        clearValidation(signupNameInput, signupNameValidation);
+      } else if (name.length >= 3) {
+        showValidation(signupNameInput, signupNameValidation, true, 'Nome válido', '');
+      } else {
+        showValidation(signupNameInput, signupNameValidation, false, '', 'Nome muito curto');
+      }
+    });
+  }
+  
+  if (signupPhoneInput) {
+    signupPhoneInput.addEventListener('input', function() {
+      let phone = signupPhoneInput.value.replace(/\D/g, '');
+      if (phone.length > 11) phone = phone.slice(0, 11);
+      
+      if (phone.length >= 11) {
+        phone = phone.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+      } else if (phone.length >= 10) {
+        phone = phone.replace(/^(\d{2})(\d{4})(\d{4})$/, '($1) $2-$3');
+      } else if (phone.length >= 6) {
+        phone = phone.replace(/^(\d{2})(\d{4})/, '($1) $2');
+      } else if (phone.length >= 2) {
+        phone = phone.replace(/^(\d{2})/, '($1) ');
+      }
+      
+      signupPhoneInput.value = phone;
+      
+      if (phone === '') {
+        clearValidation(signupPhoneInput, signupPhoneValidation);
+      } else if (validatePhone(phone)) {
+        showValidation(signupPhoneInput, signupPhoneValidation, true, 'Telefone válido', '');
+      } else {
+        showValidation(signupPhoneInput, signupPhoneValidation, false, '', 'Telefone inválido');
+      }
+    });
+  }
+  
+  if (signupEmailInput) {
+    signupEmailInput.addEventListener('input', function() {
+      const email = signupEmailInput.value.trim();
+      if (email === '') {
+        clearValidation(signupEmailInput, signupEmailValidation);
+      } else if (validateEmail(email)) {
+        showValidation(signupEmailInput, signupEmailValidation, true, 'E-mail válido', '');
+      } else {
+        showValidation(signupEmailInput, signupEmailValidation, false, '', 'Formato de e-mail inválido');
+      }
+    });
+  }
+  
+  if (signupPasswordInput) {
+    signupPasswordInput.addEventListener('input', function() {
+      const password = signupPasswordInput.value;
+      if (password === '') {
+        clearValidation(signupPasswordInput, signupPasswordValidation);
+      } else if (password.length >= 6) {
+        showValidation(signupPasswordInput, signupPasswordValidation, true, 'Senha forte e segura', '');
+      } else {
+        showValidation(signupPasswordInput, signupPasswordValidation, false, '', 'Precisa ter pelo menos 6 caracteres');
+      }
+    });
+  }
+  
+  function showMessage(messageElement, text, isError) {
+    if (messageElement) {
+      messageElement.className = 'auth-message';
+      
+      if (isError) {
+        messageElement.style.background = 'rgba(239, 68, 68, 0.1)';
+        messageElement.style.color = '#EF4444';
+        messageElement.style.borderLeft = '3px solid #EF4444';
+        messageElement.innerHTML = '<span style="font-size: 1.2rem;">⚠️</span> ' + text;
+      } else {
+        messageElement.style.background = 'rgba(16, 185, 129, 0.1)';
+        messageElement.style.color = '#10B981';
+        messageElement.style.borderLeft = '3px solid #10B981';
+        messageElement.innerHTML = '<span style="font-size: 1.2rem;">✓</span> ' + text;
+      }
+    }
+  }
+  
+  function setButtonLoading(button, isLoading) {
+    if (isLoading) {
+      button.classList.add('loading');
+      button.disabled = true;
+    } else {
+      button.classList.remove('loading');
+      button.disabled = false;
     }
   }
 
-  document.getElementById('btn-login').addEventListener('click', async function() {
-    const email = emailInput.value.trim();
-    const password = passInput.value.trim();
-    console.log('=== INÍCIO LOGIN ===');
-    console.log('Email:', email);
-    
-    if (!email || !password) return showMessage('Preencha email e senha', true);
-    if (!auth) {
-      console.error('Auth não disponível');
-      return showMessage('Serviço de autenticação indisponível', true);
-    }
-    
-    try {
-      showMessage('Entrando...', false);
-      console.log('1. Definindo persistência e chamando signInWithEmailAndPassword...');
-
-      // Forçar persistência local (important for Safari/3rd-party cookie issues)
+  if (btnLogin) {
+    btnLogin.addEventListener('click', async function() {
+      const email = loginEmailInput.value.trim();
+      const password = loginPasswordInput.value.trim();
+      
+      if (!email || !password) return showMessage(loginMessage, 'Preencha email e senha', true);
+      if (!auth) return showMessage(loginMessage, 'Serviço indisponível', true);
+      
+      setButtonLoading(btnLogin, true);
+      
       try {
+        showMessage(loginMessage, 'Entrando...', false);
         await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-        console.log('Auth persistence set to LOCAL');
-      } catch (pErr) {
-        console.warn('Falha ao definir persistência (continuando):', pErr);
-      }
-
-      const userCredential = await auth.signInWithEmailAndPassword(email, password);
-      console.log('2. Login bem-sucedido!', userCredential.user.uid);
-      // Force token refresh to ensure session is fully established before redirect
-      try {
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
         await userCredential.user.getIdToken(true);
-        console.log('ID token refreshed after sign-in');
-      } catch (tErr) {
-        console.warn('Falha ao refresh token (continuando):', tErr);
-      }
-      
-      showMessage('Verificando assinatura...', false);
-      console.log('3. Verificando assinatura...');
-      
-      // Limpar cache de assinatura antes de verificar
-      if (window.clearSubscriptionCache) {
-        window.clearSubscriptionCache();
-      }
-      
-      // Verificar assinatura antes de redirecionar
-      try {
+        
+        showMessage(loginMessage, 'Verificando assinatura...', false);
+        
+        if (window.clearSubscriptionCache) window.clearSubscriptionCache();
+        
         const functions = firebase.app().functions('southamerica-east1');
         const checkSubscription = functions.httpsCallable('checkSubscription');
-        console.log('4. Chamando checkSubscription...');
-        
         const result = await checkSubscription({ userId: userCredential.user.uid });
-        console.log('5. Resultado da verificação:', result.data);
         
         if (result.data.hasAccess) {
-          // Tem assinatura ativa - ir para o app
-          console.log('6. Acesso PERMITIDO - indo para index.html');
-          showMessage('Bem-vindo! Redirecionando...', false);
-          
-          // Aguardar um pouco mais para garantir que o Firebase Auth está sincronizado
+          showMessage(loginMessage, 'Bem-vindo! Redirecionando...', false);
           await new Promise(resolve => setTimeout(resolve, 1000));
-          
-          console.log('7. Executando window.location.href = index.html');
-          console.log('7a. Location atual antes do redirect:', window.location.href);
-          
-          // Safari: usar replace ao invés de href para evitar que volte para login
           window.location.replace('index.html');
-          
-          console.log('7b. Replace executado (se você vê isso, o redirect falhou)');
         } else {
-          // Não tem assinatura - ir para pricing
-          console.log('6. Acesso NEGADO - indo para pricing.html');
-          showMessage('Complete sua assinatura...', false);
-          setTimeout(() => { 
-            window.location.replace('pricing.html'); 
-          }, 600);
+          showMessage(loginMessage, 'Complete sua assinatura...', false);
+          setTimeout(() => window.location.replace('pricing.html'), 600);
         }
       } catch (err) {
-        console.error('Erro ao verificar assinatura:', err);
-        // Se der erro na verificação, mandar para pricing por segurança
-        showMessage('Redirecionando...', false);
-        setTimeout(() => { window.location.replace('pricing.html'); }, 600);
+        let errorMsg = 'Não foi possível fazer login. Tente novamente.';
+        if (err.code === 'auth/user-not-found') errorMsg = 'Usuário não encontrado. Crie sua conta!';
+        else if (err.code === 'auth/wrong-password') errorMsg = 'Senha incorreta.';
+        else if (err.code === 'auth/invalid-login-credentials') errorMsg = 'E-mail ou senha incorretos.';
+        else if (err.code === 'auth/too-many-requests') errorMsg = 'Muitas tentativas. Aguarde alguns minutos.';
+        
+        showMessage(loginMessage, errorMsg, true);
+        setButtonLoading(btnLogin, false);
       }
-    } catch (err) {
-      console.error('login error', err);
-      let errorMsg = 'Erro ao entrar: ';
-      if (err.code === 'auth/user-not-found') {
-        errorMsg = 'E-mail não encontrado. Faça seu cadastro primeiro.';
-      } else if (err.code === 'auth/wrong-password') {
-        errorMsg = 'Senha incorreta. Tente novamente ou clique em "Esqueci minha senha".';
-      } else if (err.code === 'auth/invalid-email') {
-        errorMsg = 'E-mail inválido.';
-      } else if (err.code === 'auth/too-many-requests') {
-        errorMsg = 'Muitas tentativas. Aguarde alguns minutos.';
-      } else {
-        errorMsg += (err.message || err);
-      }
-      showMessage(errorMsg, true);
-    }
-  });
+    });
+  }
 
-  document.getElementById('btn-signup').addEventListener('click', async function() {
-    const email = emailInput.value.trim();
-    const password = passInput.value.trim();
-    if (!email || !password) return showMessage('Preencha email e senha', true);
-    if (!auth) return showMessage('Serviço de autenticação indisponível', true);
-    try {
-      showMessage('Cadastrando...', false);
-      console.log('signup attempt', email);
-      const res = await auth.createUserWithEmailAndPassword(email, password);
-      console.log('signup success', res && res.user && res.user.uid);
+  if (btnSignup) {
+    btnSignup.addEventListener('click', async function() {
+      const name = signupNameInput.value.trim();
+      const phone = signupPhoneInput.value.trim();
+      const email = signupEmailInput.value.trim();
+      const password = signupPasswordInput.value.trim();
       
-      // Criar documento inicial no Firestore para o novo usuário
-      if (res && res.user && firebase.firestore) {
-        const db = firebase.firestore();
-        const dadosIniciais = {
-          income: [],
-          expense: [],
-          createdAt: new Date().toISOString(),
-          email: email
-        };
-        
-        await db.collection('users').doc(res.user.uid).set(dadosIniciais);
-        console.log('Documento inicial criado no Firestore para', res.user.uid);
-      }
+      if (!name) return showMessage(signupMessage, 'Preencha seu nome', true);
+      if (name.length < 3) return showMessage(signupMessage, 'Nome deve ter pelo menos 3 caracteres', true);
+      if (!phone) return showMessage(signupMessage, 'Preencha seu telefone', true);
+      if (!validatePhone(phone)) return showMessage(signupMessage, 'Telefone inválido', true);
+      if (!email || !password) return showMessage(signupMessage, 'Preencha email e senha', true);
+      if (!validateEmail(email)) return showMessage(signupMessage, 'E-mail inválido', true);
+      if (password.length < 6) return showMessage(signupMessage, 'Senha deve ter pelo menos 6 caracteres', true);
+      if (!auth) return showMessage(signupMessage, 'Serviço indisponível', true);
       
-      // Novo usuário sempre vai para pricing
-      showMessage('Cadastro realizado! Escolha seu plano...', false);
-      setTimeout(() => { window.location.replace('pricing.html'); }, 600);
-    } catch (err) {
-      console.error('signup error', err);
-      let errorMsg = 'Erro ao cadastrar: ';
-      if (err.code === 'auth/email-already-in-use') {
-        errorMsg = 'Este e-mail já está cadastrado. Use "Entrar" ou clique em "Esqueci minha senha".';
-      } else if (err.code === 'auth/weak-password') {
-        errorMsg = 'Senha muito fraca. Use no mínimo 6 caracteres.';
-      } else if (err.code === 'auth/invalid-email') {
-        errorMsg = 'E-mail inválido.';
-      } else {
-        errorMsg += (err.message || err);
-      }
-      showMessage(errorMsg, true);
-    }
-  });
-
-  // Se já está logado ao carregar a página, verificar assinatura e redirecionar
-  if (auth) {
-    auth.onAuthStateChanged(async user => {
-      if (user) {
-        console.log('User already logged in:', user.uid);
-        console.log('Safari/onAuthStateChanged: Verificando se deve redirecionar...');
+      setButtonLoading(btnSignup, true);
+      
+      try {
+        showMessage(signupMessage, 'Cadastrando...', false);
+        await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+        const res = await auth.createUserWithEmailAndPassword(email, password);
         
-        // Só redirecionar se não houver atividade de login em curso
-        // (evitar conflito com o botão de login)
-        const isLoginInProgress = emailInput.value.trim() !== '' && passInput.value.trim() !== '';
-        
-        if (!isLoginInProgress) {
-          console.log('Safari/onAuthStateChanged: Usuário já autenticado, verificando assinatura...');
-          
-          try {
-            const functions = firebase.app().functions('southamerica-east1');
-            const checkSubscription = functions.httpsCallable('checkSubscription');
-            const result = await checkSubscription({ userId: user.uid });
-            
-            console.log('Safari/onAuthStateChanged: Resultado verificação:', result.data);
-            
-            if (result.data.hasAccess) {
-              console.log('Safari/onAuthStateChanged: Tem acesso, redirecionando para index.html');
-              window.location.replace('index.html');
-            }
-            // Se não tem acesso, deixa na página de login para escolher plano
-          } catch (err) {
-            console.error('Safari/onAuthStateChanged: Erro ao verificar assinatura:', err);
-          }
+        if (res && res.user && firebase.firestore) {
+          const db = firebase.firestore();
+          await db.collection('users').doc(res.user.uid).set({
+            name: name,
+            phone: phone,
+            email: email,
+            income: [],
+            expense: [],
+            createdAt: new Date().toISOString()
+          });
         }
+        
+        showMessage(signupMessage, 'Conta criada com sucesso! Escolha seu plano...', false);
+        setTimeout(() => window.location.replace('pricing.html'), 600);
+      } catch (err) {
+        let errorMsg = 'Não foi possível criar sua conta. Tente novamente.';
+        if (err.code === 'auth/email-already-in-use') errorMsg = 'E-mail já cadastrado. Use a aba "Entrar".';
+        else if (err.code === 'auth/weak-password') errorMsg = 'Senha precisa ter pelo menos 6 caracteres.';
+        else if (err.code === 'auth/invalid-email') errorMsg = 'Formato do e-mail está incorreto.';
+        
+        showMessage(signupMessage, errorMsg, true);
+        setButtonLoading(btnSignup, false);
       }
     });
   }

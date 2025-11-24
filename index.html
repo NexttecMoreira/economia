@@ -15,12 +15,62 @@
 </head>
 <body class="resumo-bg">
   <div class="resumo-container">
-    <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 1rem;">
-      <button id="resumo-btn-sair" class="resumo-btn-voltar"> ← Sair</button>
+    <!-- User Info Header -->
+    <div class="user-info-header">
+      <div class="user-info">
+        <div class="user-avatar">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </div>
+        <div class="user-details">
+          <span id="user-email" class="user-email">Carregando...</span>
+          <span id="user-subscription" class="user-subscription">
+            <span class="subscription-badge">Premium Ativo</span>
+          </span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="manage-subscription-btn-new" class="btn-header-action" title="Gerenciar Assinatura">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M12 1v6m0 6v6m5.2-13.2l-4.2 4.2m0 6l4.2 4.2m6-12h-6m-6 0H1m13.2 5.2l-4.2-4.2m0 0L5.8 18.8"></path>
+          </svg>
+        </button>
+        <button id="resumo-btn-sair-new" class="btn-header-action btn-logout" title="Sair">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4m7 14l5-5-5-5m5 5H9"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div style="display: none; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 1rem;">
+      <button id="resumo-btn-sair" class="resumo-btn-voltar">← Sair</button>
+      <button id="manage-subscription-btn" class="resumo-btn-gerenciar">⚙️ Gerenciar Assinatura</button>
     </div>
     <header class="resumo-header">
       <h1 class="resumo-titulo">Resumo Financeiro</h1>
       <p class="resumo-subtitulo">Visão geral dos seus ganhos e gastos</p>
+      
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <button id="btn-quick-add-income" class="btn-quick-action btn-quick-income">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Adicionar Ganho
+        </button>
+        <button id="btn-quick-add-expense" class="btn-quick-action btn-quick-expense">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Adicionar Gasto
+        </button>
+      </div>
+      
       <div class="resumo-periodo">
         <button id="btn-periodo-dia" class="resumo-btn-periodo ativo">Dia</button>
         <button id="btn-periodo-mes" class="resumo-btn-periodo">Mês</button>
@@ -31,16 +81,37 @@
 
     <section class="resumo-totais">
       <div class="resumo-card-ganhos">
+        <div class="card-icon card-icon-income">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"></line>
+            <polyline points="17 6 12 1 7 6"></polyline>
+          </svg>
+        </div>
         <h3 class="resumo-label-ganhos">Total Ganhos</h3>
         <p id="resumo-total-ganhos" class="resumo-valor-ganhos">R$ 0,00</p>
+        <span id="income-variation" class="variation-indicator">—</span>
       </div>
       <div class="resumo-card-gastos">
+        <div class="card-icon card-icon-expense">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"></line>
+            <polyline points="7 18 12 23 17 18"></polyline>
+          </svg>
+        </div>
         <h3 class="resumo-label-gastos">Total Gastos</h3>
         <p id="resumo-total-gastos" class="resumo-valor-gastos">R$ 0,00</p>
+        <span id="expense-variation" class="variation-indicator">—</span>
       </div>
       <div class="resumo-card-saldo">
+        <div class="card-icon card-icon-balance">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+            <line x1="1" y1="10" x2="23" y2="10"></line>
+          </svg>
+        </div>
         <h3 class="resumo-label-saldo">Saldo</h3>
         <p id="resumo-total-saldo" class="resumo-valor-saldo">R$ 0,00</p>
+        <span id="balance-variation" class="variation-indicator">—</span>
       </div>
     </section>
 

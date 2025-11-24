@@ -4,11 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Login - NextFlow</title>
-  <link rel="stylesheet" href="login.css">
-  <link rel="stylesheet" href="style.css">
-  <meta http-equiv="Cache-control" content="no-cache">
+  <meta name="description" content="Entre no NextFlow - Controle suas finanças pessoais de forma simples e eficiente">
+  <meta property="og:title" content="Login - NextFlow">
+  <meta property="og:description" content="Gerencie suas finanças pessoais com facilidade">
+  <link rel="stylesheet" href="login.css?v=2">
+  <link rel="stylesheet" href="style.css?v=2">
+  <meta http-equiv="Cache-control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <!-- Firebase config and compat SDKs -->
-  <script src="firebase-config.js" defer></script>
+  <script src="firebase-config.js?v=2" defer></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js" defer></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js" defer></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js" defer></script>
@@ -16,24 +21,121 @@
 </head>
 <body class="auth-page">
   <div class="auth-container">
-    <h1>Entrar no NextFlow</h1>
-    <div class="auth-box">
-      <input id="auth-email" type="email" placeholder="E-mail" class="input">
-      <input id="auth-password" type="password" placeholder="Senha" class="input">
-      <div class="auth-actions">
-        <button id="btn-login" type="button" class="btn btn--primary">Entrar</button>
-        <button id="btn-signup" type="button" class="btn">Cadastrar</button>
+    <!-- Logo e Branding -->
+    <div class="auth-logo">
+      <!-- ADICIONE SUA LOGO AQUI -->
+      <!-- <img src="logo.png" alt="NextFlow Logo" class="logo-image"> -->
+      <h1 class="brand-title">NextFlow</h1>
+      <p class="brand-tagline">Controle suas finanças</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button id="tab-login" class="auth-tab active">Entrar</button>
+      <button id="tab-signup" class="auth-tab">Cadastrar</button>
+    </div>
+
+    <!-- Login Form -->
+    <div id="form-login" class="auth-box">
+      <div class="input-group">
+        <label for="login-email">E-mail</label>
+        <input id="login-email" type="email" placeholder="seu@email.com" class="input" required autocomplete="email">
+        <span class="input-validation" id="login-email-validation"></span>
       </div>
-      <div id="auth-message" class="auth-message" role="status" aria-live="polite"></div>
+
+      <div class="input-group">
+        <label for="login-password">Senha</label>
+        <div class="password-wrapper">
+          <input id="login-password" type="password" placeholder="Mínimo 6 caracteres" class="input" required autocomplete="current-password">
+          <button type="button" id="toggle-login-password" class="toggle-password" aria-label="Mostrar senha">
+            <svg class="eye-icon eye-open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <svg class="eye-icon eye-closed" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+              <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+          </button>
+        </div>
+        <span class="input-validation" id="login-password-validation"></span>
+      </div>
+
+      <button id="btn-login" type="button" class="btn btn--primary">
+        <span class="btn-text">Entrar</span>
+        <span class="btn-loading">●</span>
+      </button>
+      
+      <div id="login-message" class="auth-message" role="status" aria-live="polite"></div>
+    </div>
+
+    <!-- Signup Form -->
+    <div id="form-signup" class="auth-box" style="display: none;">
+      <div class="input-group">
+        <label for="signup-name">Nome Completo</label>
+        <input id="signup-name" type="text" placeholder="Seu nome completo" class="input" required autocomplete="name">
+        <span class="input-validation" id="signup-name-validation"></span>
+      </div>
+
+      <div class="input-group">
+        <label for="signup-phone">Telefone</label>
+        <input id="signup-phone" type="tel" placeholder="(00) 00000-0000" class="input" required autocomplete="tel">
+        <span class="input-validation" id="signup-phone-validation"></span>
+      </div>
+
+      <div class="input-group">
+        <label for="signup-email">E-mail</label>
+        <input id="signup-email" type="email" placeholder="seu@email.com" class="input" required autocomplete="email">
+        <span class="input-validation" id="signup-email-validation"></span>
+      </div>
+
+      <div class="input-group">
+        <label for="signup-password">Senha</label>
+        <div class="password-wrapper">
+          <input id="signup-password" type="password" placeholder="Mínimo 6 caracteres" class="input" required autocomplete="new-password">
+          <button type="button" id="toggle-signup-password" class="toggle-password" aria-label="Mostrar senha">
+            <svg class="eye-icon eye-open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <svg class="eye-icon eye-closed" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+              <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+          </button>
+        </div>
+        <span class="input-validation" id="signup-password-validation"></span>
+      </div>
+
+      <button id="btn-signup" type="button" class="btn btn--primary">
+        <span class="btn-text">Cadastrar</span>
+        <span class="btn-loading">●</span>
+      </button>
+      
+      <div id="signup-message" class="auth-message" role="status" aria-live="polite"></div>
+    </div>
+
+    <div class="divider">
+      <span>OU</span>
     </div>
     
-    <div style="text-align: center; margin-top: 2rem;">
-      <a href="pricing.html" style="display: inline-block; background: linear-gradient(135deg, #E57C23 0%, #D97320 100%); color: white; padding: 1rem 2rem; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(229, 124, 35, 0.4); transition: all 0.3s ease;">
-        ⭐ Ver Planos Premium - 7 dias grátis
+    <div style="text-align: center;">
+      <a href="pricing.html" class="btn-premium">
+        Ver Planos Premium - 7 dias grátis
+      </a>
+    </div>
+
+    <p class="privacy-text">
+      <span class="lock-icon">🔒</span> Seus dados estão seguros e criptografados
+    </p>
+
+    <div style="text-align: center; margin-top: 1rem;">
+      <a href="https://nexttecmoreira.github.io/Nexttec/" target="_blank" rel="noopener noreferrer" class="btn-support">
+        Suporte
       </a>
     </div>
   </div>
 
-  <script src="login.js" defer></script>
+  <script src="login.js?v=2" defer></script>
 </body>
 </html>

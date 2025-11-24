@@ -213,9 +213,19 @@
     // Verificar autenticação e aguardar assinatura
     auth.onAuthStateChanged(async user => {
       if (!user) {
-        showStatus('Você precisa estar logado. Redirecionando...', 'warning');
-        setTimeout(() => window.location.href = 'login.html', 2000);
-        return;
+        // Aguardar um pouco para garantir que o Firebase Auth carregou
+        console.log('⏳ Aguardando Firebase Auth carregar completamente...');
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Verificar novamente
+        const currentUser = firebase.auth().currentUser;
+        if (!currentUser) {
+          console.log('❌ Nenhum usuário logado após espera');
+          showStatus('Você precisa estar logado. Redirecionando...', 'warning');
+          setTimeout(() => window.location.href = 'login.html', 2000);
+          return;
+        }
+        user = currentUser;
       }
       
       console.log('👤 Usuário logado:', user.email);
