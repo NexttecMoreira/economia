@@ -337,6 +337,16 @@ window.addEventListener('DOMContentLoaded', function() {
         currentUser = user;
         console.log('👤 Usuário logado:', user.email);
         
+        // Mostrar/ocultar botão admin baseado no email
+        const btnAdmin = document.getElementById('admin-btn');
+        if (btnAdmin) {
+          if (user.email === 'rensouzajunior@gmail.com') {
+            btnAdmin.style.display = 'flex';
+          } else {
+            btnAdmin.style.display = 'none';
+          }
+        }
+        
         // Verificar assinatura (middleware já está carregado no HTML)
         if (typeof window.protectPage === 'function') {
           console.log('🔍 Chamando protectPage...');
