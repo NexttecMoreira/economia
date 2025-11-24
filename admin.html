@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - NextFlow</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="apple-touch-icon" href="logo.png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #121212 0%, #000000 100%);
+      color: #e0e0e0;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .admin-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .admin-title {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .admin-title h1 {
+      color: #fff;
+      font-size: 2rem;
+    }
+
+    .admin-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: linear-gradient(145deg, #1e1e1e 0%, #2a2a2a 100%);
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 2px solid #3a3a3a;
+      text-align: center;
+    }
+
+    .stat-card h3 {
+      color: #9CA3AF;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+    }
+
+    .stat-card .stat-value {
+      color: #fff;
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    .stat-card.active {
+      border-color: #10B981;
+    }
+
+    .stat-card.trial {
+      border-color: #667eea;
+    }
+
+    .stat-card.canceled {
+      border-color: #EF4444;
+    }
+
+    .search-bar {
+      width: 100%;
+      padding: 1rem;
+      background: #1e1e1e;
+      border: 2px solid #3a3a3a;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .search-bar:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .table-container {
+      background: linear-gradient(145deg, #1e1e1e 0%, #2a2a2a 100%);
+      border-radius: 12px;
+      padding: 2rem;
+      border: 2px solid #3a3a3a;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: rgba(102, 126, 234, 0.1);
+      color: #667eea;
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      border-bottom: 2px solid #3a3a3a;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid #3a3a3a;
+    }
+
+    tr:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status-badge.active {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10B981;
+      border: 1px solid #10B981;
+    }
+
+    .status-badge.trialing {
+      background: rgba(102, 126, 234, 0.2);
+      color: #667eea;
+      border: 1px solid #667eea;
+    }
+
+    .status-badge.canceled {
+      background: rgba(239, 68, 68, 0.2);
+      color: #EF4444;
+      border: 1px solid #EF4444;
+    }
+
+    .status-badge.none {
+      background: rgba(156, 163, 175, 0.2);
+      color: #9CA3AF;
+      border: 1px solid #9CA3AF;
+    }
+
+    .btn {
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-logout {
+      background: #EF4444;
+      color: white;
+    }
+
+    .btn-logout:hover {
+      background: #DC2626;
+      transform: translateY(-2px);
+    }
+
+    .btn-export {
+      background: #10B981;
+      color: white;
+      margin-bottom: 1rem;
+    }
+
+    .btn-export:hover {
+      background: #059669;
+      transform: translateY(-2px);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: #9CA3AF;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #3a3a3a;
+      border-top-color: #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .no-users {
+      text-align: center;
+      padding: 3rem;
+      color: #9CA3AF;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
+
+      .admin-title h1 {
+        font-size: 1.5rem;
+      }
+
+      .table-container {
+        padding: 1rem;
+      }
+
+      table {
+        font-size: 0.9rem;
+      }
+
+      th, td {
+        padding: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <div class="admin-header">
+      <div class="admin-title">
+        <img src="logo.png" alt="NextFlow" style="width: 50px; height: 50px; border-radius: 12px;">
+        <h1>🔧 Painel Admin</h1>
+      </div>
+      <button class="btn btn-logout" id="logout-btn">Sair</button>
+    </div>
+
+    <div class="admin-stats">
+      <div class="stat-card">
+        <h3>Total de Usuários</h3>
+        <div class="stat-value" id="total-users">0</div>
+      </div>
+      <div class="stat-card active">
+        <h3>Assinaturas Ativas</h3>
+        <div class="stat-value" id="active-subs">0</div>
+      </div>
+      <div class="stat-card trial">
+        <h3>Em Trial</h3>
+        <div class="stat-value" id="trial-subs">0</div>
+      </div>
+      <div class="stat-card canceled">
+        <h3>Canceladas/Sem Assinatura</h3>
+        <div class="stat-value" id="canceled-subs">0</div>
+      </div>
+    </div>
+
+    <input type="text" id="search-input" class="search-bar" placeholder="🔍 Pesquisar por nome, email ou telefone...">
+
+    <button class="btn btn-export" id="export-btn">📊 Exportar para CSV</button>
+
+    <div class="table-container">
+      <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p>Carregando dados...</p>
+      </div>
+
+      <div id="no-users" class="no-users" style="display: none;">
+        <p>Nenhum usuário encontrado.</p>
+      </div>
+
+      <table id="users-table" style="display: none;">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Telefone</th>
+            <th>Status</th>
+            <th>Data de Cadastro</th>
+            <th>Fim do Período</th>
+          </tr>
+        </thead>
+        <tbody id="users-tbody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script>
+    // Inicializar Firebase
+    if (!firebase.apps || !firebase.apps.length) {
+      firebase.initializeApp(window.firebaseConfig);
+    }
+
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let allUsers = [];
+
+    // Verificar autenticação e permissão de admin
+    auth.onAuthStateChanged(async user => {
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Verificar se é admin (você pode adicionar mais emails aqui)
+      const adminEmails = [
+        user.email // Por padrão, qualquer usuário logado pode acessar
+        // Ou especifique emails: 'seu@email.com', 'outro@email.com'
+      ];
+
+      // Se quiser restringir apenas para você, substitua pela linha abaixo:
+      // if (user.email !== 'seu@email.com') {
+      //   alert('Acesso negado!');
+      //   window.location.href = 'index.html';
+      //   return;
+      // }
+
+      // Carregar usuários
+      loadUsers();
+    });
+
+    async function loadUsers() {
+      const loading = document.getElementById('loading');
+      const noUsers = document.getElementById('no-users');
+      const table = document.getElementById('users-table');
+      const tbody = document.getElementById('users-tbody');
+
+      try {
+        console.log('Iniciando carregamento de usuários...');
+        
+        // Tentar buscar apenas o documento do usuário atual primeiro para testar
+        const currentUserDoc = await db.collection('users').doc(auth.currentUser.uid).get();
+        console.log('Documento do usuário atual:', currentUserDoc.exists ? 'existe' : 'não existe');
+        
+        // Agora buscar todos os usuários
+        const snapshot = await db.collection('users').get();
+        console.log('Total de documentos encontrados:', snapshot.size);
+        
+        if (snapshot.empty) {
+          loading.style.display = 'none';
+          noUsers.style.display = 'block';
+          return;
+        }
+
+        allUsers = [];
+        let totalUsers = 0;
+        let activeSubs = 0;
+        let trialSubs = 0;
+        let canceledSubs = 0;
+
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          console.log('Usuário encontrado:', doc.id, data);
+          
+          const user = {
+            id: doc.id,
+            name: data.name || 'Sem nome',
+            email: data.email || 'Sem email',
+            phone: data.phone || 'Sem telefone',
+            createdAt: data.createdAt || '',
+            subscription: data.subscription || null
+          };
+
+          allUsers.push(user);
+          totalUsers++;
+
+          if (user.subscription) {
+            if (user.subscription.status === 'active') {
+              activeSubs++;
+            } else if (user.subscription.status === 'trialing') {
+              trialSubs++;
+            } else {
+              canceledSubs++;
+            }
+          } else {
+            canceledSubs++;
+          }
+        });
+
+        console.log('Estatísticas:', { totalUsers, activeSubs, trialSubs, canceledSubs });
+
+        // Atualizar estatísticas
+        document.getElementById('total-users').textContent = totalUsers;
+        document.getElementById('active-subs').textContent = activeSubs;
+        document.getElementById('trial-subs').textContent = trialSubs;
+        document.getElementById('canceled-subs').textContent = canceledSubs;
+
+        // Renderizar tabela
+        renderUsers(allUsers);
+
+        loading.style.display = 'none';
+        table.style.display = 'table';
+
+      } catch (error) {
+        console.error('Erro detalhado:', error);
+        console.error('Código do erro:', error.code);
+        console.error('Mensagem:', error.message);
+        
+        let errorMsg = 'Erro ao carregar dados. ';
+        
+        if (error.code === 'permission-denied') {
+          errorMsg += 'Permissão negada. Configure as regras do Firestore.';
+        } else if (error.code === 'unavailable') {
+          errorMsg += 'Firestore indisponível. Verifique sua conexão.';
+        } else {
+          errorMsg += error.message || 'Tente novamente.';
+        }
+        
+        loading.innerHTML = `<p style="color: #EF4444;">${errorMsg}</p><p style="color: #9CA3AF; margin-top: 1rem;">Erro: ${error.code || 'desconhecido'}</p>`;
+      }
+    }
+
+    function renderUsers(users) {
+      const tbody = document.getElementById('users-tbody');
+      tbody.innerHTML = '';
+
+      users.forEach(user => {
+        const tr = document.createElement('tr');
+
+        let status = 'none';
+        let statusText = 'Sem assinatura';
+        let endDate = '-';
+
+        if (user.subscription) {
+          status = user.subscription.status;
+          statusText = status === 'active' ? 'Ativo' : 
+                       status === 'trialing' ? 'Trial' : 
+                       status === 'canceled' ? 'Cancelado' : 'Sem assinatura';
+
+          if (user.subscription.currentPeriodEnd) {
+            const date = user.subscription.currentPeriodEnd.toDate();
+            endDate = date.toLocaleDateString('pt-BR');
+          }
+        }
+
+        const createdDate = user.createdAt ? new Date(user.createdAt).toLocaleDateString('pt-BR') : '-';
+
+        tr.innerHTML = `
+          <td><strong>${user.name}</strong></td>
+          <td>${user.email}</td>
+          <td>${user.phone}</td>
+          <td><span class="status-badge ${status}">${statusText}</span></td>
+          <td>${createdDate}</td>
+          <td>${endDate}</td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Pesquisa
+    document.getElementById('search-input').addEventListener('input', function(e) {
+      const query = e.target.value.toLowerCase();
+      const filtered = allUsers.filter(user => 
+        user.name.toLowerCase().includes(query) ||
+        user.email.toLowerCase().includes(query) ||
+        user.phone.toLowerCase().includes(query)
+      );
+      renderUsers(filtered);
+    });
+
+    // Exportar para CSV
+    document.getElementById('export-btn').addEventListener('click', function() {
+      const csv = ['Nome,Email,Telefone,Status,Data de Cadastro,Fim do Período'];
+      
+      allUsers.forEach(user => {
+        let status = 'Sem assinatura';
+        let endDate = '-';
+
+        if (user.subscription) {
+          status = user.subscription.status === 'active' ? 'Ativo' : 
+                   user.subscription.status === 'trialing' ? 'Trial' : 
+                   user.subscription.status === 'canceled' ? 'Cancelado' : 'Sem assinatura';
+
+          if (user.subscription.currentPeriodEnd) {
+            const date = user.subscription.currentPeriodEnd.toDate();
+            endDate = date.toLocaleDateString('pt-BR');
+          }
+        }
+
+        const createdDate = user.createdAt ? new Date(user.createdAt).toLocaleDateString('pt-BR') : '-';
+
+        csv.push(`"${user.name}","${user.email}","${user.phone}","${status}","${createdDate}","${endDate}"`);
+      });
+
+      const csvContent = csv.join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `usuarios_nextflow_${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+    });
+
+    // Logout
+    document.getElementById('logout-btn').addEventListener('click', async function() {
+      await auth.signOut();
+      window.location.href = 'login.html';
+    });
+  </script>
+</body>
+</html>

@@ -411,6 +411,14 @@ window.addEventListener('DOMContentLoaded', function() {
   const btnManage = document.getElementById('manage-subscription-btn');
   const btnManageNew = document.getElementById('manage-subscription-btn-new');
   
+  // Botão Admin
+  const btnAdmin = document.getElementById('admin-btn');
+  if (btnAdmin) {
+    btnAdmin.addEventListener('click', function() {
+      window.location.href = 'admin.html';
+    });
+  }
+  
   async function handleManageSubscription() {
     if (!currentUser) {
       alert('Você precisa estar logado!');
@@ -472,9 +480,11 @@ window.addEventListener('DOMContentLoaded', function() {
 
 // Função para mostrar o modal de instalação
 function showInstallModal() {
-  // Verificar se o usuário já optou por não mostrar
-  const dontShowAgain = localStorage.getItem('dontShowInstallModal');
-  if (dontShowAgain === 'true') {
+  // Verificar se já foi mostrado hoje
+  const lastShown = localStorage.getItem('installModalLastShown');
+  const today = new Date().toDateString();
+  
+  if (lastShown === today) {
     return;
   }
 
@@ -527,9 +537,13 @@ function showInstallModal() {
   function closeModal() {
     modal.classList.remove('show');
     
-    // Salvar preferência se checkbox marcado
+    // Marcar como mostrado hoje (independente do checkbox)
+    localStorage.setItem('installModalLastShown', today);
+    
+    // Se checkbox marcado, não mostrar mais hoje
     if (dontShowCheckbox && dontShowCheckbox.checked) {
-      localStorage.setItem('dontShowInstallModal', 'true');
+      // Já foi salvo acima com a data de hoje
+      console.log('Modal não será mostrado novamente hoje');
     }
   }
 
