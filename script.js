@@ -429,6 +429,44 @@ window.addEventListener('DOMContentLoaded', function() {
     });
   }
   
+  // Botão de Ajuda - Instalar App
+  const btnHelpInstall = document.getElementById('help-install-btn');
+  if (btnHelpInstall) {
+    btnHelpInstall.addEventListener('click', function() {
+      const modal = document.getElementById('install-modal');
+      if (modal) {
+        // Ignorar verificações e mostrar o modal imediatamente
+        modal.classList.add('show');
+        
+        // Detectar plataforma para mostrar instruções corretas
+        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+        const isAndroid = /android/i.test(userAgent);
+        
+        const iosSteps = document.getElementById('ios-steps');
+        const androidSteps = document.getElementById('android-steps');
+        const desktopSteps = document.getElementById('desktop-steps');
+        
+        if (iosSteps && androidSteps && desktopSteps) {
+          if (isIOS) {
+            iosSteps.style.display = 'block';
+            androidSteps.style.display = 'none';
+            desktopSteps.style.display = 'none';
+          } else if (isAndroid) {
+            iosSteps.style.display = 'none';
+            androidSteps.style.display = 'block';
+            desktopSteps.style.display = 'none';
+          } else {
+            // Desktop ou genérico
+            iosSteps.style.display = 'none';
+            androidSteps.style.display = 'none';
+            desktopSteps.style.display = 'block';
+          }
+        }
+      }
+    });
+  }
+  
   async function handleManageSubscription() {
     if (!currentUser) {
       alert('Você precisa estar logado!');
@@ -490,9 +528,14 @@ window.addEventListener('DOMContentLoaded', function() {
 
 // Função para mostrar o modal de instalação
 function showInstallModal() {
-  // Verificar se o usuário marcou para nunca mais mostrar
-  const neverShowAgain = localStorage.getItem('installModalNeverShow');
-  if (neverShowAgain === 'true') {
+  const modal = document.getElementById('install-modal');
+  
+  if (!modal) return;
+
+  // Verificar se o usuário marcou como instalado (permanente)
+  const appInstalled = localStorage.getItem('appInstalled');
+  if (appInstalled === 'true') {
+    console.log('App já marcado como instalado');
     return;
   }
 
@@ -501,15 +544,13 @@ function showInstallModal() {
   const today = new Date().toDateString();
   
   if (lastShown === today) {
+    console.log('Modal já foi mostrado hoje');
     return;
   }
 
-  const modal = document.getElementById('install-modal');
   const closeBtn = document.getElementById('close-modal');
   const gotItBtn = document.getElementById('got-it-btn');
-  const dontShowCheckbox = document.getElementById('dont-show-again');
-  
-  if (!modal) return;
+  const installedBtn = document.getElementById('app-installed-btn');
 
   // Detectar plataforma
   const userAgent = navigator.userAgent || navigator.vendor || window.opera;
@@ -547,21 +588,21 @@ function showInstallModal() {
   // Mostrar modal após 2 segundos
   setTimeout(() => {
     modal.classList.add('show');
+    // Marcar como mostrado hoje assim que aparecer
+    localStorage.setItem('installModalLastShown', today);
   }, 2000);
 
-  // Fechar modal
+  // Fechar modal temporariamente
   function closeModal() {
     modal.classList.remove('show');
-    
-    // Se checkbox marcado, salvar para nunca mais mostrar
-    if (dontShowCheckbox && dontShowCheckbox.checked) {
-      localStorage.setItem('installModalNeverShow', 'true');
-      console.log('Modal não será mostrado novamente (permanente)');
-    } else {
-      // Caso contrário, apenas marcar como mostrado hoje
-      localStorage.setItem('installModalLastShown', today);
-      console.log('Modal não será mostrado novamente hoje');
-    }
+  }
+
+  // Marcar como instalado (permanente - nunca mais aparece)
+  function markAsInstalled() {
+    localStorage.setItem('appInstalled', 'true');
+    localStorage.setItem('appInstalledAt', new Date().toISOString());
+    modal.classList.remove('show');
+    console.log('App marcado como instalado - modal não aparecerá mais');
   }
 
   if (closeBtn) {
@@ -570,6 +611,10 @@ function showInstallModal() {
 
   if (gotItBtn) {
     gotItBtn.addEventListener('click', closeModal);
+  }
+
+  if (installedBtn) {
+    installedBtn.addEventListener('click', markAsInstalled);
   }
 
   // Fechar ao clicar fora do modal
