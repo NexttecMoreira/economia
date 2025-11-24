@@ -6,6 +6,9 @@
   <title>Admin - NextFlow</title>
   <link rel="icon" type="image/png" href="logo.png">
   <link rel="apple-touch-icon" href="logo.png">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <style>
     * {
       margin: 0;
@@ -517,9 +520,10 @@
       link.click();
     });
 
-    // Logout
+    // Logout (voltar para resumo)
     document.getElementById('logout-btn').addEventListener('click', function() {
-      window.location.href = 'index.html';
+      console.log('Botão Sair clicado - redirecionando para index.html');
+      window.location.href = 'index.html?t=' + Date.now();
     });
   </script>
 </body>
