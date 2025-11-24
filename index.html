@@ -9,13 +9,13 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <link rel="stylesheet" href="style.css?v=3">
-  <script src="firebase-config.js?v=3"></script>
+  <link rel="stylesheet" href="style.css?v=4">
+  <script src="firebase-config.js?v=4"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-functions-compat.js"></script>
-  <script src="subscription-middleware.js?v=3"></script>
+  <script src="subscription-middleware.js?v=4"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
 </head>
 <body class="resumo-bg">
@@ -136,6 +136,56 @@
     </section>
   </div>
 
-  <script src="script.js?v=3" defer></script>
+  <!-- Modal de Instalação PWA -->
+  <div id="install-modal" class="install-modal">
+    <div class="install-modal-content">
+      <button class="install-modal-close" id="close-modal">&times;</button>
+      <img src="logo.png" alt="NextFlow" style="width: 60px; height: 60px; border-radius: 12px; margin-bottom: 1rem;">
+      <h2>📱 Instale o NextFlow</h2>
+      <p style="margin-bottom: 1.5rem; color: #9CA3AF;">Adicione o app à tela inicial do seu celular para acesso rápido!</p>
+      
+      <div class="install-steps">
+        <!-- iOS Safari -->
+        <div class="install-step" id="ios-steps" style="display: none;">
+          <h3>📱 iPhone/iPad (Safari)</h3>
+          <ol>
+            <li>Toque no botão <strong>Compartilhar</strong> <svg style="width: 16px; height: 16px; display: inline; vertical-align: middle;" viewBox="0 0 24 24" fill="currentColor"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg> (na parte inferior)</li>
+            <li>Role para baixo e toque em <strong>"Adicionar à Tela de Início"</strong> 📲</li>
+            <li>Toque em <strong>"Adicionar"</strong> no canto superior direito</li>
+            <li>Pronto! O app aparecerá na sua tela inicial 🎉</li>
+          </ol>
+        </div>
+
+        <!-- Android Chrome -->
+        <div class="install-step" id="android-steps" style="display: none;">
+          <h3>🤖 Android (Chrome)</h3>
+          <ol>
+            <li>Toque no menu <strong>⋮</strong> (três pontos) no canto superior direito</li>
+            <li>Selecione <strong>"Adicionar à tela inicial"</strong> ou <strong>"Instalar app"</strong> 📲</li>
+            <li>Toque em <strong>"Adicionar"</strong> ou <strong>"Instalar"</strong></li>
+            <li>Pronto! O app aparecerá na sua tela inicial 🎉</li>
+          </ol>
+        </div>
+
+        <!-- Desktop -->
+        <div class="install-step" id="desktop-steps" style="display: none;">
+          <h3>💻 Computador (Chrome/Edge)</h3>
+          <ol>
+            <li>Clique no ícone <strong>⊕</strong> ou <strong>🖥️</strong> na barra de endereço</li>
+            <li>Clique em <strong>"Instalar"</strong></li>
+            <li>O app será instalado como um programa no seu computador 🎉</li>
+          </ol>
+        </div>
+      </div>
+
+      <button class="install-modal-btn" id="got-it-btn">Entendi!</button>
+      <label style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1rem; color: #9CA3AF; font-size: 0.9rem;">
+        <input type="checkbox" id="dont-show-again" style="width: 16px; height: 16px;">
+        Não mostrar novamente
+      </label>
+    </div>
+  </div>
+
+  <script src="script.js?v=4" defer></script>
 </body>
 </html>

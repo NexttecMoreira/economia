@@ -465,4 +465,87 @@ window.addEventListener('DOMContentLoaded', function() {
       window.location.href = 'gastos.html';
     });
   }
+
+  // Modal de Instalação PWA
+  showInstallModal();
 });
+
+// Função para mostrar o modal de instalação
+function showInstallModal() {
+  // Verificar se o usuário já optou por não mostrar
+  const dontShowAgain = localStorage.getItem('dontShowInstallModal');
+  if (dontShowAgain === 'true') {
+    return;
+  }
+
+  const modal = document.getElementById('install-modal');
+  const closeBtn = document.getElementById('close-modal');
+  const gotItBtn = document.getElementById('got-it-btn');
+  const dontShowCheckbox = document.getElementById('dont-show-again');
+  
+  if (!modal) return;
+
+  // Detectar plataforma
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+  const isAndroid = /android/i.test(userAgent);
+  const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(userAgent);
+
+  // Não mostrar no desktop
+  if (!isMobile) {
+    return;
+  }
+
+  // Mostrar instruções específicas da plataforma
+  const iosSteps = document.getElementById('ios-steps');
+  const androidSteps = document.getElementById('android-steps');
+  const desktopSteps = document.getElementById('desktop-steps');
+
+  if (iosSteps && androidSteps && desktopSteps) {
+    if (isIOS) {
+      iosSteps.style.display = 'block';
+      androidSteps.style.display = 'none';
+      desktopSteps.style.display = 'none';
+    } else if (isAndroid) {
+      iosSteps.style.display = 'none';
+      androidSteps.style.display = 'block';
+      desktopSteps.style.display = 'none';
+    } else {
+      // Mobile genérico, mostrar ambas as instruções
+      iosSteps.style.display = 'block';
+      androidSteps.style.display = 'block';
+      desktopSteps.style.display = 'none';
+    }
+  }
+
+  // Mostrar modal após 2 segundos
+  setTimeout(() => {
+    modal.classList.add('show');
+  }, 2000);
+
+  // Fechar modal
+  function closeModal() {
+    modal.classList.remove('show');
+    
+    // Salvar preferência se checkbox marcado
+    if (dontShowCheckbox && dontShowCheckbox.checked) {
+      localStorage.setItem('dontShowInstallModal', 'true');
+    }
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeModal);
+  }
+
+  if (gotItBtn) {
+    gotItBtn.addEventListener('click', closeModal);
+  }
+
+  // Fechar ao clicar fora do modal
+  modal.addEventListener('click', function(event) {
+    if (event.target === modal) {
+      closeModal();
+    }
+  });
+}
+

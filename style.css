@@ -1098,6 +1098,7 @@ html {
         padding: 3rem;
     }
 
+
     .layout-grid {
         grid-template-columns: repeat(3, 1fr);
         gap: 2.5rem;
@@ -1108,3 +1109,170 @@ html {
 
     .card { width: 90%; align-self: center; align-items: center; }
 }
+
+/* Modal de Instalação PWA */
+.install-modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.3s ease;
+}
+
+.install-modal.show {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.install-modal-content {
+  background: linear-gradient(145deg, #1e1e1e 0%, #2a2a2a 100%);
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  border: 2px solid #3a3a3a;
+  text-align: center;
+  position: relative;
+  animation: slideUp 0.3s ease;
+}
+
+.install-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  color: #9CA3AF;
+  font-size: 2rem;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.install-modal-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  transform: rotate(90deg);
+}
+
+.install-modal h2 {
+  color: #fff;
+  font-size: 1.8rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.install-steps {
+  text-align: left;
+  margin: 1.5rem 0;
+}
+
+.install-step {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.install-step h3 {
+  color: #667eea;
+  font-size: 1.2rem;
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.install-step ol {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: #e0e0e0;
+}
+
+.install-step li {
+  margin-bottom: 0.8rem;
+  line-height: 1.6;
+}
+
+.install-step strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+.install-modal-btn {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.install-modal-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .install-modal-content {
+    padding: 1.5rem;
+    max-height: 85vh;
+  }
+
+  .install-modal h2 {
+    font-size: 1.5rem;
+  }
+
+  .install-step {
+    padding: 1rem;
+  }
+
+  .install-step h3 {
+    font-size: 1.1rem;
+  }
+
+  .install-step li {
+    font-size: 0.95rem;
+  }
+}
+
