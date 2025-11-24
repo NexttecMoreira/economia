@@ -141,10 +141,31 @@
     .loading.active {
       display: block;
     }
+
+    .back-button {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background: #2a2a2a;
+      color: #9CA3AF;
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: 600;
+      border: 2px solid #3a3a3a;
+      transition: all 0.3s ease;
+      margin-bottom: 2rem;
+    }
+
+    .back-button:hover {
+      border-color: #E57C23;
+      color: #E57C23;
+      transform: translateY(-2px);
+    }
   </style>
 </head>
 <body>
   <div class="pricing-container">
+    <a href="login.html" class="back-button">← Voltar para Login</a>
+    
     <div class="pricing-header">
       <h1>📊 Organize suas Finanças</h1>
       <p>Controle total dos seus gastos e ganhos</p>
