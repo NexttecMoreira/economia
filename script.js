@@ -480,6 +480,12 @@ window.addEventListener('DOMContentLoaded', function() {
 
 // Função para mostrar o modal de instalação
 function showInstallModal() {
+  // Verificar se o usuário marcou para nunca mais mostrar
+  const neverShowAgain = localStorage.getItem('installModalNeverShow');
+  if (neverShowAgain === 'true') {
+    return;
+  }
+
   // Verificar se já foi mostrado hoje
   const lastShown = localStorage.getItem('installModalLastShown');
   const today = new Date().toDateString();
@@ -537,12 +543,13 @@ function showInstallModal() {
   function closeModal() {
     modal.classList.remove('show');
     
-    // Marcar como mostrado hoje (independente do checkbox)
-    localStorage.setItem('installModalLastShown', today);
-    
-    // Se checkbox marcado, não mostrar mais hoje
+    // Se checkbox marcado, salvar para nunca mais mostrar
     if (dontShowCheckbox && dontShowCheckbox.checked) {
-      // Já foi salvo acima com a data de hoje
+      localStorage.setItem('installModalNeverShow', 'true');
+      console.log('Modal não será mostrado novamente (permanente)');
+    } else {
+      // Caso contrário, apenas marcar como mostrado hoje
+      localStorage.setItem('installModalLastShown', today);
       console.log('Modal não será mostrado novamente hoje');
     }
   }
