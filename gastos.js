@@ -149,12 +149,22 @@ document.addEventListener('DOMContentLoaded', function() {
     listaGastos.innerHTML = '';
     let total = 0;
 
-    // Inverter a ordem para mostrar os mais recentes primeiro
-    const gastosRevertidos = [...finances.expense].reverse();
+    // Ordenar por data - mais recente primeiro
+    const gastosOrdenados = [...finances.expense].sort((a, b) => {
+      const dataA = new Date(a.date || '1970-01-01');
+      const dataB = new Date(b.date || '1970-01-01');
+      return dataB - dataA; // Ordem decrescente (mais recente primeiro)
+    });
     
-    gastosRevertidos.forEach((gasto, index) => {
-      // Calcular o índice real no array original
-      const realIndex = finances.expense.length - 1 - index;
+    gastosOrdenados.forEach((gasto) => {
+      // Encontrar o índice real no array original
+      const realIndex = finances.expense.findIndex(g => 
+        g.name === gasto.name && 
+        g.value === gasto.value && 
+        g.date === gasto.date &&
+        g.payment === gasto.payment
+      );
+      
       total += parseFloat(gasto.value);
 
       const itemDiv = document.createElement('div');

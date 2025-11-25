@@ -129,12 +129,21 @@ document.addEventListener('DOMContentLoaded', function() {
     listaGanhos.innerHTML = '';
     let total = 0;
 
-    // Inverter a ordem para mostrar os mais recentes primeiro
-    const ganhosRevertidos = [...finances.income].reverse();
+    // Ordenar por data - mais recente primeiro
+    const ganhosOrdenados = [...finances.income].sort((a, b) => {
+      const dataA = new Date(a.date || '1970-01-01');
+      const dataB = new Date(b.date || '1970-01-01');
+      return dataB - dataA; // Ordem decrescente (mais recente primeiro)
+    });
     
-    ganhosRevertidos.forEach((ganho, index) => {
-      // Calcular o índice real no array original
-      const realIndex = finances.income.length - 1 - index;
+    ganhosOrdenados.forEach((ganho) => {
+      // Encontrar o índice real no array original
+      const realIndex = finances.income.findIndex(g => 
+        g.name === ganho.name && 
+        g.value === ganho.value && 
+        g.date === ganho.date
+      );
+      
       total += parseFloat(ganho.value);
 
       const itemDiv = document.createElement('div');

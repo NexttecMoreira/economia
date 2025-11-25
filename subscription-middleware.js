@@ -113,4 +113,3 @@ window.clearSubscriptionCache = () => {
 };
 
 console.log('✅ Subscription middleware carregado');
-
