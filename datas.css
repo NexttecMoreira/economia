@@ -170,6 +170,24 @@ body.datas-bg {
   text-align: center;
 }
 
+.datas-card-ganhos {
+  background: rgba(16, 185, 129, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.datas-card-gastos {
+  background: rgba(239, 68, 68, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
 .datas-label {
   font-size: 1rem;
   font-weight: 600;
@@ -195,6 +213,20 @@ body.datas-bg {
   font-size: 2rem;
   font-weight: 700;
   color: #b5b5b5;
+  margin: 0;
+}
+
+.datas-valor-ganhos {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #10B981;
+  margin: 0;
+}
+
+.datas-valor-gastos {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #EF4444;
   margin: 0;
 }
 
@@ -418,7 +450,9 @@ body.datas-bg {
 
   .datas-card-dia,
   .datas-card-semana,
-  .datas-card-mes {
+  .datas-card-mes,
+  .datas-card-ganhos,
+  .datas-card-gastos {
     padding: 1rem;
   }
 
@@ -428,7 +462,9 @@ body.datas-bg {
 
   .datas-valor-dia,
   .datas-valor-semana,
-  .datas-valor-mes {
+  .datas-valor-mes,
+  .datas-valor-ganhos,
+  .datas-valor-gastos {
     font-size: 1.5rem;
   }
 
@@ -560,7 +596,9 @@ body.datas-bg {
 
   .datas-valor-dia,
   .datas-valor-semana,
-  .datas-valor-mes {
+  .datas-valor-mes,
+  .datas-valor-ganhos,
+  .datas-valor-gastos {
     font-size: 1.3rem;
   }
 }
