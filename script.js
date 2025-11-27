@@ -3,7 +3,7 @@
 let data = { income: [], expense: [] };
 let incomeChart = null;
 let expenseChart = null;
-let currentPeriod = 'dia'; // 'dia', 'mes', 'ano'
+let currentPeriod = 'mes'; // 'dia', 'mes', 'ano'
 let db = null;
 let currentUser = null;
 
