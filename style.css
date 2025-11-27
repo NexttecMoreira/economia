@@ -479,8 +479,8 @@ body.resumo-bg {
   backdrop-filter: blur(10px);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 8px 25px rgba(255, 183, 0, 0.16);
-  border: 1px solid #ffaa0044;
+    box-shadow: 0 8px 25px rgba(30, 136, 229, 0.25);
+  border: 1px solid rgba(30, 136, 229, 0.4);
   text-align: left;
   animation: fadeIn 0.5s ease-out forwards;
   transform: translateZ(0);
@@ -492,8 +492,8 @@ body.resumo-bg {
   backdrop-filter: blur(10px);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 8px 25px rgba(255, 183, 0, 0.16);
-  border: 1px solid #ffaa0044;
+  box-shadow: 0 8px 25px rgba(229, 124, 35, 0.25);
+  border: 1px solid rgba(229, 124, 35, 0.4);
   text-align: left;
   animation: fadeIn 0.5s ease-out forwards;
   transform: translateZ(0);
