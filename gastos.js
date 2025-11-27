@@ -240,8 +240,21 @@ document.addEventListener('DOMContentLoaded', function() {
   function atualizarGrafico() {
     if (!canvasGrafico) return;
 
-    const labels = finances.expense.map(g => g.name);
-    const dados = finances.expense.map(g => parseFloat(g.value));
+    // Agregar gastos por nome (somar valores com mesmo nome)
+    const dadosAgregados = {};
+    finances.expense.forEach(g => {
+      const nome = g.name;
+      const valor = parseFloat(g.value);
+      if (dadosAgregados[nome]) {
+        dadosAgregados[nome] += valor;
+      } else {
+        dadosAgregados[nome] = valor;
+      }
+    });
+
+    // Converter para arrays
+    const labels = Object.keys(dadosAgregados);
+    const dados = Object.values(dadosAgregados);
     
     // Gerar cores aleatórias infinitas em tons de laranja
     const cores = [];
