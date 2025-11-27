@@ -124,7 +124,9 @@ body.resumo-bg {
   padding: 0;
   margin: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-  background: linear-gradient(135deg, #121212 0%, #000000 100%);
+  background: radial-gradient(1200px 600px at 10% 10%, #161616ff, transparent),
+              radial-gradient(900px 400px at 90% 90%, #131313ff, transparent),
+              #0e0e0eff;
   color: #e0e0e0;
   min-height: 100vh;
   overflow-x: hidden;
@@ -139,12 +141,13 @@ body.resumo-bg {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(30, 30, 30, 0.6);
+  background: linear-gradient(180deg, #0f0f0fff, rgba(22, 22, 22, 1));
   backdrop-filter: blur(10px);
   border-radius: 12px;
   padding: 1rem 1.5rem;
   margin-bottom: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid #ffaa0044;
+  box-shadow: 0 8px 25px rgba(255, 183, 0, 0.16);
 }
 
 .user-info {
@@ -472,12 +475,12 @@ body.resumo-bg {
 }
 
 .resumo-card-ganhos {
-  background: rgba(30, 136, 229, 0.1);
+  background: linear-gradient(180deg, #0f0f0fff, rgba(22, 22, 22, 1));
   backdrop-filter: blur(10px);
-  border-radius: 1rem;
+  border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(30, 136, 229, 0.3);
+  box-shadow: 0 8px 25px rgba(255, 183, 0, 0.16);
+  border: 1px solid #ffaa0044;
   text-align: left;
   animation: fadeIn 0.5s ease-out forwards;
   transform: translateZ(0);
@@ -485,12 +488,12 @@ body.resumo-bg {
 }
 
 .resumo-card-gastos {
-  background: rgba(229, 124, 35, 0.1);
+  background: linear-gradient(180deg, #0f0f0fff, rgba(22, 22, 22, 1));
   backdrop-filter: blur(10px);
-  border-radius: 1rem;
+  border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(229, 124, 35, 0.3);
+  box-shadow: 0 8px 25px rgba(255, 183, 0, 0.16);
+  border: 1px solid #ffaa0044;
   text-align: left;
   animation: fadeIn 0.5s ease-out forwards;
   transform: translateZ(0);
@@ -498,11 +501,11 @@ body.resumo-bg {
 }
 
 .resumo-card-saldo {
-  background: rgba(177, 177, 177, 0.1);
+  background: linear-gradient(180deg, #0f0f0fff, rgba(22, 22, 22, 1));
   backdrop-filter: blur(10px);
-  border-radius: 1rem;
+  border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 25px rgba(177, 177, 177, 0.16);
   border: 1px solid rgba(177, 177, 177, 0.3);
   text-align: left;
   animation: fadeIn 0.5s ease-out forwards;
@@ -559,12 +562,12 @@ body.resumo-bg {
 }
 
 .resumo-grafico {
-  background: rgba(30, 30, 30, 0.5);
+  background: linear-gradient(180deg, #0f0f0fff, rgba(22, 22, 22, 1));
   backdrop-filter: blur(10px);
-  border-radius: 1rem;
+  border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(60, 60, 60, 0.5);
+  box-shadow: 0 8px 25px rgba(255, 183, 0, 0.16);
+  border: 1px solid #ffaa0044;
   margin-bottom: 2rem;
   animation: fadeIn 0.5s ease-out forwards;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -577,6 +580,16 @@ body.resumo-bg {
 .resumo-grafico:hover {
   transform: translateY(-5px);
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+.resumo-grafico-ganhos-section {
+  box-shadow: 0 8px 25px rgba(30, 136, 229, 0.25);
+  border: 1px solid rgba(30, 136, 229, 0.4);
+}
+
+.resumo-grafico-gastos-section {
+  box-shadow: 0 8px 25px rgba(229, 124, 35, 0.25);
+  border: 1px solid rgba(229, 124, 35, 0.4);
 }
 
 .resumo-grafico-titulo {
