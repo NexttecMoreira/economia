@@ -43,7 +43,9 @@ body.gastos-bg {
   padding: 0;
   margin: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  background: linear-gradient(135deg, #121212 0%, #000000 100%);
+  background: radial-gradient(1200px 600px at 10% 10%, #161616ff, transparent),
+              radial-gradient(900px 400px at 90% 90%, #131313ff, transparent),
+              #0e0e0eff;
   color: #e0e0e0;
   min-height: 100vh;
   overflow-x: hidden;
@@ -103,12 +105,12 @@ body.gastos-bg {
 }
 
 .gastos-form {
-  background: rgba(30, 30, 30, 0.5);
+  background: linear-gradient(180deg, #0f0f0fff, rgba(22, 22, 22, 1));
   backdrop-filter: blur(10px);
-  border-radius: 1rem;
+  border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(60, 60, 60, 0.5);
+  box-shadow: 0 8px 25px rgba(229, 124, 35, 0.25);
+  border: 1px solid rgba(229, 124, 35, 0.4);
   margin-bottom: 2rem;
   display: flex;
   flex-direction: column;
@@ -209,12 +211,12 @@ body.gastos-bg {
 }
 
 .gastos-grafico {
-  background: rgba(30, 30, 30, 0.5);
+  background: linear-gradient(180deg, #0f0f0fff, rgba(22, 22, 22, 1));
   backdrop-filter: blur(10px);
-  border-radius: 1rem;
+  border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(60, 60, 60, 0.5);
+  box-shadow: 0 8px 25px rgba(229, 124, 35, 0.25);
+  border: 1px solid rgba(229, 124, 35, 0.4);
   margin-bottom: 2rem;
   animation: fadeIn 0.5s ease-out forwards;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -305,12 +307,12 @@ body.gastos-bg {
 }
 
 .gastos-lista {
-  background: rgba(30, 30, 30, 0.5);
+  background: linear-gradient(180deg, #0f0f0fff, rgba(22, 22, 22, 1));
   backdrop-filter: blur(10px);
-  border-radius: 1rem;
+  border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(60, 60, 60, 0.5);
+  box-shadow: 0 8px 25px rgba(229, 124, 35, 0.25);
+  border: 1px solid rgba(229, 124, 35, 0.4);
   margin-bottom: 2rem;
   animation: fadeIn 0.5s ease-out forwards;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
