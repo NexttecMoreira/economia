@@ -20,12 +20,21 @@ function loadData() {
         renderCalendar();
         updateSummary();
         showMonthSummary();
+        showTodayDetails(); // Mostrar detalhes do dia atual automaticamente
       },
       function(erro) {
         console.error('Erro ao carregar do Firestore:', erro);
       }
     );
   }
+}
+
+// Mostrar detalhes do dia atual automaticamente
+function showTodayDetails() {
+  const today = new Date();
+  const todayStr = formatDateStr(today);
+  selectedDate = todayStr;
+  showDetails(todayStr);
 }
 
 // Obter gastos de um dia específico
@@ -378,9 +387,85 @@ function showMonthSummary() {
     return;
   }
   
-  // Resumo geral do mês
+  // Lista de ganhos do mês (agregados por nome)
+  if (monthIncome.length > 0) {
+    // Agregar ganhos por nome
+    const dadosAgregados = {};
+    monthIncome.forEach(function(item) {
+      const nome = item.name;
+      const valor = parseFloat(item.value);
+      if (dadosAgregados[nome]) {
+        dadosAgregados[nome] += valor;
+      } else {
+        dadosAgregados[nome] = valor;
+      }
+    });
+    
+    // Converter objeto para array e ordenar por valor (maior para menor)
+    const ganhosAgregados = Object.keys(dadosAgregados).map(function(nome) {
+      return { name: nome, value: dadosAgregados[nome] };
+    }).sort(function(a, b) {
+      return b.value - a.value;
+    });
+    
+    const ganhosTitle = document.createElement('h3');
+    ganhosTitle.style.cssText = 'color: #10B981; font-size: 1rem; margin: 1.5rem 0 1rem 0; text-transform: uppercase; display: flex; align-items: center; gap: 0.5rem;';
+    ganhosTitle.innerHTML = `💰 Ganhos do Mês <span style="color: #9CA3AF; font-size: 0.9rem; font-weight: normal;">(${ganhosAgregados.length} itens)</span>`;
+    conteudo.appendChild(ganhosTitle);
+    
+    ganhosAgregados.forEach(function(item) {
+      const div = document.createElement('div');
+      div.className = 'datas-item ganho';
+      div.innerHTML = 
+        '<div style="display: flex; flex-direction: column; gap: 0.25rem;">' +
+          '<div class="datas-item-nome">' + item.name + '</div>' +
+        '</div>' +
+        '<div class="datas-item-valor ganho">+ R$ ' + item.value.toFixed(2) + '</div>';
+      conteudo.appendChild(div);
+    });
+  }
+  
+  // Lista de gastos do mês (agregados por nome)
+  if (monthExpenses.length > 0) {
+    // Agregar gastos por nome
+    const dadosAgregados = {};
+    monthExpenses.forEach(function(item) {
+      const nome = item.name;
+      const valor = parseFloat(item.value);
+      if (dadosAgregados[nome]) {
+        dadosAgregados[nome] += valor;
+      } else {
+        dadosAgregados[nome] = valor;
+      }
+    });
+    
+    // Converter objeto para array e ordenar por valor (maior para menor)
+    const gastosAgregados = Object.keys(dadosAgregados).map(function(nome) {
+      return { name: nome, value: dadosAgregados[nome] };
+    }).sort(function(a, b) {
+      return b.value - a.value;
+    });
+    
+    const gastosTitle = document.createElement('h3');
+    gastosTitle.style.cssText = 'color: #EF4444; font-size: 1rem; margin: 1.5rem 0 1rem 0; text-transform: uppercase; display: flex; align-items: center; gap: 0.5rem;';
+    gastosTitle.innerHTML = `💸 Gastos do Mês <span style="color: #9CA3AF; font-size: 0.9rem; font-weight: normal;">(${gastosAgregados.length} itens)</span>`;
+    conteudo.appendChild(gastosTitle);
+    
+    gastosAgregados.forEach(function(item) {
+      const div = document.createElement('div');
+      div.className = 'datas-item';
+      div.innerHTML = 
+        '<div style="display: flex; flex-direction: column; gap: 0.25rem;">' +
+          '<div class="datas-item-nome">' + item.name + '</div>' +
+        '</div>' +
+        '<div class="datas-item-valor gasto">- R$ ' + item.value.toFixed(2) + '</div>';
+      conteudo.appendChild(div);
+    });
+  }
+  
+  // Resumo geral do mês (no final)
   const resumoDiv = document.createElement('div');
-  resumoDiv.style.cssText = 'background: linear-gradient(145deg, #1e1e1e 0%, #2a2a2a 100%); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 2px solid #3a3a3a;';
+  resumoDiv.style.cssText = 'background: linear-gradient(145deg, #1e1e1e 0%, #2a2a2a 100%); padding: 1.5rem; border-radius: 12px; margin-top: 1.5rem; border: 2px solid #3a3a3a;';
   resumoDiv.innerHTML = `
     <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
       <span style="color: #9CA3AF; font-size: 1rem;">💰 Total de Ganhos:</span>
@@ -396,63 +481,7 @@ function showMonthSummary() {
     </div>
   `;
   conteudo.appendChild(resumoDiv);
-  
-  // Lista de ganhos do mês
-  if (monthIncome.length > 0) {
-    const ganhosTitle = document.createElement('h3');
-    ganhosTitle.style.cssText = 'color: #10B981; font-size: 1rem; margin: 1.5rem 0 1rem 0; text-transform: uppercase; display: flex; align-items: center; gap: 0.5rem;';
-    ganhosTitle.innerHTML = `💰 Ganhos do Mês <span style="color: #9CA3AF; font-size: 0.9rem; font-weight: normal;">(${monthIncome.length} itens)</span>`;
-    conteudo.appendChild(ganhosTitle);
-    
-    // Ordenar por data
-    monthIncome.sort(function(a, b) {
-      return new Date(b.date) - new Date(a.date);
-    });
-    
-    monthIncome.forEach(function(item) {
-      const div = document.createElement('div');
-      div.className = 'datas-item ganho';
-      const dateObj = new Date(item.date);
-      const dateFormatted = dateObj.getDate() + '/' + (dateObj.getMonth() + 1);
-      div.innerHTML = 
-        '<div style="display: flex; flex-direction: column; gap: 0.25rem;">' +
-          '<div class="datas-item-nome">' + item.name + '</div>' +
-          '<div style="color: #9CA3AF; font-size: 0.85rem;">' + dateFormatted + '</div>' +
-        '</div>' +
-        '<div class="datas-item-valor ganho">+ R$ ' + parseFloat(item.value).toFixed(2) + '</div>';
-      conteudo.appendChild(div);
-    });
-  }
-  
-  // Lista de gastos do mês
-  if (monthExpenses.length > 0) {
-    const gastosTitle = document.createElement('h3');
-    gastosTitle.style.cssText = 'color: #EF4444; font-size: 1rem; margin: 1.5rem 0 1rem 0; text-transform: uppercase; display: flex; align-items: center; gap: 0.5rem;';
-    gastosTitle.innerHTML = `💸 Gastos do Mês <span style="color: #9CA3AF; font-size: 0.9rem; font-weight: normal;">(${monthExpenses.length} itens)</span>`;
-    conteudo.appendChild(gastosTitle);
-    
-    // Ordenar por data
-    monthExpenses.sort(function(a, b) {
-      return new Date(b.date) - new Date(a.date);
-    });
-    
-    monthExpenses.forEach(function(item) {
-      const div = document.createElement('div');
-      div.className = 'datas-item';
-      const dateObj = new Date(item.date);
-      const dateFormatted = dateObj.getDate() + '/' + (dateObj.getMonth() + 1);
-      div.innerHTML = 
-        '<div style="display: flex; flex-direction: column; gap: 0.25rem;">' +
-          '<div class="datas-item-nome">' + item.name + '</div>' +
-          '<div style="color: #9CA3AF; font-size: 0.85rem;">' + dateFormatted + '</div>' +
-        '</div>' +
-        '<div class="datas-item-valor gasto">- R$ ' + parseFloat(item.value).toFixed(2) + '</div>';
-      conteudo.appendChild(div);
-    });
-  }
 }
-
-// Eventos
 window.addEventListener('DOMContentLoaded', function() {
   // Inicializar Firebase se disponível
   if (typeof firebase !== 'undefined' && window.firebaseConfig) {
