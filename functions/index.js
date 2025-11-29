@@ -19,19 +19,41 @@ exports.createCheckoutSession = functions
     const userDoc = await admin.firestore().collection('users').doc(userId).get();
     let customerId = userDoc.data()?.stripeCustomerId;
 
-    // Se não existe, criar novo customer no Stripe
+    // Se não existe, verificar se já existe customer no Stripe com este email (EVITA DUPLICAÇÃO)
     if (!customerId) {
-      const customer = await stripe.customers.create({
+      console.log('Buscando customer existente por email:', email);
+      const existingCustomers = await stripe.customers.list({
         email: email,
-        metadata: {
-          firebaseUID: userId
-        }
+        limit: 1
       });
-      customerId = customer.id;
+
+      if (existingCustomers.data.length > 0) {
+        // Reutilizar customer existente
+        customerId = existingCustomers.data[0].id;
+        console.log('✅ Customer existente encontrado:', customerId);
+        
+        // Atualizar metadata com o firebaseUID correto
+        await stripe.customers.update(customerId, {
+          metadata: {
+            firebaseUID: userId
+          }
+        });
+      } else {
+        // Criar novo customer apenas se não existir
+        const customer = await stripe.customers.create({
+          email: email,
+          metadata: {
+            firebaseUID: userId
+          }
+        });
+        customerId = customer.id;
+        console.log('✅ Novo customer criado:', customerId);
+      }
 
       // Salvar customerId no Firestore
       await admin.firestore().collection('users').doc(userId).set({
-        stripeCustomerId: customerId
+        stripeCustomerId: customerId,
+        email: email
       }, { merge: true });
     }
 
