@@ -113,6 +113,125 @@ exports.createPortalSession = functions
   }
 });
 
+// Cancelar assinatura (Admin)
+exports.cancelSubscription = functions
+  .region('southamerica-east1')
+  .https.onCall(async (data, context) => {
+  try {
+    const { userId } = data;
+
+    if (!userId) {
+      throw new functions.https.HttpsError('invalid-argument', 'userId é obrigatório');
+    }
+
+    // Buscar dados do usuário
+    const userDoc = await admin.firestore().collection('users').doc(userId).get();
+    
+    if (!userDoc.exists) {
+      throw new functions.https.HttpsError('not-found', 'Usuário não encontrado');
+    }
+
+    const userData = userDoc.data();
+    const subscriptionId = userData?.subscription?.stripeSubscriptionId;
+
+    if (!subscriptionId) {
+      throw new functions.https.HttpsError('not-found', 'Assinatura não encontrada');
+    }
+
+    // Cancelar assinatura no Stripe
+    const canceledSubscription = await stripe.subscriptions.cancel(subscriptionId);
+    console.log('✅ Assinatura cancelada:', canceledSubscription.id);
+
+    // Atualizar no Firestore
+    await admin.firestore().collection('users').doc(userId).set({
+      subscription: {
+        status: 'canceled',
+        canceledAt: admin.firestore.FieldValue.serverTimestamp()
+      }
+    }, { merge: true });
+
+    return { success: true, message: 'Assinatura cancelada com sucesso' };
+  } catch (error) {
+    console.error('Erro ao cancelar assinatura:', error);
+    throw new functions.https.HttpsError('internal', error.message);
+  }
+});
+
+// Deletar usuário completamente (Admin)
+exports.deleteUser = functions
+  .region('southamerica-east1')
+  .https.onCall(async (data, context) => {
+  try {
+    const { userId } = data;
+
+    if (!userId) {
+      throw new functions.https.HttpsError('invalid-argument', 'userId é obrigatório');
+    }
+
+    // Buscar dados do usuário
+    const userDoc = await admin.firestore().collection('users').doc(userId).get();
+    
+    if (!userDoc.exists) {
+      throw new functions.https.HttpsError('not-found', 'Usuário não encontrado');
+    }
+
+    const userData = userDoc.data();
+    
+    // 1. Cancelar assinatura no Stripe se existir
+    const subscriptionId = userData?.subscription?.stripeSubscriptionId;
+    if (subscriptionId) {
+      try {
+        await stripe.subscriptions.cancel(subscriptionId);
+        console.log('✅ Assinatura cancelada no Stripe:', subscriptionId);
+      } catch (error) {
+        console.warn('Assinatura já cancelada ou não existe:', error.message);
+      }
+    }
+
+    // 2. Deletar customer do Stripe se existir
+    const customerId = userData?.stripeCustomerId;
+    if (customerId) {
+      try {
+        await stripe.customers.del(customerId);
+        console.log('✅ Customer deletado no Stripe:', customerId);
+      } catch (error) {
+        console.warn('Customer já deletado ou não existe:', error.message);
+      }
+    }
+
+    // 3. Deletar subcoleção de payments se existir
+    const paymentsSnapshot = await admin.firestore()
+      .collection('users')
+      .doc(userId)
+      .collection('payments')
+      .get();
+    
+    const deletePayments = [];
+    paymentsSnapshot.forEach(doc => {
+      deletePayments.push(doc.ref.delete());
+    });
+    await Promise.all(deletePayments);
+    console.log('✅ Pagamentos deletados:', deletePayments.length);
+
+    // 4. Deletar documento do usuário no Firestore
+    await admin.firestore().collection('users').doc(userId).delete();
+    console.log('✅ Usuário deletado do Firestore:', userId);
+
+    // 5. Deletar usuário do Firebase Auth
+    try {
+      await admin.auth().deleteUser(userId);
+      console.log('✅ Usuário deletado do Auth:', userId);
+    } catch (error) {
+      console.warn('Usuário já deletado do Auth ou não existe:', error.message);
+    }
+
+    return { success: true, message: 'Usuário removido completamente' };
+  } catch (error) {
+    console.error('Erro ao deletar usuário:', error);
+    throw new functions.https.HttpsError('internal', error.message);
+  }
+});
+
 // Webhook para receber eventos do Stripe
 exports.stripeWebhook = functions.https.onRequest(async (req, res) => {
   const sig = req.headers['stripe-signature'];

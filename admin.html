@@ -200,6 +200,34 @@
       transform: translateY(-2px);
     }
 
+    .btn-cancel {
+      background: #EF4444;
+      color: white;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
+    }
+
+    .btn-cancel:hover {
+      background: #DC2626;
+    }
+
+    .btn-cancel:disabled {
+      background: #6B7280;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .btn-delete {
+      background: #DC2626;
+      color: white;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
+    }
+
+    .btn-delete:hover {
+      background: #B91C1C;
+    }
+
     .loading {
       text-align: center;
       padding: 3rem;
@@ -301,6 +329,7 @@
             <th>Status</th>
             <th>Data de Cadastro</th>
             <th>Fim do Período</th>
+            <th>Ações</th>
           </tr>
         </thead>
         <tbody id="users-tbody">
@@ -471,10 +500,35 @@
           <td><span class="status-badge ${status}">${statusText}</span></td>
           <td>${createdDate}</td>
           <td>${endDate}</td>
+          <td><button class="btn btn-delete" onclick="deleteUser('${user.id}', '${user.email}')">🗑️ Remover</button></td>
         `;
 
         tbody.appendChild(tr);
       });
+    }
+
+    // Remover usuário
+    async function deleteUser(userId, userEmail) {
+      if (!confirm(`⚠️ ATENÇÃO: Tem certeza que deseja REMOVER permanentemente o usuário ${userEmail}?\n\nIsso vai:\n- Cancelar a assinatura no Stripe\n- Deletar todos os dados do usuário\n- Esta ação NÃO pode ser desfeita!`)) {
+        return;
+      }
+
+      try {
+        const functions = firebase.app().functions('southamerica-east1');
+        const deleteUserFunc = functions.httpsCallable('deleteUser');
+        
+        const result = await deleteUserFunc({ userId: userId });
+        
+        if (result.data.success) {
+          alert('✅ Usuário removido com sucesso!');
+          loadUsers(); // Recarregar lista
+        } else {
+          alert('Erro ao remover: ' + (result.data.message || 'Erro desconhecido'));
+        }
+      } catch (error) {
+        console.error('Erro ao remover usuário:', error);
+        alert('Erro ao remover usuário: ' + error.message);
+      }
     }
 
     // Pesquisa
