@@ -63,7 +63,7 @@ exports.createCheckoutSession = functions
       payment_method_types: ['card'],
       mode: 'subscription',
       line_items: [{
-        price: 'price_1SWj8IA6ujAHHqQDQuKmWiDV',
+        price: 'price_1SYmo1A6ujAHHqQDp808x7Gz', // R$ 6,99/mês
         quantity: 1,
       }],
       subscription_data: {
