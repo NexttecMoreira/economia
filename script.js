@@ -58,11 +58,15 @@ function filterDataByPeriod(items) {
     if (currentPeriod === 'dia') {
       return item.date === hoje_str;
     } else if (currentPeriod === 'mes') {
-      const itemDate = new Date(item.date);
+      // Corrigir bug de timezone: usar split ao invés de new Date direto
+      const [year, month, day] = item.date.split('-').map(Number);
+      const itemDate = new Date(year, month - 1, day);
       return itemDate.getMonth() === hoje.getMonth() && 
              itemDate.getFullYear() === hoje.getFullYear();
     } else if (currentPeriod === 'ano') {
-      const itemDate = new Date(item.date);
+      // Corrigir bug de timezone: usar split ao invés de new Date direto
+      const [year] = item.date.split('-').map(Number);
+      const itemDate = new Date(year, 0, 1);
       return itemDate.getFullYear() === hoje.getFullYear();
     }
     return false;
@@ -431,11 +435,64 @@ window.addEventListener('DOMContentLoaded', function() {
   
   // Botão de Ajuda - Instalar App
   const btnHelpInstall = document.getElementById('help-install-btn');
+  const modal = document.getElementById('install-modal');
+  const closeBtn = document.getElementById('close-modal');
+  const gotItBtn = document.getElementById('got-it-btn');
+  const installedBtn = document.getElementById('app-installed-btn');
+
+  // Função para fechar o modal
+  function closeModal() {
+    if (modal) {
+      modal.classList.remove('show');
+    }
+  }
+
+  // Função para marcar como instalado
+  function markAsInstalled() {
+    localStorage.setItem('appInstalled', 'true');
+    localStorage.setItem('appInstalledAt', new Date().toISOString());
+    closeModal();
+    console.log('App marcado como instalado');
+  }
+
+  // Event listeners dos botões do modal
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      closeModal();
+    });
+  }
+
+  if (gotItBtn) {
+    gotItBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      closeModal();
+    });
+  }
+
+  if (installedBtn) {
+    installedBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      markAsInstalled();
+    });
+  }
+
+  // Fechar ao clicar fora do modal
+  if (modal) {
+    modal.addEventListener('click', function(event) {
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
+  }
+
+  // Botão para abrir o modal
   if (btnHelpInstall) {
     btnHelpInstall.addEventListener('click', function() {
-      const modal = document.getElementById('install-modal');
       if (modal) {
-        // Ignorar verificações e mostrar o modal imediatamente
         modal.classList.add('show');
         
         // Detectar plataforma para mostrar instruções corretas
@@ -522,8 +579,8 @@ window.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Modal de Instalação PWA
-  showInstallModal();
+  // Modal de Instalação PWA - NÃO MOSTRAR AUTOMATICAMENTE
+  // showInstallModal(); // REMOVIDO
 });
 
 // Função para mostrar o modal de instalação
