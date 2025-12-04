@@ -514,6 +514,16 @@
         return;
       }
 
+      // Encontrar o botão e a linha para desabilitar/animar
+      const btn = event.target.closest('button');
+      const row = event.target.closest('tr');
+      
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = '⏳ Removendo...';
+        btn.style.opacity = '0.5';
+      }
+
       try {
         const functions = firebase.app().functions('southamerica-east1');
         const deleteUserFunc = functions.httpsCallable('deleteUser');
@@ -521,15 +531,75 @@
         const result = await deleteUserFunc({ userId: userId });
         
         if (result.data.success) {
-          alert('✅ Usuário removido com sucesso!');
-          loadUsers(); // Recarregar lista
+          // Animar a remoção da linha
+          if (row) {
+            row.style.transition = 'all 0.3s ease';
+            row.style.opacity = '0';
+            row.style.transform = 'translateX(-20px)';
+            
+            setTimeout(() => {
+              // Remover da array allUsers
+              allUsers = allUsers.filter(u => u.id !== userId);
+              
+              // Atualizar estatísticas
+              updateStats();
+              
+              // Remover a linha da tabela
+              row.remove();
+              
+              // Verificar se ainda tem usuários
+              if (allUsers.length === 0) {
+                document.getElementById('users-table').style.display = 'none';
+                document.getElementById('no-users').style.display = 'block';
+              }
+              
+              alert('✅ Usuário removido com sucesso!');
+            }, 300);
+          }
         } else {
           alert('Erro ao remover: ' + (result.data.message || 'Erro desconhecido'));
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '🗑️ Remover';
+            btn.style.opacity = '1';
+          }
         }
       } catch (error) {
         console.error('Erro ao remover usuário:', error);
         alert('Erro ao remover usuário: ' + error.message);
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '🗑️ Remover';
+          btn.style.opacity = '1';
+        }
       }
+    }
+
+    // Atualizar estatísticas
+    function updateStats() {
+      let totalUsers = allUsers.length;
+      let activeSubs = 0;
+      let trialSubs = 0;
+      let canceledSubs = 0;
+
+      allUsers.forEach(user => {
+        if (user.subscription) {
+          if (user.subscription.status === 'active') {
+            activeSubs++;
+          } else if (user.subscription.status === 'trialing') {
+            trialSubs++;
+          } else {
+            canceledSubs++;
+          }
+        } else {
+          canceledSubs++;
+        }
+      });
+
+      document.getElementById('total-users').textContent = totalUsers;
+      document.getElementById('active-subs').textContent = activeSubs;
+      document.getElementById('trial-subs').textContent = trialSubs;
+      document.getElementById('canceled-subs').textContent = canceledSubs;
     }
 
     // Pesquisa
