@@ -112,6 +112,8 @@ exports.createPortalSession = functions
   try {
     const { userId } = data;
 
+    console.log('🔧 createPortalSession iniciado para userId:', userId);
+
     if (!userId) {
       throw new functions.https.HttpsError('invalid-argument', 'userId é obrigatório');
     }
@@ -119,40 +121,64 @@ exports.createPortalSession = functions
     const userDoc = await admin.firestore().collection('users').doc(userId).get();
     let customerId = userDoc.data()?.stripeCustomerId;
 
+    console.log('📋 CustomerId encontrado no Firestore:', customerId);
+
     if (!customerId) {
       throw new functions.https.HttpsError('not-found', 'Você precisa de uma assinatura ativa para gerenciar.');
     }
 
     // Verificar se o customer ainda existe no Stripe
     try {
+      console.log('🔍 Verificando se customer existe no Stripe...');
       await stripe.customers.retrieve(customerId);
       console.log('✅ Customer válido para portal:', customerId);
-    } catch (error) {
-      console.log('⚠️ Erro ao buscar customer no portal:', error.type, error.code, error.message);
+    } catch (retrieveError) {
+      console.log('⚠️ Erro ao buscar customer:', retrieveError.type, retrieveError.code, retrieveError.message);
+      
       // Se customer não existe, retornar erro amigável
-      if (error.type === 'StripeInvalidRequestError' || error.code === 'resource_missing' || error.message.includes('No such customer')) {
+      if (retrieveError.type === 'StripeInvalidRequestError' || 
+          retrieveError.code === 'resource_missing' || 
+          retrieveError.message?.includes('No such customer')) {
+        
         console.error('❌ Customer não existe no Stripe:', customerId);
+        console.log('🗑️ Limpando customerId inválido do Firestore...');
         
         // Limpar o customerId inválido do Firestore
         await admin.firestore().collection('users').doc(userId).update({
           stripeCustomerId: admin.firestore.FieldValue.delete()
         });
         
-        throw new functions.https.HttpsError('not-found', 'Sua assinatura não foi encontrada. Por favor, crie uma nova assinatura.');
+        console.log('✅ CustomerId removido do Firestore');
+        
+        throw new functions.https.HttpsError(
+          'not-found', 
+          'Sua assinatura anterior foi removida. Por favor, crie uma nova assinatura na página de preços.'
+        );
       } else {
-        throw error;
+        // Outro tipo de erro, re-lançar
+        throw new functions.https.HttpsError('internal', `Erro ao verificar customer: ${retrieveError.message}`);
       }
     }
 
+    console.log('🔐 Criando sessão do billing portal...');
     const session = await stripe.billingPortal.sessions.create({
       customer: customerId,
       return_url: 'https://economia-5c8de.web.app/index.html',
     });
 
+    console.log('✅ Sessão criada com sucesso:', session.id);
     return { url: session.url };
+    
   } catch (error) {
-    console.error('Erro ao criar portal:', error);
-    throw new functions.https.HttpsError('internal', error.message);
+    console.error('❌ Erro em createPortalSession:', error);
+    
+    // Se já é um HttpsError, re-lançar como está
+    if (error.code && error.code.startsWith('functions/')) {
+      throw error;
+    }
+    
+    // Outros erros, encapsular
+    throw new functions.https.HttpsError('internal', error.message || 'Erro desconhecido ao criar portal');
   }
 });
 
