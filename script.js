@@ -533,23 +533,44 @@ window.addEventListener('DOMContentLoaded', function() {
     const btn = this;
     btn.disabled = true;
     const originalText = btn.innerHTML;
-    btn.innerHTML = 'Carregando...';
+    btn.innerHTML = '⏳ Abrindo...';
 
     try {
+      console.log('🔧 Iniciando createPortalSession para userId:', currentUser.uid);
+      
       const functions = firebase.app().functions('southamerica-east1');
       const createPortalSession = functions.httpsCallable('createPortalSession');
       
+      console.log('📞 Chamando função createPortalSession...');
       const result = await createPortalSession({ userId: currentUser.uid });
+      
+      console.log('✅ Resposta recebida:', result.data);
 
       if (result.data.url) {
+        console.log('🔗 Redirecionando para:', result.data.url);
         // Redirecionar para o portal do Stripe
         window.location.href = result.data.url;
       } else {
         throw new Error('URL do portal não retornada');
       }
     } catch (error) {
-      console.error('Erro ao abrir portal:', error);
-      alert('Erro ao abrir gerenciamento de assinatura. Tente novamente.');
+      console.error('❌ Erro completo ao abrir portal:', error);
+      console.error('Código do erro:', error.code);
+      console.error('Mensagem:', error.message);
+      console.error('Detalhes:', error.details);
+      
+      let errorMessage = 'Erro ao abrir gerenciamento de assinatura.';
+      
+      if (error.code === 'not-found') {
+        errorMessage = error.message || 'Você não tem uma assinatura ativa. Por favor, crie uma assinatura primeiro.';
+      } else if (error.code === 'invalid-argument') {
+        errorMessage = 'Dados inválidos. Por favor, tente novamente.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      console.error('📢 Mostrando erro ao usuário:', errorMessage);
+      alert(errorMessage);
       btn.disabled = false;
       btn.innerHTML = originalText;
     }

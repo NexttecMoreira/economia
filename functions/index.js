@@ -19,6 +19,28 @@ exports.createCheckoutSession = functions
     const userDoc = await admin.firestore().collection('users').doc(userId).get();
     let customerId = userDoc.data()?.stripeCustomerId;
 
+    // Se existe customerId, verificar se ele ainda existe no Stripe
+    if (customerId) {
+      try {
+        const customer = await stripe.customers.retrieve(customerId);
+        console.log('✅ Customer existente válido:', customerId);
+      } catch (error) {
+        console.log('⚠️ Erro ao buscar customer:', error.type, error.code, error.message);
+        // Stripe retorna erro quando customer não existe
+        if (error.type === 'StripeInvalidRequestError' || error.code === 'resource_missing' || error.message.includes('No such customer')) {
+          console.log('🗑️ Customer não existe mais no Stripe, será recriado');
+          customerId = null; // Resetar para criar novo
+          
+          // Limpar o customerId inválido do Firestore
+          await admin.firestore().collection('users').doc(userId).update({
+            stripeCustomerId: admin.firestore.FieldValue.delete()
+          });
+        } else {
+          throw error;
+        }
+      }
+    }
+
     // Se não existe, verificar se já existe customer no Stripe com este email (EVITA DUPLICAÇÃO)
     if (!customerId) {
       console.log('Buscando customer existente por email:', email);
@@ -67,7 +89,7 @@ exports.createCheckoutSession = functions
         quantity: 1,
       }],
       subscription_data: {
-        trial_period_days: 7,
+        trial_period_days: 7,  // 7 dias de trial
       },
       success_url: 'https://economia-5c8de.web.app/success.html?session_id={CHECKOUT_SESSION_ID}',
       cancel_url: 'https://economia-5c8de.web.app/pricing.html',
@@ -95,15 +117,36 @@ exports.createPortalSession = functions
     }
 
     const userDoc = await admin.firestore().collection('users').doc(userId).get();
-    const customerId = userDoc.data()?.stripeCustomerId;
+    let customerId = userDoc.data()?.stripeCustomerId;
 
     if (!customerId) {
-      throw new functions.https.HttpsError('not-found', 'Cliente não encontrado');
+      throw new functions.https.HttpsError('not-found', 'Você precisa de uma assinatura ativa para gerenciar.');
+    }
+
+    // Verificar se o customer ainda existe no Stripe
+    try {
+      await stripe.customers.retrieve(customerId);
+      console.log('✅ Customer válido para portal:', customerId);
+    } catch (error) {
+      console.log('⚠️ Erro ao buscar customer no portal:', error.type, error.code, error.message);
+      // Se customer não existe, retornar erro amigável
+      if (error.type === 'StripeInvalidRequestError' || error.code === 'resource_missing' || error.message.includes('No such customer')) {
+        console.error('❌ Customer não existe no Stripe:', customerId);
+        
+        // Limpar o customerId inválido do Firestore
+        await admin.firestore().collection('users').doc(userId).update({
+          stripeCustomerId: admin.firestore.FieldValue.delete()
+        });
+        
+        throw new functions.https.HttpsError('not-found', 'Sua assinatura não foi encontrada. Por favor, crie uma nova assinatura.');
+      } else {
+        throw error;
+      }
     }
 
     const session = await stripe.billingPortal.sessions.create({
       customer: customerId,
-      return_url: 'https://economia-5c8de.web.app/account.html',
+      return_url: 'https://economia-5c8de.web.app/index.html',
     });
 
     return { url: session.url };
@@ -486,29 +529,82 @@ exports.checkSubscription = functions
     const now = new Date();
     const periodEnd = subscription.currentPeriodEnd?.toDate();
     const trialEnd = subscription.trialEnd?.toDate();
-    const isActive = subscription.status === 'active' || subscription.status === 'trialing';
+    const status = subscription.status;
     
-    // Se está em trial, verificar trialEnd; senão verificar periodEnd
-    let hasAccess = false;
-    if (subscription.status === 'trialing' && trialEnd) {
-      hasAccess = trialEnd > now;
-    } else if (subscription.status === 'active' && periodEnd) {
-      hasAccess = periodEnd > now;
-    }
-
-    console.log('Status da assinatura:', subscription.status);
-    console.log('Está ativa/trial?', isActive);
+    console.log('Status da assinatura:', status);
     console.log('Período termina em:', periodEnd);
     console.log('Trial termina em:', trialEnd);
+    console.log('Data/hora atual:', now);
+    
+    // Verificar se tem acesso
+    let hasAccess = false;
+    let reason = '';
+    
+    // Dar acesso se:
+    // 1. Status é 'active' e período ainda é válido
+    // 2. Status é 'trialing' e trial ainda é válido
+    // 3. Status é 'past_due' mas período ainda não expirou (pagamento pendente)
+    // 4. Status é 'active' mesmo sem periodEnd (assumir que é válido)
+    // 5. Status é 'trialing' mesmo sem trialEnd (assumir que é válido)
+    
+    if (status === 'active') {
+      if (periodEnd && periodEnd > now) {
+        hasAccess = true;
+        reason = 'active_and_valid';
+      } else if (!periodEnd) {
+        // Se não tem periodEnd mas está active, considerar válido
+        hasAccess = true;
+        reason = 'active_no_period_end';
+      } else {
+        hasAccess = false;
+        reason = 'active_but_expired';
+      }
+    } else if (status === 'trialing') {
+      if (trialEnd && trialEnd > now) {
+        hasAccess = true;
+        reason = 'trialing_and_valid';
+      } else if (!trialEnd) {
+        // Se não tem trialEnd mas está trialing, considerar válido
+        hasAccess = true;
+        reason = 'trialing_no_end_date';
+      } else {
+        // Trial expirou mas pode estar esperando cobrar
+        hasAccess = true;
+        reason = 'trialing_but_waiting_charge';
+      }
+    } else if (status === 'past_due') {
+      // Pagamento pendente mas período ainda válido
+      if (periodEnd && periodEnd > now) {
+        hasAccess = true;
+        reason = 'past_due_but_period_valid';
+      } else {
+        hasAccess = false;
+        reason = 'past_due_and_expired';
+      }
+    } else if (status === 'incomplete') {
+      // Assinatura incompleta, não dar acesso
+      hasAccess = false;
+      reason = 'incomplete_subscription';
+    } else if (status === 'canceled') {
+      // Cancelada definitivamente
+      hasAccess = false;
+      reason = 'canceled';
+    } else {
+      hasAccess = false;
+      reason = 'unknown_status_' + status;
+    }
+    
     console.log('Tem acesso?', hasAccess);
+    console.log('Razão:', reason);
     console.log('=== checkSubscription finalizado ===');
 
     return {
       hasAccess,
-      status: subscription.status,
+      status: status,
       currentPeriodEnd: periodEnd,
-      trialEnd: subscription.trialEnd?.toDate(),
-      cancelAtPeriodEnd: subscription.cancelAtPeriodEnd
+      trialEnd: trialEnd,
+      cancelAtPeriodEnd: subscription.cancelAtPeriodEnd,
+      reason: reason
     };
   } catch (error) {
     console.error('❌ Erro ao verificar assinatura:', error);
