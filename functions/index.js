@@ -79,8 +79,12 @@ exports.createCheckoutSession = functions
       }, { merge: true });
     }
 
-    // Criar sessão de checkout
-    const session = await stripe.checkout.sessions.create({
+    // Verificar se o usuário já usou o período de teste (trial)
+    const userData = userDoc.exists ? userDoc.data() : {};
+    const alreadyUsedTrial = userData.trialUsed === true;
+
+    // Configuração base da sessão de checkout
+    const sessionConfig = {
       customer: customerId,
       payment_method_types: ['card'],
       mode: 'subscription',
@@ -88,15 +92,29 @@ exports.createCheckoutSession = functions
         price: 'price_1SYmo1A6ujAHHqQDp808x7Gz', // R$ 6,99/mês
         quantity: 1,
       }],
-      subscription_data: {
-        trial_period_days: 7,  // 7 dias de trial
-      },
       success_url: 'https://economia-5c8de.web.app/success.html?session_id={CHECKOUT_SESSION_ID}',
       cancel_url: 'https://economia-5c8de.web.app/pricing.html',
       metadata: {
         firebaseUID: userId
       }
-    });
+    };
+
+    // Só aplicar trial de 7 dias se o usuário ainda não usou
+    if (!alreadyUsedTrial) {
+      sessionConfig.subscription_data = {
+        trial_period_days: 7, // 7 dias de trial
+      };
+    }
+
+    // Criar sessão de checkout com a configuração definida
+    const session = await stripe.checkout.sessions.create(sessionConfig);
+
+    // Se acabamos de conceder um trial pela primeira vez, marcar no Firestore
+    if (!alreadyUsedTrial) {
+      await admin.firestore().collection('users').doc(userId).set({
+        trialUsed: true
+      }, { merge: true });
+    }
 
     return { sessionId: session.id, url: session.url };
   } catch (error) {
