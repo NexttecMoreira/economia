@@ -1,14 +1,109 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const stripe = require('stripe')(functions.config().stripe.secret_key);
+
+const stripeSecretKey = functions.config()?.stripe?.secret_key;
+const stripe = stripeSecretKey ? require('stripe')(stripeSecretKey) : null;
+
+function requireStripe() {
+  if (!stripe) {
+    throw new functions.https.HttpsError(
+      'failed-precondition',
+      'Stripe não configurado (functions.config().stripe.secret_key ausente).'
+    );
+  }
+  return stripe;
+}
 
 admin.initializeApp();
+
+// Converte diferentes formatos vindos do Firestore/Stripe em Date
+function toDateSafe(value) {
+  if (!value) return null;
+
+  // Firestore Timestamp
+  if (typeof value?.toDate === 'function') {
+    try {
+      return value.toDate();
+    } catch (_) {
+      // continua
+    }
+  }
+
+  // JS Date
+  if (value instanceof Date) return value;
+
+  // Stripe/Firestore pode vir como número (segundos ou ms)
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    // Heurística: timestamps em segundos são ~10 dígitos
+    const ms = value < 3e12 ? value * 1000 : value;
+    const d = new Date(ms);
+    return Number.isNaN(d.getTime()) ? null : d;
+  }
+
+  // String parseável
+  if (typeof value === 'string') {
+    const d = new Date(value);
+    return Number.isNaN(d.getTime()) ? null : d;
+  }
+
+  return null;
+}
+
+function computeAccessFromDates({ status, now, periodEnd, trialEnd }) {
+  let hasAccess = false;
+  let reason = '';
+
+  if (status === 'active') {
+    if (periodEnd && periodEnd > now) {
+      hasAccess = true;
+      reason = 'active_and_valid';
+    } else if (!periodEnd) {
+      hasAccess = true;
+      reason = 'active_no_period_end';
+    } else {
+      hasAccess = false;
+      reason = 'active_but_expired';
+    }
+  } else if (status === 'trialing') {
+    if (trialEnd && trialEnd > now) {
+      hasAccess = true;
+      reason = 'trialing_and_valid';
+    } else if (!trialEnd) {
+      hasAccess = true;
+      reason = 'trialing_no_end_date';
+    } else {
+      // Trial expirou mas pode estar aguardando cobrança
+      hasAccess = true;
+      reason = 'trialing_but_waiting_charge';
+    }
+  } else if (status === 'past_due') {
+    if (periodEnd && periodEnd > now) {
+      hasAccess = true;
+      reason = 'past_due_but_period_valid';
+    } else {
+      hasAccess = false;
+      reason = 'past_due_and_expired';
+    }
+  } else if (status === 'incomplete') {
+    hasAccess = false;
+    reason = 'incomplete_subscription';
+  } else if (status === 'canceled') {
+    hasAccess = false;
+    reason = 'canceled';
+  } else {
+    hasAccess = false;
+    reason = 'unknown_status_' + status;
+  }
+
+  return { hasAccess, reason };
+}
 
 // Criar sessão de checkout do Stripe usando onCall (CORS automático)
 exports.createCheckoutSession = functions
   .region('southamerica-east1')
   .https.onCall(async (data, context) => {
   try {
+    const stripe = requireStripe();
     const { userId, email } = data;
 
     if (!userId || !email) {
@@ -89,7 +184,7 @@ exports.createCheckoutSession = functions
       payment_method_types: ['card'],
       mode: 'subscription',
       line_items: [{
-        price: 'price_1SYmo1A6ujAHHqQDp808x7Gz', // R$ 6,99/mês
+        price: 'price_1Sjf8CA6ujAHHqQDJfPUuL1g',
         quantity: 1,
       }],
       success_url: 'https://economia-5c8de.web.app/success.html?session_id={CHECKOUT_SESSION_ID}',
@@ -205,6 +300,7 @@ exports.cancelSubscription = functions
   .region('southamerica-east1')
   .https.onCall(async (data, context) => {
   try {
+    const stripe = requireStripe();
     const { userId } = data;
 
     if (!userId) {
@@ -321,8 +417,21 @@ exports.deleteUser = functions
 
 // Webhook para receber eventos do Stripe
 exports.stripeWebhook = functions.https.onRequest(async (req, res) => {
+  let stripe;
+  try {
+    stripe = requireStripe();
+  } catch (e) {
+    console.error('Stripe não configurado para webhook:', e.message);
+    return res.status(500).json({ error: e.message });
+  }
+
   const sig = req.headers['stripe-signature'];
-  const endpointSecret = functions.config().stripe.webhook_secret;
+  const endpointSecret = functions.config()?.stripe?.webhook_secret;
+
+  if (!endpointSecret) {
+    console.error('Stripe webhook_secret não configurado (functions.config().stripe.webhook_secret ausente).');
+    return res.status(500).json({ error: 'Stripe webhook_secret não configurado.' });
+  }
 
   let event;
 
@@ -367,6 +476,7 @@ exports.stripeWebhook = functions.https.onRequest(async (req, res) => {
 
 async function handleSubscriptionUpdate(subscription) {
   try {
+    const stripe = requireStripe();
     const customerId = subscription.customer;
     console.log('Processando subscription update para customer:', customerId);
     
@@ -415,6 +525,7 @@ async function handleSubscriptionUpdate(subscription) {
 }
 
 async function handleSubscriptionDeleted(subscription) {
+  const stripe = requireStripe();
   const customerId = subscription.customer;
   const customer = await stripe.customers.retrieve(customerId);
   const userId = customer.metadata.firebaseUID;
@@ -433,6 +544,7 @@ async function handleSubscriptionDeleted(subscription) {
 
 async function handlePaymentSucceeded(invoice) {
   try {
+    const stripe = requireStripe();
     const customerId = invoice.customer;
     console.log('Processando pagamento bem-sucedido para customer:', customerId);
     
@@ -478,6 +590,7 @@ async function handlePaymentSucceeded(invoice) {
 }
 
 async function handlePaymentFailed(invoice) {
+  const stripe = requireStripe();
   const customerId = invoice.customer;
   const customer = await stripe.customers.retrieve(customerId);
   const userId = customer.metadata.firebaseUID;
@@ -570,72 +683,110 @@ exports.checkSubscription = functions
       return { hasAccess: false, status: 'no_subscription' };
     }
 
-    const now = new Date();
-    const periodEnd = subscription.currentPeriodEnd?.toDate();
-    const trialEnd = subscription.trialEnd?.toDate();
-    const status = subscription.status;
+  const now = new Date();
+  const status = subscription.status;
+  const periodEnd = toDateSafe(subscription.currentPeriodEnd);
+  const trialEnd = toDateSafe(subscription.trialEnd);
     
     console.log('Status da assinatura:', status);
     console.log('Período termina em:', periodEnd);
     console.log('Trial termina em:', trialEnd);
     console.log('Data/hora atual:', now);
     
-    // Verificar se tem acesso
-    let hasAccess = false;
-    let reason = '';
-    
-    // Dar acesso se:
-    // 1. Status é 'active' e período ainda é válido
-    // 2. Status é 'trialing' e trial ainda é válido
-    // 3. Status é 'past_due' mas período ainda não expirou (pagamento pendente)
-    // 4. Status é 'active' mesmo sem periodEnd (assumir que é válido)
-    // 5. Status é 'trialing' mesmo sem trialEnd (assumir que é válido)
-    
-    if (status === 'active') {
-      if (periodEnd && periodEnd > now) {
-        hasAccess = true;
-        reason = 'active_and_valid';
-      } else if (!periodEnd) {
-        // Se não tem periodEnd mas está active, considerar válido
-        hasAccess = true;
-        reason = 'active_no_period_end';
-      } else {
-        hasAccess = false;
-        reason = 'active_but_expired';
+    // Verificar se tem acesso a partir dos dados do Firestore
+    let { hasAccess, reason } = computeAccessFromDates({
+      status,
+      now,
+      periodEnd,
+      trialEnd
+    });
+
+    // Se o Firestore estiver incoerente (ex.: Stripe diz trialing até X mas aqui nega),
+    // fazer fallback consultando o Stripe e re-sincronizar o Firestore.
+    // Isso elimina bloqueios indevidos quando webhook falha/atrasa.
+    if (!hasAccess) {
+      const stripeSubscriptionId = subscription?.stripeSubscriptionId;
+      const stripeCustomerId = userData?.stripeCustomerId || subscription?.stripeCustomerId;
+
+      console.log('🔄 Sem acesso via Firestore. Tentando fallback no Stripe...');
+      console.log('stripeSubscriptionId:', stripeSubscriptionId || '(vazio)');
+      console.log('stripeCustomerId:', stripeCustomerId || '(vazio)');
+
+      try {
+        const stripe = requireStripe();
+        let stripeSub = null;
+
+        if (stripeSubscriptionId) {
+          stripeSub = await stripe.subscriptions.retrieve(stripeSubscriptionId);
+        } else if (stripeCustomerId) {
+          const subs = await stripe.subscriptions.list({
+            customer: stripeCustomerId,
+            status: 'all',
+            limit: 1
+          });
+          stripeSub = subs.data?.[0] || null;
+        }
+
+        if (stripeSub) {
+          console.log('✅ Fallback Stripe subscription encontrada:', stripeSub.id, 'status:', stripeSub.status);
+
+          const stripePeriodEnd = stripeSub.current_period_end
+            ? new Date(stripeSub.current_period_end * 1000)
+            : null;
+          const stripeTrialEnd = stripeSub.trial_end
+            ? new Date(stripeSub.trial_end * 1000)
+            : null;
+
+          const stripeStatus = stripeSub.status || 'unknown';
+          const computed = computeAccessFromDates({
+            status: stripeStatus,
+            now,
+            periodEnd: stripePeriodEnd,
+            trialEnd: stripeTrialEnd
+          });
+
+          // Re-sincronizar Firestore com a fonte da verdade (Stripe)
+          await admin.firestore().collection('users').doc(userId).set({
+            subscription: {
+              stripeCustomerId: stripeSub.customer || stripeCustomerId || '',
+              stripeSubscriptionId: stripeSub.id || stripeSubscriptionId || '',
+              status: stripeStatus,
+              currentPeriodStart: stripeSub.current_period_start
+                ? new Date(stripeSub.current_period_start * 1000)
+                : admin.firestore.FieldValue.serverTimestamp(),
+              currentPeriodEnd: stripePeriodEnd,
+              cancelAtPeriodEnd: stripeSub.cancel_at_period_end === true,
+              trialEnd: stripeTrialEnd,
+              planId: (stripeSub.items && stripeSub.items.data && stripeSub.items.data[0])
+                ? stripeSub.items.data[0].price.id
+                : '',
+              updatedAt: admin.firestore.FieldValue.serverTimestamp()
+            }
+          }, { merge: true });
+
+          hasAccess = computed.hasAccess;
+          reason = 'stripe_fallback_' + computed.reason;
+
+          // Atualizar as datas retornadas
+          // (para facilitar debug no front)
+          console.log('🔁 Resultado após Stripe fallback - hasAccess?', hasAccess, 'reason:', reason);
+          return {
+            hasAccess,
+            status: stripeStatus,
+            currentPeriodEnd: stripePeriodEnd,
+            trialEnd: stripeTrialEnd,
+            cancelAtPeriodEnd: stripeSub.cancel_at_period_end === true,
+            reason
+          };
+        } else {
+          console.log('⚠️ Nenhuma subscription encontrada no Stripe no fallback');
+          reason = reason || 'stripe_fallback_no_subscription';
+        }
+      } catch (stripeErr) {
+        console.error('⚠️ Erro no fallback do Stripe:', stripeErr?.type, stripeErr?.code, stripeErr?.message);
+        // Mantém a decisão do Firestore, mas registra o motivo
+        reason = (reason || 'no_access') + '_stripe_fallback_failed';
       }
-    } else if (status === 'trialing') {
-      if (trialEnd && trialEnd > now) {
-        hasAccess = true;
-        reason = 'trialing_and_valid';
-      } else if (!trialEnd) {
-        // Se não tem trialEnd mas está trialing, considerar válido
-        hasAccess = true;
-        reason = 'trialing_no_end_date';
-      } else {
-        // Trial expirou mas pode estar esperando cobrar
-        hasAccess = true;
-        reason = 'trialing_but_waiting_charge';
-      }
-    } else if (status === 'past_due') {
-      // Pagamento pendente mas período ainda válido
-      if (periodEnd && periodEnd > now) {
-        hasAccess = true;
-        reason = 'past_due_but_period_valid';
-      } else {
-        hasAccess = false;
-        reason = 'past_due_and_expired';
-      }
-    } else if (status === 'incomplete') {
-      // Assinatura incompleta, não dar acesso
-      hasAccess = false;
-      reason = 'incomplete_subscription';
-    } else if (status === 'canceled') {
-      // Cancelada definitivamente
-      hasAccess = false;
-      reason = 'canceled';
-    } else {
-      hasAccess = false;
-      reason = 'unknown_status_' + status;
     }
     
     console.log('Tem acesso?', hasAccess);

@@ -243,11 +243,11 @@ body {
 .datas-calendario {
   background: linear-gradient(180deg, #0f0f0fff, rgba(22, 22, 22, 1));
   backdrop-filter: blur(10px);
-  border: 1px solid #ffaa0044;
+  border: 1px solid rgba(29, 185, 84, 0.27);
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 2rem;
-  box-shadow: 0 8px 25px rgba(255, 183, 0, 0.16);
+  box-shadow: 0 8px 25px rgba(29, 185, 84, 0.16);
 }
 
 .datas-dias-semana {
@@ -354,11 +354,11 @@ body {
 .datas-detalhes {
   background: linear-gradient(180deg, #0f0f0fff, rgba(22, 22, 22, 1));
   backdrop-filter: blur(10px);
-  border: 1px solid #ffaa0044;
+  border: 1px solid rgba(29, 185, 84, 0.27);
   border-radius: 12px;
   padding: 1.5rem;
   display: none;
-  box-shadow: 0 8px 25px rgba(255, 183, 0, 0.16);
+  box-shadow: 0 8px 25px rgba(29, 185, 84, 0.16);
   margin-bottom: 2rem;
 }
 

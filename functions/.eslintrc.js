@@ -18,6 +18,23 @@ module.exports = {
   },
   overrides: [
     {
+      files: ["index.js"],
+      rules: {
+        "indent": "off",
+        "quotes": "off",
+        "max-len": "off",
+        "require-jsdoc": "off",
+        "object-curly-spacing": "off",
+        "comma-dangle": "off",
+        "arrow-parens": "off",
+        "operator-linebreak": "off",
+        "padded-blocks": "off",
+        "no-trailing-spaces": "off",
+        "no-unused-vars": "off",
+        "prefer-const": "off",
+      },
+    },
+    {
       files: ["**/*.spec.*"],
       env: {
         mocha: true,

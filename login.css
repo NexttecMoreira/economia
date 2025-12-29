@@ -36,10 +36,10 @@ body {
   background: linear-gradient(180deg, #0f0f0fff, rgba(22, 22, 22, 1));
   border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 8px 25px rgba(255, 183, 0, 0.16);
+  box-shadow: 0 8px 25px rgba(29, 185, 84, 0.16);
   text-align: center;
   color: #E6EDF3;
-  border: 1px solid #ffaa0044;
+  border: 1px solid rgba(29, 185, 84, 0.27);
 }
 
 /* Logo e Branding */
@@ -276,7 +276,7 @@ body {
 .btn--primary:hover {
   background: linear-gradient(135deg, #212121ff 0%, #202020ff 100%);
   box-shadow: 0 6px 20px rgba(75, 75, 75, 0.4);
-  border: 1px solid #836e0570;
+  border: 1px solid rgba(46, 204, 113, 0.65);
 }
 
 .btn:not(.btn--primary) {
@@ -335,20 +335,20 @@ body {
 /* Premium Button */
 .btn-premium {
   display: inline-block;
-        background: linear-gradient(135deg, #E57C23 0%, #D97320 100%);
+  background: linear-gradient(135deg, #1DB954 0%, #145A32 100%);
   color: white;
   padding: 0.6rem 1.2rem;
   border-radius: 8px;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.95rem;
-  box-shadow: 0 4px 15px rgba(229, 124, 35, 0.4);
+  box-shadow: 0 4px 15px rgba(29, 185, 84, 0.35);
   transition: all 0.3s ease;
 }
 
 .btn-premium:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(229, 124, 35, 0.6);
+  box-shadow: 0 6px 20px rgba(29, 185, 84, 0.55);
 }
 
 /* Privacy Text */

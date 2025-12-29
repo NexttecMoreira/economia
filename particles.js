@@ -8,13 +8,21 @@ document.body.prepend(canvas);
 const ctx = canvas.getContext('2d');
 let particles = [];
 const PARTICLE_COUNT = 70;
+// Paleta alinhada ao tema (verde)
+// Primary:   #1DB954
+// Secondary: #2ECC71
+// Dark:      #145A32
 const colors = [
-  '#111', '#222', '#333', '#444', '#555', '#888', '#d1d5db',
-  '#FFD700', // dourado
-  '#FFC300', // dourado intenso
-  '#BFA640'  // dourado escuro
+  // neutros (bem sutis no fundo escuro)
+  '#111', '#1a1a1a', '#222', '#2a2a2a', '#333', '#444',
+  // verdes do tema
+  '#1DB954', // primary
+  '#2ECC71', // secondary
+  '#145A32'  // dark accent
 ];
-const LINE_COLOR = '#222';
+
+// Linhas levemente esverdeadas (mais “premium” e combinando com o tema)
+const LINE_COLOR = 'rgba(46, 204, 113, 0.35)';
 const LINE_MAX_DIST = 120;
 
 function resizeCanvas() {

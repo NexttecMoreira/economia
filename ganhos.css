@@ -456,11 +456,11 @@ body {
 }
 
 .ganhos-link-gastos {
-  background: linear-gradient(135deg, #E57C23 0%, #D84315 100%);
+  background: linear-gradient(135deg, #E57C23 0%, #D97320 100%);
 }
 
 .ganhos-link-gastos:hover {
-  background: linear-gradient(135deg, #FF9800 0%, #E64A19 100%);
+  background: linear-gradient(135deg, #D97320 0%, #D84315 100%);
 }
 
 /* Custom scrollbar */

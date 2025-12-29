@@ -161,7 +161,7 @@ function updateCharts() {
     });
     const labels = Object.keys(grouped);
     const values = Object.values(grouped);
-    const colors = generateColors(labels.length, '#E57C23');
+  const colors = generateColors(labels.length, '#E57C23');
     
     expenseChart.data.labels = labels;
     expenseChart.data.datasets[0].data = values;

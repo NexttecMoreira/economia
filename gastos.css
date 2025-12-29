@@ -184,9 +184,20 @@ body {
 }
 
 .gastos-btn-add:hover {
-  background: #bc6519ff;
-  box-shadow: 0 6px 20px rgba(224, 15, 15, 0.6);
+  background: #D97320;
+  box-shadow: 0 6px 20px rgba(229, 124, 35, 0.55);
   transform: translateY(-2px);
+}
+
+.gastos-btn-add:active {
+  transform: translateY(0);
+  background: #D84315;
+  box-shadow: 0 4px 15px rgba(229, 124, 35, 0.45);
+}
+
+.gastos-btn-add:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(229, 124, 35, 0.35), 0 6px 20px rgba(229, 124, 35, 0.45);
 }
 
 .gastos-btn-cancelar {

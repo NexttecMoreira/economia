@@ -24,7 +24,7 @@ body {
 
 .pricing-header h1 {
   font-size: 2.5rem;
-  color: #E57C23;
+  color: #1DB954;
   margin-bottom: 1rem;
 }
 
@@ -37,14 +37,14 @@ body {
   background: linear-gradient(180deg, #0f0f0fff, rgba(22, 22, 22, 1));
   border-radius: 12px;
   padding: 3rem;
-  box-shadow: 0 8px 25px rgba(255, 183, 0, 0.16);
-  border: 1px solid #ffaa0044;
+  box-shadow: 0 8px 25px rgba(29, 185, 84, 0.16);
+  border: 1px solid rgba(29, 185, 84, 0.27);
   text-align: center;
 }
 
 .pricing-badge {
   display: inline-block;
-  background: linear-gradient(135deg, #E57C23 0%, #D97320 100%);
+  background: linear-gradient(135deg, #2ECC71 0%, #145A32 100%);
   color: white;
   padding: 0.5rem 1.5rem;
   border-radius: 50px;
@@ -56,7 +56,7 @@ body {
 .pricing-price {
   font-size: 4rem;
   font-weight: 700;
-  color: #E57C23;
+  color: #1DB954;
   margin: 1rem 0;
 }
 
@@ -100,19 +100,19 @@ body {
   padding: 1.2rem;
   font-size: 1.2rem;
   font-weight: 600;
-  background: linear-gradient(135deg, #E57C23 0%, #D97320 100%);
+  background: linear-gradient(135deg, #1DB954 0%, #145A32 100%);
   color: white;
   border: none;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(229, 124, 35, 0.4);
+  box-shadow: 0 4px 15px rgba(29, 185, 84, 0.35);
   margin-top: 2rem;
 }
 
 .pricing-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(229, 124, 35, 0.6);
+  box-shadow: 0 8px 25px rgba(29, 185, 84, 0.55);
 }
 
 .pricing-btn:disabled {
@@ -128,7 +128,7 @@ body {
 }
 
 .pricing-login-link a {
-  color: #E57C23;
+  color: #2ECC71;
   text-decoration: none;
   font-weight: 600;
 }
@@ -156,14 +156,14 @@ body {
   text-decoration: none;
   border-radius: 10px;
   font-weight: 600;
-  border: 1px solid #ffaa0044;
+  border: 1px solid rgba(29, 185, 84, 0.27);
   transition: all 0.3s ease;
   margin-bottom: 2rem;
   margin-left: -2rem;
 }
 
 .back-button:hover {
-  border-color: #ffaa0066;
+  border-color: rgba(46, 204, 113, 0.45);
   color: #E6EDF3;
   transform: translateY(-2px);
 }

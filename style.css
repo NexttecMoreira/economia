@@ -1,5 +1,30 @@
 /* Estilos para NextFlow - Sistema Financeiro */
 
+/* ============================================================
+   THEME COLORS (Paleta Principal)
+   Primary:   #1DB954 (ações/botões principais)
+   Secondary: #2ECC71 (badges, destaques, gráficos)
+   Dark:      #145A32 (accent escuro: header/footer/ícones ativos)
+   ============================================================ */
+
+:root {
+  --nf-primary: #1DB954;
+  --nf-secondary: #2ECC71;
+  --nf-dark-accent: #145A32;
+
+  /* Helpers (para reusar onde antes era “laranja”) */
+  --nf-accent: var(--nf-primary);
+  --nf-accent-2: var(--nf-secondary);
+  --nf-accent-soft-border: rgba(29, 185, 84, 0.27);
+  --nf-accent-soft-shadow: rgba(29, 185, 84, 0.16);
+  --nf-accent-soft-bg: rgba(29, 185, 84, 0.12);
+
+  /* Gastos (laranja) - apenas para seções/elementos de despesa */
+  --nf-expense: #E57C23;
+  --nf-expense-dark: #D97320;
+  --nf-expense-deep: #D84315;
+}
+
 /* Performance optimizations */
 * {
   -webkit-font-smoothing: antialiased;
@@ -71,8 +96,8 @@ body.resumo-bg {
   border-radius: 12px;
   padding: 1rem 1.5rem;
   margin-bottom: 2rem;
-  border: 1px solid #ffaa0044;
-  box-shadow: 0 8px 25px rgba(255, 183, 0, 0.16);
+  border: 1px solid var(--nf-accent-soft-border);
+  box-shadow: 0 8px 25px var(--nf-accent-soft-shadow);
 }
 
 .user-info {
@@ -84,7 +109,7 @@ body.resumo-bg {
 .user-avatar {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #1E88E5 0%, #E57C23 100%);
+  background: linear-gradient(135deg, var(--nf-dark-accent) 0%, var(--nf-primary) 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -192,7 +217,7 @@ body.resumo-bg {
 }
 
 .btn-quick-expense {
-  background: linear-gradient(135deg, #E57C23 0%, #D97320 100%);
+  background: linear-gradient(135deg, var(--nf-expense) 0%, var(--nf-expense-dark) 100%);
   color: white;
 }
 
@@ -231,8 +256,8 @@ body.resumo-bg {
 }
 
 .card-icon-expense {
-  background: rgba(229, 124, 35, 0.2);
-  color: #E57C23;
+  background: rgba(229, 124, 35, 0.18);
+  color: var(--nf-expense);
 }
 
 .card-icon-balance {
@@ -286,7 +311,7 @@ body.resumo-bg {
 }
 
 .resumo-btn-gerenciar {
-  background: linear-gradient(135deg, #E57C23 0%, #D97320 100%);
+  background: linear-gradient(135deg, var(--nf-primary) 0%, var(--nf-dark-accent) 100%);
   color: white;
   text-decoration: none;
   padding: 0.75rem 1.5rem;
@@ -296,12 +321,12 @@ body.resumo-bg {
   border: none;
   transition: all 0.3s ease;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(229, 124, 35, 0.4);
+  box-shadow: 0 4px 15px rgba(29, 185, 84, 0.35);
 }
 
 .resumo-btn-gerenciar:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(229, 124, 35, 0.6);
+  box-shadow: 0 8px 25px rgba(29, 185, 84, 0.55);
 }
 
 .resumo-container {
@@ -417,8 +442,8 @@ body.resumo-bg {
   backdrop-filter: blur(10px);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 8px 25px rgba(229, 124, 35, 0.25);
-  border: 1px solid rgba(229, 124, 35, 0.4);
+  box-shadow: 0 8px 25px rgba(229, 124, 35, 0.22);
+  border: 1px solid rgba(229, 124, 35, 0.38);
   text-align: left;
   animation: fadeIn 0.5s ease-out forwards;
   transform: translateZ(0);
@@ -472,7 +497,7 @@ body.resumo-bg {
 .resumo-valor-gastos {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #E57C23;
+  color: var(--nf-expense);
   margin: 0;
   text-align: left;
   word-break: break-word;
@@ -492,8 +517,8 @@ body.resumo-bg {
   backdrop-filter: blur(10px);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 8px 25px rgba(255, 183, 0, 0.16);
-  border: 1px solid #ffaa0044;
+  box-shadow: 0 8px 25px var(--nf-accent-soft-shadow);
+  border: 1px solid var(--nf-accent-soft-border);
   margin-bottom: 2rem;
   animation: fadeIn 0.5s ease-out forwards;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -514,8 +539,8 @@ body.resumo-bg {
 }
 
 .resumo-grafico-gastos-section {
-  box-shadow: 0 8px 25px rgba(229, 124, 35, 0.25);
-  border: 1px solid rgba(229, 124, 35, 0.4);
+  box-shadow: 0 8px 25px rgba(229, 124, 35, 0.22);
+  border: 1px solid rgba(229, 124, 35, 0.38);
 }
 
 .resumo-grafico-titulo {
@@ -656,7 +681,7 @@ body.resumo-bg {
 }
 
 .resumo-link-gastos {
-  background: linear-gradient(135deg, #E57C23 0%, #D84315 100%);
+  background: linear-gradient(135deg, var(--nf-expense) 0%, var(--nf-expense-deep) 100%);
 }
 
 .resumo-link-gastos:hover {
@@ -1036,8 +1061,8 @@ body.resumo-bg {
   width: 100%;
   max-height: 80vh;
   overflow-y: auto;
-  box-shadow: 0 8px 25px rgba(255, 183, 0, 0.16);
-  border: 1px solid #ffaa0044;
+  box-shadow: 0 8px 25px var(--nf-accent-soft-shadow);
+  border: 1px solid var(--nf-accent-soft-border);
   text-align: center;
   position: relative;
   animation: slideUp 0.3s ease;
@@ -1101,7 +1126,7 @@ body.resumo-bg {
 }
 
 .install-step h3 {
-  color: #ffaa00;
+  color: var(--nf-secondary);
   font-size: 1.1rem;
   margin: 0 0 1rem 0;
   display: flex;
